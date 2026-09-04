@@ -16,3 +16,16 @@ CREATE TABLE IF NOT EXISTS tradespeople (
     display_name VARCHAR(255) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS trades (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS specialties (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    trade_id INTEGER NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    UNIQUE (trade_id, name),
+    FOREIGN KEY (trade_id) REFERENCES trades(id)
+);
