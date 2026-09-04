@@ -49,6 +49,25 @@ CREATE TABLE IF NOT EXISTS projects (
     FOREIGN KEY (homeowner_id) REFERENCES homeowners(id)
 );
 
+CREATE TABLE IF NOT EXISTS project_teams (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id INTEGER NOT NULL,
+    tradesperson_id INTEGER NOT NULL,
+    status VARCHAR(32) NOT NULL CHECK (status IN ('INVITED', 'PENDING', 'ACTIVE')),
+    UNIQUE (project_id, tradesperson_id),
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (tradesperson_id) REFERENCES tradespeople(id)
+);
+
+CREATE TABLE IF NOT EXISTS project_team_trades (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_team_id INTEGER NOT NULL,
+    trade_id INTEGER NOT NULL,
+    UNIQUE (project_team_id, trade_id),
+    FOREIGN KEY (project_team_id) REFERENCES project_teams(id),
+    FOREIGN KEY (trade_id) REFERENCES trades(id)
+);
+
 CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title VARCHAR(255) NOT NULL,

@@ -49,6 +49,9 @@ public class Project {
     @OneToMany(mappedBy = "project")
     private List<Task> tasks = new ArrayList<>();
 
+    @OneToMany(mappedBy = "project")
+    private List<ProjectTeam> projectTeams = new ArrayList<>();
+
     protected Project() {
     }
 
@@ -87,6 +90,10 @@ public class Project {
 
     public List<Task> getTasks() {
         return tasks;
+    }
+
+    public List<ProjectTeam> getProjectTeams() {
+        return projectTeams;
     }
 
     void addTask(Task task) {

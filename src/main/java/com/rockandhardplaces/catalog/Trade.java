@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.rockandhardplaces.account.PersonTrade;
 import com.rockandhardplaces.project.TaskTrade;
+import com.rockandhardplaces.project.ProjectTeamTrade;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,6 +40,9 @@ public class Trade {
     @OneToMany(mappedBy = "trade")
     private List<TaskTrade> taskTrades = new ArrayList<>();
 
+    @OneToMany(mappedBy = "trade")
+    private List<ProjectTeamTrade> projectTeamTrades = new ArrayList<>();
+
     protected Trade() {
     }
 
@@ -64,5 +68,9 @@ public class Trade {
 
     public List<TaskTrade> getTaskTrades() {
         return taskTrades;
+    }
+
+    public List<ProjectTeamTrade> getProjectTeamTrades() {
+        return projectTeamTrades;
     }
 }
