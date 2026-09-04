@@ -47,6 +47,9 @@ public class Task {
     @OneToMany(mappedBy = "task")
     private List<TaskTrade> taskTrades = new ArrayList<>();
 
+    @OneToMany(mappedBy = "task")
+    private List<TaskAssignment> taskAssignments = new ArrayList<>();
+
     protected Task() {
     }
 
@@ -86,5 +89,9 @@ public class Task {
 
     public List<TaskTrade> getTaskTrades() {
         return taskTrades;
+    }
+
+    public List<TaskAssignment> getTaskAssignments() {
+        return taskAssignments;
     }
 }

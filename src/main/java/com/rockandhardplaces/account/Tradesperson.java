@@ -3,6 +3,8 @@ package com.rockandhardplaces.account;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rockandhardplaces.project.TaskAssignment;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,6 +33,9 @@ public class Tradesperson {
     @OneToMany(mappedBy = "tradesperson")
     private List<PersonTrade> personTrades = new ArrayList<>();
 
+    @OneToMany(mappedBy = "tradesperson")
+    private List<TaskAssignment> taskAssignments = new ArrayList<>();
+
     protected Tradesperson() {
     }
 
@@ -53,5 +58,9 @@ public class Tradesperson {
 
     public List<PersonTrade> getPersonTrades() {
         return personTrades;
+    }
+
+    public List<TaskAssignment> getTaskAssignments() {
+        return taskAssignments;
     }
 }

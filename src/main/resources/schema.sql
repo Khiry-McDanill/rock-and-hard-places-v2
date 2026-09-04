@@ -69,3 +69,12 @@ CREATE TABLE IF NOT EXISTS task_trades (
     FOREIGN KEY (task_id) REFERENCES tasks(id),
     FOREIGN KEY (trade_id) REFERENCES trades(id)
 );
+
+CREATE TABLE IF NOT EXISTS task_assignments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_id INTEGER NOT NULL,
+    tradesperson_id INTEGER NOT NULL,
+    UNIQUE (task_id, tradesperson_id),
+    FOREIGN KEY (task_id) REFERENCES tasks(id),
+    FOREIGN KEY (tradesperson_id) REFERENCES tradespeople(id)
+);
