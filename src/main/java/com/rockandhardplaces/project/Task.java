@@ -82,6 +82,10 @@ public class Task {
         return status;
     }
 
+    void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
     public Project getProject() {
         return project;
     }
