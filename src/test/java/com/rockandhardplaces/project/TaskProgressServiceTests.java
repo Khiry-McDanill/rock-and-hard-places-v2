@@ -70,7 +70,7 @@ class TaskProgressServiceTests {
     }
 
     @Test
-    void cancelledParentExcludesBranch() {
+    void cancelledParentExcludesDescendants() {
         Task parent = task(TaskStatus.CANCELLED);
         child(parent, TaskStatus.IN_PROGRESS);
         task(TaskStatus.COMPLETED);
