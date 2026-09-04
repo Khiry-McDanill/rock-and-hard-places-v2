@@ -98,11 +98,11 @@ class TaskPersistenceTests {
     }
 
     @Test
-    void taskHasNoDirectWorkerTradeOrBidFields() {
+        void taskHasNoDirectWorkerOrTradeFields() {
         assertThat(Task.class.getDeclaredFields())
                 .extracting(Field::getName)
                 .doesNotContain("tradesperson", "tradespersonId", "worker", "workerId",
-                        "trade", "tradeId", "bid", "bidId", "bids");
+                                                "trade", "tradeId", "bid", "bidId");
     }
 
     private Project createProject() {

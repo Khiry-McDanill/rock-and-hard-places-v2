@@ -66,6 +66,9 @@ class TaskAssignmentServiceTests {
     private ProjectTeamRepository projectTeamRepository;
 
     @Autowired
+    private ProjectTeamTradeRepository projectTeamTradeRepository;
+
+    @Autowired
     private TaskAssignmentRepository taskAssignmentRepository;
 
     @Autowired
@@ -171,12 +174,13 @@ class TaskAssignmentServiceTests {
         Trade carpentry = tradeRepository.saveAndFlush(new Trade("Carpentry"));
         Task task = createTask(project, "Carpentry task", TaskStatus.PLANNING);
 
-        projectTeamRepository.saveAndFlush(
+        ProjectTeam membership = projectTeamRepository.saveAndFlush(
                 new ProjectTeam(project, worker, ProjectTeamStatus.ACTIVE));
         personTradeRepository.saveAndFlush(new PersonTrade(worker, carpentry));
+        projectTeamTradeRepository.saveAndFlush(new ProjectTeamTrade(membership, carpentry));
         taskTradeRepository.saveAndFlush(new TaskTrade(task, carpentry));
 
-        // Should not throw when qualification matches
+        // Should not throw when membership, qualification, and role all match
         taskAssignmentService.validateAssignmentEligibility(task, worker);
     }
 
@@ -202,6 +206,102 @@ class TaskAssignmentServiceTests {
                 .hasMessageContaining("no matching qualifications");
     }
 
+    // ===== Test: ProjectTeamTrade Role Matching =====
+
+    @Test
+    void assignmentRequiresMatchingProjectTeamTrade() {
+        Project project = createProject("ProjectTeamTrade required project", ProjectStatus.PLANNING);
+        Tradesperson worker = createTradesperson("roled@example.com", "Roled Worker");
+        Trade carpentry = tradeRepository.saveAndFlush(new Trade("Carpentry"));
+        Task task = createTask(project, "Carpentry task", TaskStatus.PLANNING);
+
+        ProjectTeam membership = projectTeamRepository.saveAndFlush(
+                new ProjectTeam(project, worker, ProjectTeamStatus.ACTIVE));
+        personTradeRepository.saveAndFlush(new PersonTrade(worker, carpentry));
+        projectTeamTradeRepository.saveAndFlush(new ProjectTeamTrade(membership, carpentry));
+        taskTradeRepository.saveAndFlush(new TaskTrade(task, carpentry));
+
+        // Should not throw when membership, qualification, and role all match
+        taskAssignmentService.validateAssignmentEligibility(task, worker);
+    }
+
+    @Test
+    void rejectsAssignmentWhenNoMatchingProjectTeamTrade() {
+        Project project = createProject("No role project", ProjectStatus.PLANNING);
+        Tradesperson worker = createTradesperson("norole@example.com", "No Role Worker");
+        Trade carpentry = tradeRepository.saveAndFlush(new Trade("Carpentry"));
+        Task task = createTask(project, "Carpentry task", TaskStatus.PLANNING);
+
+        projectTeamRepository.saveAndFlush(
+                new ProjectTeam(project, worker, ProjectTeamStatus.ACTIVE));
+        personTradeRepository.saveAndFlush(new PersonTrade(worker, carpentry));
+        taskTradeRepository.saveAndFlush(new TaskTrade(task, carpentry));
+        entityManager.flush();
+        entityManager.clear();
+
+        Task refreshedTask = taskRepository.findById(task.getId()).orElseThrow();
+
+        // Should throw: membership and qualification exist, but no matching role
+        assertThatThrownBy(
+                () -> taskAssignmentService.validateAssignmentEligibility(refreshedTask, worker))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("no matching project roles");
+    }
+
+    @Test
+    void rejectsAssignmentWhenProjectTeamTradeIsUnrelatedTrade() {
+        Project project = createProject("Wrong role project", ProjectStatus.PLANNING);
+        Tradesperson worker = createTradesperson("wrongrole@example.com", "Wrong Role Worker");
+        Trade carpentry = tradeRepository.saveAndFlush(new Trade("Carpentry"));
+        Trade plumbing = tradeRepository.saveAndFlush(new Trade("Plumbing"));
+        Task task = createTask(project, "Carpentry task", TaskStatus.PLANNING);
+
+        ProjectTeam membership = projectTeamRepository.saveAndFlush(
+                new ProjectTeam(project, worker, ProjectTeamStatus.ACTIVE));
+        personTradeRepository.saveAndFlush(new PersonTrade(worker, carpentry));
+        projectTeamTradeRepository.saveAndFlush(new ProjectTeamTrade(membership, plumbing));
+        taskTradeRepository.saveAndFlush(new TaskTrade(task, carpentry));
+        entityManager.flush();
+        entityManager.clear();
+
+        Task refreshedTask = taskRepository.findById(task.getId()).orElseThrow();
+
+        // Should throw: qualification matches but role does not
+        assertThatThrownBy(
+                () -> taskAssignmentService.validateAssignmentEligibility(refreshedTask, worker))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("no matching project roles");
+    }
+
+    @Test
+    void projectTeamTradeFromAnotherProjectDoesNotSatisfyEligibility() {
+        Project projectA = createProject("Project A", ProjectStatus.PLANNING);
+        Project projectB = createProject("Project B", ProjectStatus.PLANNING);
+        Tradesperson worker = createTradesperson("multi-project@example.com", "Multi-Project Worker");
+        Trade carpentry = tradeRepository.saveAndFlush(new Trade("Carpentry"));
+        Task taskInProjectB = createTask(projectB, "Carpentry in B", TaskStatus.PLANNING);
+
+        // Worker has membership in Project A with Carpentry role
+        ProjectTeam membershipA = projectTeamRepository.saveAndFlush(
+                new ProjectTeam(projectA, worker, ProjectTeamStatus.ACTIVE));
+        projectTeamTradeRepository.saveAndFlush(new ProjectTeamTrade(membershipA, carpentry));
+
+        // Worker also has qualification
+        personTradeRepository.saveAndFlush(new PersonTrade(worker, carpentry));
+
+        // Task in Project B requires Carpentry
+        taskTradeRepository.saveAndFlush(new TaskTrade(taskInProjectB, carpentry));
+
+        // Worker has no membership in Project B
+        Task refreshedTask = taskRepository.findById(taskInProjectB.getId()).orElseThrow();
+
+        // Should throw: role exists but for wrong project
+        assertThatThrownBy(
+                () -> taskAssignmentService.validateAssignmentEligibility(refreshedTask, worker))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("no ACTIVE ProjectTeam membership");
+    }
+
     // ===== Test: Multi-Trade Scenarios =====
 
     @Test
@@ -216,14 +316,16 @@ class TaskAssignmentServiceTests {
         Task task = createTask(project, "Kitchen remodel", TaskStatus.PLANNING);
 
         // Setup memberships
-        projectTeamRepository.saveAndFlush(
+        ProjectTeam carpenterMembership = projectTeamRepository.saveAndFlush(
                 new ProjectTeam(project, carpenter, ProjectTeamStatus.ACTIVE));
-        projectTeamRepository.saveAndFlush(
+        ProjectTeam plumberMembership = projectTeamRepository.saveAndFlush(
                 new ProjectTeam(project, plumber, ProjectTeamStatus.ACTIVE));
 
-        // Setup qualifications
+        // Setup qualifications and roles
         personTradeRepository.saveAndFlush(new PersonTrade(carpenter, carpentry));
         personTradeRepository.saveAndFlush(new PersonTrade(plumber, plumbing));
+        projectTeamTradeRepository.saveAndFlush(new ProjectTeamTrade(carpenterMembership, carpentry));
+        projectTeamTradeRepository.saveAndFlush(new ProjectTeamTrade(plumberMembership, plumbing));
 
         // Setup task requirements
         taskTradeRepository.saveAndFlush(new TaskTrade(task, carpentry));
@@ -254,12 +356,14 @@ class TaskAssignmentServiceTests {
         Task task = createTask(project, "Kitchen full remodel", TaskStatus.PLANNING);
 
         // Setup membership
-        projectTeamRepository.saveAndFlush(
+        ProjectTeam membership = projectTeamRepository.saveAndFlush(
                 new ProjectTeam(project, worker, ProjectTeamStatus.ACTIVE));
 
-        // Setup multiple qualifications
+        // Setup multiple qualifications and roles
         personTradeRepository.saveAndFlush(new PersonTrade(worker, carpentry));
         personTradeRepository.saveAndFlush(new PersonTrade(worker, plumbing));
+        projectTeamTradeRepository.saveAndFlush(new ProjectTeamTrade(membership, carpentry));
+        projectTeamTradeRepository.saveAndFlush(new ProjectTeamTrade(membership, plumbing));
 
         // Setup task requirements
         taskTradeRepository.saveAndFlush(new TaskTrade(task, carpentry));

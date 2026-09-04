@@ -50,6 +50,9 @@ public class Task {
     @OneToMany(mappedBy = "task")
     private List<TaskAssignment> taskAssignments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "task")
+    private List<Bid> bids = new ArrayList<>();
+
     protected Task() {
     }
 
@@ -93,5 +96,9 @@ public class Task {
 
     public List<TaskAssignment> getTaskAssignments() {
         return taskAssignments;
+    }
+
+    public List<Bid> getBids() {
+        return bids;
     }
 }

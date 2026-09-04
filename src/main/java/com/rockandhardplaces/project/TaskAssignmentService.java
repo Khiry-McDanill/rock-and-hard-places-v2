@@ -19,20 +19,25 @@ import com.rockandhardplaces.catalog.Trade;
  * Project.
  * 2. Tradesperson must have PersonTrade qualification matching at least one
  * TaskTrade requirement.
- * 3. Assignment does not implicitly create ProjectTeam or ProjectTeamTrade
+ * 3. Tradesperson must have ProjectTeamTrade role matching at least one
+ * TaskTrade requirement for the project.
+ * 4. Assignment does not implicitly create ProjectTeam or ProjectTeamTrade
  * records.
  */
 @Service
 public class TaskAssignmentService {
 
     private final ProjectTeamRepository projectTeamRepository;
+    private final ProjectTeamTradeRepository projectTeamTradeRepository;
     private final PersonTradeRepository personTradeRepository;
     private final TaskAssignmentRepository taskAssignmentRepository;
 
     public TaskAssignmentService(ProjectTeamRepository projectTeamRepository,
+            ProjectTeamTradeRepository projectTeamTradeRepository,
             PersonTradeRepository personTradeRepository,
             TaskAssignmentRepository taskAssignmentRepository) {
         this.projectTeamRepository = projectTeamRepository;
+        this.projectTeamTradeRepository = projectTeamTradeRepository;
         this.personTradeRepository = personTradeRepository;
         this.taskAssignmentRepository = taskAssignmentRepository;
     }
@@ -44,6 +49,8 @@ public class TaskAssignmentService {
      * 1. ACTIVE ProjectTeam membership for the Task's Project.
      * 2. At least one PersonTrade qualification matching at least one
      * TaskTrade requirement.
+     * 3. At least one ProjectTeamTrade role matching at least one TaskTrade
+     * requirement.
      *
      * @param task the Task to assign to
      * @param tradesperson the Tradesperson to assign
@@ -51,20 +58,19 @@ public class TaskAssignmentService {
      */
     public void validateAssignmentEligibility(Task task, Tradesperson tradesperson) {
         // Rule 1: Check ACTIVE project membership
-        boolean hasActiveMembership = projectTeamRepository
+        ProjectTeam membership = projectTeamRepository
                 .findActiveMembership(task.getProject(), tradesperson, ProjectTeamStatus.ACTIVE)
-                .isPresent();
-
-        if (!hasActiveMembership) {
-            throw new IllegalArgumentException(
-                    String.format(
-                            "Tradesperson %d cannot be assigned to Task %d: "
-                                    + "no ACTIVE ProjectTeam membership in Project %d",
-                            tradesperson.getId(), task.getId(), task.getProject().getId()));
-        }
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format(
+                                "Tradesperson %d cannot be assigned to Task %d: "
+                                        + "no ACTIVE ProjectTeam membership in Project %d",
+                                tradesperson.getId(), task.getId(), task.getProject().getId())));
 
         // Rule 2: Check qualification matching
         validateQualificationMatching(task, tradesperson);
+
+        // Rule 3: Check project-specific role matching
+        validateProjectTeamTradeMatching(task, membership);
     }
 
     /**
@@ -106,6 +112,48 @@ public class TaskAssignmentService {
                             "Tradesperson %d cannot be assigned to Task %d: "
                                     + "no matching qualifications. Task requires: [%s]; Tradesperson qualified for: [%s]",
                             tradesperson.getId(), task.getId(), requiredTradeNames, qualifiedTradeNames));
+        }
+    }
+
+    /**
+     * Validates that the ProjectTeam has at least one ProjectTeamTrade role
+     * matching at least one TaskTrade requirement.
+     */
+    private void validateProjectTeamTradeMatching(Task task, ProjectTeam membership) {
+        List<TaskTrade> requirements = task.getTaskTrades();
+
+        // If no requirements are specified, any ACTIVE member can work
+        if (requirements.isEmpty()) {
+            return;
+        }
+
+        List<ProjectTeamTrade> roles = projectTeamTradeRepository.findByProjectTeam(membership);
+
+        Set<Trade> requiredTrades = requirements.stream()
+                .map(TaskTrade::getTrade)
+                .collect(Collectors.toSet());
+
+        Set<Trade> assignedRoles = roles.stream()
+                .map(ProjectTeamTrade::getTrade)
+                .collect(Collectors.toSet());
+
+        boolean hasMatchingRole = assignedRoles.stream()
+                .anyMatch(requiredTrades::contains);
+
+        if (!hasMatchingRole) {
+            String requiredTradeNames = requiredTrades.stream()
+                    .map(Trade::getName)
+                    .collect(Collectors.joining(", "));
+            String assignedRoleNames = assignedRoles.isEmpty() ? "(none)"
+                    : assignedRoles.stream()
+                            .map(Trade::getName)
+                            .collect(Collectors.joining(", "));
+
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Tradesperson %d cannot be assigned to Task %d: "
+                                    + "no matching project roles. Task requires: [%s]; Tradesperson has roles: [%s]",
+                            membership.getTradesperson().getId(), task.getId(), requiredTradeNames, assignedRoleNames));
         }
     }
 

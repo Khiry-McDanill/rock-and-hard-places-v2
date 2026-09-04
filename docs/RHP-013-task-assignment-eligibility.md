@@ -80,8 +80,9 @@ These rules are now resolved below.
   participation.
 - `INVITED`, `PENDING`, and `SUSPENDED` states do not authorize work.
 
-**Constraint**: This rule is enforced at the entity layer when
-`TaskAssignment` is constructed.
+**Enforcement Boundary**: This rule cannot be enforced in the entity
+constructor because it requires querying the `ProjectTeam` repository. It must
+be enforced at the service layer before `TaskAssignment` is persisted.
 
 **Cross-Project Prevention**: This rule inherently prevents cross-project
 assignments since `ProjectTeam` is unique by `(project, tradesperson)` and a
@@ -105,7 +106,27 @@ constructor because it requires querying `PersonTrade` and `TaskTrade`
 repositories. It must be enforced at the service layer before `TaskAssignment`
 is persisted.
 
-### Rule 3: No Implicit Membership or Role Creation
+### Rule 3: Project-Specific Role Eligibility
+
+**Approved Policy**: A `Tradesperson` may only be assigned to a `Task` if they
+have at least one `ProjectTeamTrade` role matching at least one `TaskTrade`
+requirement for that task's project.
+
+**Rationale**:
+
+- Project roles represent project-specific authorization for specific trade work.
+- A tradesperson's `PersonTrade` qualification is general; `ProjectTeamTrade`
+  roles are project-specific.
+- A task may require multiple trades; the assigned worker must have a role for
+  at least one of them on the specific project.
+- A tradesperson may hold different roles across different projects.
+
+**Enforcement Boundary**: This rule cannot be enforced in the entity
+constructor because it requires querying `ProjectTeamTrade` and `TaskTrade`
+repositories. It must be enforced at the service layer before `TaskAssignment`
+is persisted.
+
+### Rule 4: No Implicit Membership or Role Creation
 
 **Approved Policy**: Creating a `TaskAssignment` does NOT implicitly create
 `ProjectTeam` membership or `ProjectTeamTrade` roles.
@@ -122,7 +143,7 @@ is persisted.
 **Constraint**: This is a documented constraint; the entity layer does not
 create these relationships.
 
-### Rule 4: Multi-Worker, Multi-Trade Tasks
+### Rule 5: Multi-Worker, Multi-Trade Tasks
 
 **Approved Policy**: A `Task` with multiple `TaskTrade` requirements may have
 multiple `Tradesperson` assignments, where each satisfies different trade
@@ -144,7 +165,7 @@ requires no special enforcement.
 - Worker B is assigned (qualified for Plumbing).
 - Both satisfy different requirements; no duplicate assignment.
 
-### Rule 5: Single Worker, Multiple Trade Roles
+### Rule 6: Single Worker, Multiple Trade Roles
 
 **Approved Policy**: A single `Tradesperson` assigned to a `Task` may be
 qualified for and hold roles for multiple required trades.
@@ -164,7 +185,7 @@ applicable work.
 - Worker A is assigned (qualified and roled for both Carpentry and Plumbing).
 - Single assignment covers both trade requirements.
 
-### Rule 6: Membership Suspension and Removal
+### Rule 7: Membership Suspension and Removal
 
 **Approved Policy**: When a `ProjectTeam` membership is transitioned to
 `SUSPENDED` or removed, related `TaskAssignment` records must be reviewed and
@@ -187,7 +208,7 @@ service must also remove related `TaskAssignment` records for that
 `(project, tradesperson)` pair, or handle them according to the deletion
 policy.
 
-### Rule 7: Qualification and Role Removal
+### Rule 8: Qualification and Role Removal
 
 **Approved Policy**: When a `PersonTrade` qualification or `ProjectTeamTrade`
 role is removed, related `TaskAssignment` records should be reviewed. If an
@@ -205,7 +226,7 @@ the assignment must be removed or marked invalid at the service layer.
 **Enforcement Boundary**: Validation and cleanup occur at the service layer,
 not in entity constructors.
 
-### Rule 8: Unassigned Tasks Remain Valid
+### Rule 9: Unassigned Tasks Remain Valid
 
 **Approved Policy**: A `Task` may persist with zero `TaskAssignment` records
 and remain valid for later assignment.
@@ -228,7 +249,7 @@ and remain valid for later assignment.
 | Must an assigned Tradesperson have an ACTIVE ProjectTeam membership for the Task's Project? | **YES**. ACTIVE membership is required. INVITED, PENDING, and SUSPENDED are not sufficient. |
 | Must TaskAssignment remain within the Task's Project context? | **YES**. This is enforced by requiring ACTIVE membership for that specific project. Cross-project assignment is not possible. |
 | Must the Tradesperson have a PersonTrade qualification matching at least one TaskTrade requirement? | **YES**. Eligibility checking happens at the service layer before persistence. |
-| Must the Tradesperson also have a matching ProjectTeamTrade role? | **YES** (in practice). The service layer should validate that the tradesperson has project-specific roles for the work. This is related to Rule 2 qualification checking and project team setup. |
+| Must the Tradesperson also have a matching ProjectTeamTrade role? | **YES** (ENFORCED). The service layer validates that the tradesperson has project-specific roles matching at least one task requirement. |
 | What happens if a membership is later SUSPENDED or removed? | Assignments to that member for that project must be removed or marked invalid at the service layer. No cascade at database level; service is responsible. |
 | What happens if a qualification or project role is later removed? | The assignment becomes potentially invalid. Service logic should prevent removal if it creates ineligible assignments, or clean them up afterward. |
 | Can a Task with multiple required trades have multiple workers, each satisfying different trade requirements? | **YES**. This is explicitly supported. |
@@ -239,13 +260,14 @@ and remain valid for later assignment.
 
 ### Implemented in RH&P-013
 
-- TaskAssignment entity validation for ACTIVE project membership (constructor).
+- TaskAssignmentService validation for ACTIVE project membership (Rule 1).
+- TaskAssignmentService validation for PersonTrade qualification matching (Rule 2).
+- TaskAssignmentService validation for ProjectTeamTrade role matching (Rule 3).
 - ProjectTeamRepository helper method to query membership status.
-- TaskAssignmentService with eligibility validation methods.
-- Focused tests for all eligibility rules.
-- Persistence tests validating ACTIVE membership requirement.
-- Validation test for PersonTrade qualification matching.
-- Documentation of the complete rules.
+- ProjectTeamTradeRepository helper method to query project-specific roles.
+- Focused tests for all eligibility rules (9 new test cases).
+- Documentation of all 9 assignment eligibility rules.
+- Explicit approval answers for all 9 criteria questions.
 
 ### Intentionally Not Implemented
 

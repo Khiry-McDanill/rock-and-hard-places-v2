@@ -15,6 +15,8 @@ public interface ProjectTeamRepository extends JpaRepository<ProjectTeam, Long> 
 
     List<ProjectTeam> findByTradesperson(Tradesperson tradesperson);
 
+    Optional<ProjectTeam> findByProjectAndTradesperson(Project project, Tradesperson tradesperson);
+
     @Query("SELECT pt FROM ProjectTeam pt WHERE pt.project = :project AND pt.tradesperson = :tradesperson AND pt.status = :status")
     Optional<ProjectTeam> findActiveMembership(@Param("project") Project project,
             @Param("tradesperson") Tradesperson tradesperson,

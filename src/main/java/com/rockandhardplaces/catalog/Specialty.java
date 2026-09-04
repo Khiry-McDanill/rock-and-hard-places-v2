@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
@@ -29,6 +30,9 @@ public class Specialty {
     @JoinColumn(name = "trade_id", nullable = false)
     private Trade trade;
 
+    @OneToMany(mappedBy = "specialty")
+    private java.util.List<PersonSpecialty> personSpecialties = new java.util.ArrayList<>();
+
     protected Specialty() {
     }
 
@@ -47,5 +51,9 @@ public class Specialty {
 
     public Trade getTrade() {
         return trade;
+    }
+
+    public java.util.List<PersonSpecialty> getPersonSpecialties() {
+        return personSpecialties;
     }
 }
