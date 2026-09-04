@@ -10,8 +10,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tasks")
@@ -40,6 +43,9 @@ public class Task {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_task_id")
     private Task parentTask;
+
+    @OneToMany(mappedBy = "task")
+    private List<TaskTrade> taskTrades = new ArrayList<>();
 
     protected Task() {
     }
@@ -76,5 +82,9 @@ public class Task {
 
     public Task getParentTask() {
         return parentTask;
+    }
+
+    public List<TaskTrade> getTaskTrades() {
+        return taskTrades;
     }
 }

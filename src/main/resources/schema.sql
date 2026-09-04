@@ -60,3 +60,12 @@ CREATE TABLE IF NOT EXISTS tasks (
     FOREIGN KEY (project_id) REFERENCES projects(id),
     FOREIGN KEY (parent_task_id) REFERENCES tasks(id)
 );
+
+CREATE TABLE IF NOT EXISTS task_trades (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_id INTEGER NOT NULL,
+    trade_id INTEGER NOT NULL,
+    UNIQUE (task_id, trade_id),
+    FOREIGN KEY (task_id) REFERENCES tasks(id),
+    FOREIGN KEY (trade_id) REFERENCES trades(id)
+);
