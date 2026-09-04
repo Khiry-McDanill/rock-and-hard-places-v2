@@ -34,6 +34,10 @@ public class ProjectTeamTrade {
     }
 
     public ProjectTeamTrade(ProjectTeam projectTeam, Trade trade) {
+        if (projectTeam.getStatus() != ProjectTeamStatus.ACTIVE) {
+            throw new IllegalArgumentException(
+                    "ProjectTeamTrade requires an ACTIVE project team membership");
+        }
         this.projectTeam = projectTeam;
         this.trade = trade;
     }

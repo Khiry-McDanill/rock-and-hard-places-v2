@@ -339,7 +339,7 @@ another.
 `IN_PROGRESS`, `COMPLETED`, and `CANCELLED`.
 
 `ProjectTeam.status` uses the independent `ProjectTeamStatus` values
-`INVITED`, `PENDING`, and `ACTIVE`.
+`INVITED`, `PENDING`, `ACTIVE`, and `SUSPENDED`.
 
 They are separate Java enums, columns, constraints, and persistence tests. A
 project may be `IN_PROGRESS` while a member is `PENDING`, and a member may be
@@ -348,15 +348,10 @@ stored on a team membership, and no membership status is stored on a project.
 
 ## 9. Unresolved Business Rules
 
-These rules are intentionally recorded rather than invented:
+These rules were unresolved at the RH&P-011 checkpoint. Membership rules are
+now defined in `docs/RHP-012-project-team-membership-workflow.md`.
 
 - Whether a task assignment requires an existing `ACTIVE` project membership.
-- Who may invite, approve, suspend, or remove a project team member.
-- Whether `INVITED` and `PENDING` represent distinct initiators or approval
-  steps.
-- Whether project roles must be supported by a matching `PersonTrade`
-  qualification.
-- Whether a project role may be assigned before membership approval.
 - Whether a task assignment may cross project boundaries or must match the
   task's project team.
 - How project progress is calculated from tasks, subtasks, weights, and
@@ -457,9 +452,12 @@ workflow descriptions only; no frontend is built here.
 
 ### Needs correction
 
-No concrete domain-model defect was found that should be changed during this
-checkpoint. The current implementation is intentionally persistence-focused;
-its absent application workflows are not defects in this issue's scope.
+RH&P-012 identified and corrected one concrete follow-up from this checkpoint:
+the original status set could not represent suspension and reactivation. The
+model now includes `ProjectTeamStatus.SUSPENDED`, with migration support for
+existing SQLite databases and role-timing enforcement. The remaining absent
+application workflows are intentionally future scope, not defects in this
+checkpoint.
 
 ### Unresolved
 

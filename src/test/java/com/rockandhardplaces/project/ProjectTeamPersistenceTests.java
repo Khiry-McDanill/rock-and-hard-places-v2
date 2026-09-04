@@ -10,6 +10,7 @@ import jakarta.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -26,6 +27,7 @@ import com.rockandhardplaces.catalog.TradeRepository;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Import(ProjectTeamSchemaMigration.class)
 class ProjectTeamPersistenceTests {
 
     @Autowired
@@ -119,6 +121,18 @@ class ProjectTeamPersistenceTests {
     }
 
     @Test
+    void persistsSuspendedMembershipStatus() {
+        Project project = createProject("Suspended status project", ProjectStatus.IN_PROGRESS);
+        Tradesperson worker = createTradesperson("suspended-member@example.com", "Worker");
+
+        ProjectTeam membership = projectTeamRepository.saveAndFlush(
+                new ProjectTeam(project, worker, ProjectTeamStatus.SUSPENDED));
+
+        assertThat(projectTeamRepository.findById(membership.getId()).orElseThrow().getStatus())
+                .isEqualTo(ProjectTeamStatus.SUSPENDED);
+    }
+
+    @Test
     void allowsOneTeamMemberToHaveMultipleTradeRoles() {
         Project project = createProject("Multiple roles project", ProjectStatus.PLANNING);
         Tradesperson worker = createTradesperson("multiple-roles@example.com", "Multi-role worker");
@@ -134,6 +148,19 @@ class ProjectTeamPersistenceTests {
                 .extracting(ProjectTeamTrade::getTrade)
                 .extracting(Trade::getName)
                 .containsExactlyInAnyOrder("Carpentry", "Plumbing");
+    }
+
+    @Test
+    void rejectsProjectTeamTradeBeforeMembershipIsActive() {
+        Project project = createProject("Pending role project", ProjectStatus.PLANNING);
+        Tradesperson worker = createTradesperson("pending-role@example.com", "Worker");
+        ProjectTeam membership = projectTeamRepository.saveAndFlush(
+                new ProjectTeam(project, worker, ProjectTeamStatus.PENDING));
+        Trade carpentry = tradeRepository.saveAndFlush(new Trade("Carpentry"));
+
+        assertThatThrownBy(() -> new ProjectTeamTrade(membership, carpentry))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("ProjectTeamTrade requires an ACTIVE project team membership");
     }
 
     @Test

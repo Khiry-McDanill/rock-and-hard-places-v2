@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS project_teams (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     project_id INTEGER NOT NULL,
     tradesperson_id INTEGER NOT NULL,
-    status VARCHAR(32) NOT NULL CHECK (status IN ('INVITED', 'PENDING', 'ACTIVE')),
+    status VARCHAR(32) NOT NULL CHECK (status IN ('INVITED', 'PENDING', 'ACTIVE', 'SUSPENDED')),
     UNIQUE (project_id, tradesperson_id),
     FOREIGN KEY (project_id) REFERENCES projects(id),
     FOREIGN KEY (tradesperson_id) REFERENCES tradespeople(id)
