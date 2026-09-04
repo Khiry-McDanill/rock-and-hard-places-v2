@@ -133,3 +133,69 @@ CREATE UNIQUE INDEX IF NOT EXISTS uk_bids_submitted_task_trade_tradesperson
 CREATE UNIQUE INDEX IF NOT EXISTS uk_bids_accepted_task_trade
     ON bids (task_trade_id)
     WHERE status = 'ACCEPTED';
+
+CREATE TABLE IF NOT EXISTS message_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    requester_id INTEGER NOT NULL,
+    recipient_id INTEGER NOT NULL,
+    project_id INTEGER NOT NULL,
+    status VARCHAR(32) NOT NULL CHECK (status IN ('PENDING', 'ACCEPTED', 'DECLINED', 'CANCELLED')),
+    created_at TIMESTAMP NOT NULL,
+    resolved_at TIMESTAMP,
+    CHECK (requester_id <> recipient_id),
+    FOREIGN KEY (requester_id) REFERENCES users(id),
+    FOREIGN KEY (recipient_id) REFERENCES users(id),
+    FOREIGN KEY (project_id) REFERENCES projects(id)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS uk_message_requests_pending_context_pair
+    ON message_requests (MIN(requester_id, recipient_id), MAX(requester_id, recipient_id), project_id)
+    WHERE status = 'PENDING';
+
+CREATE TABLE IF NOT EXISTS conversations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    type VARCHAR(32) NOT NULL CHECK (type IN ('PRIVATE', 'PROJECT_TEAM')),
+    project_id INTEGER NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (project_id) REFERENCES projects(id)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS uk_conversations_project_team
+    ON conversations (project_id) WHERE type = 'PROJECT_TEAM';
+
+CREATE TABLE IF NOT EXISTS conversation_participants (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    conversation_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    active BOOLEAN NOT NULL,
+    joined_at TIMESTAMP NOT NULL,
+    revoked_at TIMESTAMP,
+    UNIQUE (conversation_id, user_id),
+    FOREIGN KEY (conversation_id) REFERENCES conversations(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    conversation_id INTEGER NOT NULL,
+    sender_id INTEGER NOT NULL,
+    body VARCHAR(10000) NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    edited_at TIMESTAMP,
+    removed_at TIMESTAMP,
+    FOREIGN KEY (conversation_id) REFERENCES conversations(id),
+    FOREIGN KEY (sender_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS message_attachments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    message_id INTEGER NOT NULL,
+    original_filename VARCHAR(255) NOT NULL,
+    content_type VARCHAR(255) NOT NULL,
+    file_size INTEGER NOT NULL CHECK (file_size >= 0),
+    storage_key VARCHAR(255) NOT NULL UNIQUE,
+    uploader_id INTEGER NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (message_id) REFERENCES messages(id),
+    FOREIGN KEY (uploader_id) REFERENCES users(id)
+);
