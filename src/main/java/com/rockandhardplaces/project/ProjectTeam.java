@@ -68,6 +68,10 @@ public class ProjectTeam {
         return status;
     }
 
+    public void setStatus(ProjectTeamStatus status) {
+        this.status = status;
+    }
+
     public List<ProjectTeamTrade> getProjectTeamTrades() {
         return projectTeamTrades;
     }
