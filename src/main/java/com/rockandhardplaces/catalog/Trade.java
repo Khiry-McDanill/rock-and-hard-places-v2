@@ -3,6 +3,8 @@ package com.rockandhardplaces.catalog;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rockandhardplaces.account.PersonTrade;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,6 +32,9 @@ public class Trade {
     @OneToMany(mappedBy = "trade")
     private List<Specialty> specialties = new ArrayList<>();
 
+    @OneToMany(mappedBy = "trade")
+    private List<PersonTrade> personTrades = new ArrayList<>();
+
     protected Trade() {
     }
 
@@ -47,5 +52,9 @@ public class Trade {
 
     public List<Specialty> getSpecialties() {
         return specialties;
+    }
+
+    public List<PersonTrade> getPersonTrades() {
+        return personTrades;
     }
 }

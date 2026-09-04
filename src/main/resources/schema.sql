@@ -29,3 +29,12 @@ CREATE TABLE IF NOT EXISTS specialties (
     UNIQUE (trade_id, name),
     FOREIGN KEY (trade_id) REFERENCES trades(id)
 );
+
+CREATE TABLE IF NOT EXISTS person_trades (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tradesperson_id INTEGER NOT NULL,
+    trade_id INTEGER NOT NULL,
+    UNIQUE (tradesperson_id, trade_id),
+    FOREIGN KEY (tradesperson_id) REFERENCES tradespeople(id),
+    FOREIGN KEY (trade_id) REFERENCES trades(id)
+);
