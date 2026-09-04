@@ -131,7 +131,6 @@ public class TaskProgressService {
                 && left.getId().equals(right.getId()));
     }
 
-    // Cancelling a parent excludes its entire branch of work.
     private boolean isIncluded(Task task) {
         for (Task current = task; current != null; current = current.getParentTask()) {
             if (current.getStatus() == TaskStatus.CANCELLED) {
