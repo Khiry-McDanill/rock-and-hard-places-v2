@@ -6,6 +6,9 @@ import java.util.List;
 import com.rockandhardplaces.project.Project;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,6 +33,13 @@ public class Homeowner {
     @NotBlank
     private String displayName;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountStatus accountStatus;
+
+    @Column(name = "profile_image_reference")
+    private String profileImageReference;
+
     @OneToMany(mappedBy = "homeowner")
     private List<Project> projects = new ArrayList<>();
 
@@ -39,6 +49,7 @@ public class Homeowner {
     public Homeowner(User user, String displayName) {
         this.user = user;
         this.displayName = displayName;
+        this.accountStatus = AccountStatus.ACTIVE;
     }
 
     public Long getId() {
@@ -55,5 +66,15 @@ public class Homeowner {
 
     public List<Project> getProjects() {
         return projects;
+    }
+
+    public AccountStatus getAccountStatus() { return accountStatus; }
+
+    public void setAccountStatus(AccountStatus accountStatus) { this.accountStatus = accountStatus; }
+
+    public String getProfileImageReference() { return profileImageReference; }
+
+    public void setProfileImageReference(String profileImageReference) {
+        this.profileImageReference = profileImageReference;
     }
 }

@@ -2,6 +2,7 @@ package com.rockandhardplaces.communication;
 
 import java.util.Objects;
 import com.rockandhardplaces.account.User;
+import com.rockandhardplaces.account.AccountAuthorizationService;
 import com.rockandhardplaces.project.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,10 +12,13 @@ public class CommunicationService {
  private final MessageRequestRepository requests; private final ConversationRepository conversations;
  private final ConversationParticipantRepository participants; private final MessageRepository messages;
  private final MessageAttachmentRepository attachments; private final ProjectTeamRepository teams;
- public CommunicationService(MessageRequestRepository requests,ConversationRepository conversations,ConversationParticipantRepository participants,MessageRepository messages,MessageAttachmentRepository attachments,ProjectTeamRepository teams){
+ private final AccountAuthorizationService authorization;
+ public CommunicationService(MessageRequestRepository requests,ConversationRepository conversations,ConversationParticipantRepository participants,MessageRepository messages,MessageAttachmentRepository attachments,ProjectTeamRepository teams,AccountAuthorizationService authorization){
   this.requests=requests;this.conversations=conversations;this.participants=participants;this.messages=messages;this.attachments=attachments;this.teams=teams;
+  this.authorization=authorization;
  }
  @Transactional public MessageRequest requestCommunication(User requester,User recipient,Project project){
+  authorization.requireDifferentUsers(requester,recipient);
   if(!requests.between(requester,recipient,project,MessageRequestStatus.PENDING).isEmpty()) throw new IllegalStateException("A pending message request already exists for these users and project");
   return requests.saveAndFlush(new MessageRequest(requester,recipient,project));
  }
@@ -25,6 +29,7 @@ public class CommunicationService {
  @Transactional public void decline(MessageRequest request,User recipient){if(!same(request.getRecipient(),recipient))throw new SecurityException("Only the recipient may decline");request.decline();requests.saveAndFlush(request);}
  @Transactional public void cancel(MessageRequest request,User requester){if(!same(request.getRequester(),requester))throw new SecurityException("Only the requester may cancel");request.cancel();requests.saveAndFlush(request);}
  @Transactional public Conversation privateConversation(User a,User b,Project project){
+  authorization.requireDifferentUsers(a,b);
   if(!authorized(a,b,project)) throw new SecurityException("Communication requires an accepted request or active project relationship");
   for(Conversation c:conversations.findAllByProjectAndType(project,ConversationType.PRIVATE))
    if(participants.findByConversation(c).stream().filter(ConversationParticipant::isActive).map(ConversationParticipant::getUser).map(User::getId).collect(java.util.stream.Collectors.toSet()).equals(java.util.Set.of(a.getId(),b.getId()))) return c;
