@@ -199,3 +199,96 @@ CREATE TABLE IF NOT EXISTS message_attachments (
     FOREIGN KEY (message_id) REFERENCES messages(id),
     FOREIGN KEY (uploader_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS reviews (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    homeowner_id INTEGER NOT NULL,
+    tradesperson_id INTEGER NOT NULL,
+    project_id INTEGER NOT NULL,
+    task_id INTEGER,
+    level VARCHAR(16) NOT NULL CHECK (level IN ('TASK', 'PROJECT')),
+    overall_rating INTEGER NOT NULL CHECK (overall_rating BETWEEN 1 AND 5),
+    quality_rating INTEGER CHECK (quality_rating BETWEEN 1 AND 5),
+    communication_rating INTEGER CHECK (communication_rating BETWEEN 1 AND 5),
+    reliability_rating INTEGER CHECK (reliability_rating BETWEEN 1 AND 5),
+    professionalism_rating INTEGER CHECK (professionalism_rating BETWEEN 1 AND 5),
+    body VARCHAR(10000),
+    created_at TIMESTAMP NOT NULL,
+    edited_at TIMESTAMP,
+    withdrawn_at TIMESTAMP,
+    moderation_hidden_at TIMESTAMP,
+    CHECK ((level = 'TASK' AND task_id IS NOT NULL) OR (level = 'PROJECT' AND task_id IS NULL)),
+    FOREIGN KEY (homeowner_id) REFERENCES homeowners(id),
+    FOREIGN KEY (tradesperson_id) REFERENCES tradespeople(id),
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (task_id) REFERENCES tasks(id)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS uk_reviews_task_context
+    ON reviews(homeowner_id, tradesperson_id, task_id) WHERE level = 'TASK';
+CREATE UNIQUE INDEX IF NOT EXISTS uk_reviews_project_context
+    ON reviews(homeowner_id, tradesperson_id, project_id) WHERE level = 'PROJECT';
+
+CREATE TABLE IF NOT EXISTS review_responses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    review_id INTEGER NOT NULL UNIQUE,
+    tradesperson_id INTEGER NOT NULL,
+    body VARCHAR(10000) NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    edited_at TIMESTAMP,
+    moderation_hidden_at TIMESTAMP,
+    FOREIGN KEY (review_id) REFERENCES reviews(id),
+    FOREIGN KEY (tradesperson_id) REFERENCES tradespeople(id)
+);
+
+CREATE TABLE IF NOT EXISTS moderation_reports (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    reporter_id INTEGER NOT NULL,
+    target_type VARCHAR(32) NOT NULL CHECK (target_type IN ('REVIEW', 'REVIEW_RESPONSE')),
+    review_id INTEGER,
+    response_id INTEGER,
+    reason VARCHAR(2000) NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    status VARCHAR(32) NOT NULL CHECK (status IN ('OPEN', 'UNDER_REVIEW', 'RESOLVED', 'DISMISSED')),
+    CHECK ((target_type = 'REVIEW' AND review_id IS NOT NULL AND response_id IS NULL)
+        OR (target_type = 'REVIEW_RESPONSE' AND response_id IS NOT NULL AND review_id IS NULL)),
+    FOREIGN KEY (reporter_id) REFERENCES users(id),
+    FOREIGN KEY (review_id) REFERENCES reviews(id),
+    FOREIGN KEY (response_id) REFERENCES review_responses(id)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS uk_active_report_review
+    ON moderation_reports(reporter_id, review_id) WHERE review_id IS NOT NULL AND status IN ('OPEN','UNDER_REVIEW');
+CREATE UNIQUE INDEX IF NOT EXISTS uk_active_report_response
+    ON moderation_reports(reporter_id, response_id) WHERE response_id IS NOT NULL AND status IN ('OPEN','UNDER_REVIEW');
+
+CREATE TABLE IF NOT EXISTS portfolio_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tradesperson_id INTEGER NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description VARCHAR(5000),
+    provenance VARCHAR(32) NOT NULL CHECK (provenance IN ('RHP_VERIFIED','EXTERNALLY_VERIFIED','SELF_REPORTED')),
+    project_id INTEGER,
+    task_id INTEGER,
+    completion_date DATE,
+    created_at TIMESTAMP NOT NULL,
+    CHECK (task_id IS NULL OR project_id IS NOT NULL),
+    CHECK (provenance <> 'RHP_VERIFIED' OR project_id IS NOT NULL),
+    FOREIGN KEY (tradesperson_id) REFERENCES tradespeople(id),
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (task_id) REFERENCES tasks(id)
+);
+CREATE INDEX IF NOT EXISTS idx_portfolio_items_owner_provenance ON portfolio_items(tradesperson_id, provenance);
+
+CREATE TABLE IF NOT EXISTS portfolio_publication_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    portfolio_item_id INTEGER NOT NULL,
+    attachment_id INTEGER NOT NULL,
+    status VARCHAR(16) NOT NULL CHECK (status IN ('PENDING','APPROVED','DECLINED','CANCELLED')),
+    created_at TIMESTAMP NOT NULL,
+    decided_at TIMESTAMP,
+    decided_by_homeowner_id INTEGER,
+    UNIQUE (portfolio_item_id, attachment_id),
+    FOREIGN KEY (portfolio_item_id) REFERENCES portfolio_items(id),
+    FOREIGN KEY (attachment_id) REFERENCES message_attachments(id),
+    FOREIGN KEY (decided_by_homeowner_id) REFERENCES homeowners(id)
+);
+CREATE INDEX IF NOT EXISTS idx_portfolio_publication_status ON portfolio_publication_requests(status);

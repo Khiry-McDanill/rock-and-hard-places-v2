@@ -1,0 +1,4 @@
+package com.rockandhardplaces.portfolio;
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.rockandhardplaces.communication.MessageAttachment;
+public interface PortfolioPublicationRequestRepository extends JpaRepository<PortfolioPublicationRequest,Long>{boolean existsByPortfolioItemAndAttachment(PortfolioItem item,MessageAttachment attachment);}
