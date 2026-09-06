@@ -2,6 +2,7 @@ package com.rockandhardplaces.account;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -72,5 +73,15 @@ class Rhp020AccountLifecycleTests {
         assertThatThrownBy(() -> service.submit(task, mock(TaskTrade.class), tradesperson,
                 BigDecimal.TEN, null)).isInstanceOf(SecurityException.class)
                 .hasMessageContaining("own opposite profile");
+    }
+
+    @Test
+    void distinctTransientUsersWithNullIdsAreNotTreatedAsSameUser() {
+        AccountAuthorizationService authorization = new AccountAuthorizationService();
+
+        User first = new User("first@example.com");
+        User second = new User("second@example.com");
+
+        assertDoesNotThrow(() -> authorization.requireDifferentUsers(first, second));
     }
 }

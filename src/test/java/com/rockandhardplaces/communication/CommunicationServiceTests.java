@@ -11,10 +11,16 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import com.rockandhardplaces.account.*;
 import com.rockandhardplaces.project.*;
+import com.rockandhardplaces.account.AccountAuthorizationService;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
-@Import({CommunicationService.class,ProjectTeamSchemaMigration.class})
+@Import({
+    CommunicationService.class,
+    ProjectTeamSchemaMigration.class,
+    AccountAuthorizationService.class
+})
+
 class CommunicationServiceTests {
  @Autowired CommunicationService service; @Autowired UserRepository users; @Autowired HomeownerRepository homeowners;
  @Autowired TradespersonRepository tradespeople; @Autowired ProjectRepository projects; @Autowired ProjectTeamRepository teams;

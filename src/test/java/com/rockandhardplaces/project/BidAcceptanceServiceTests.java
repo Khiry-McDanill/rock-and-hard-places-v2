@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import com.rockandhardplaces.account.AccountAuthorizationService;
 import com.rockandhardplaces.account.Homeowner;
 import com.rockandhardplaces.account.HomeownerRepository;
 import com.rockandhardplaces.account.PersonTrade;
@@ -24,7 +25,11 @@ import com.rockandhardplaces.catalog.TradeRepository;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(BidAcceptanceService.class)
+@Import({
+        BidAcceptanceService.class,
+        AccountAuthorizationService.class
+})
+
 class BidAcceptanceServiceTests {
 
     @Autowired

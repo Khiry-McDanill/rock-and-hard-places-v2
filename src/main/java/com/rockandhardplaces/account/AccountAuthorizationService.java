@@ -26,7 +26,11 @@ public class AccountAuthorizationService {
     }
 
     public void requireDifferentUsers(User first, User second) {
-        if (first == second || (first != null && second != null
+        if (first == second
+                || (first != null
+                && second != null
+                && first.getId() != null
+                && second.getId() != null
                 && Objects.equals(first.getId(), second.getId()))) {
             throw new SecurityException("A user cannot interact with their own opposite profile");
         }
