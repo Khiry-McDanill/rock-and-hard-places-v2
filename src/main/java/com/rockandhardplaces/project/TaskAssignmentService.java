@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.rockandhardplaces.account.PersonTrade;
+import com.rockandhardplaces.account.AccountAuthorizationService;
 import com.rockandhardplaces.account.PersonTradeRepository;
 import com.rockandhardplaces.account.Tradesperson;
 import com.rockandhardplaces.catalog.Trade;
@@ -31,15 +32,18 @@ public class TaskAssignmentService {
     private final ProjectTeamTradeRepository projectTeamTradeRepository;
     private final PersonTradeRepository personTradeRepository;
     private final TaskAssignmentRepository taskAssignmentRepository;
+    private final AccountAuthorizationService authorization;
 
     public TaskAssignmentService(ProjectTeamRepository projectTeamRepository,
             ProjectTeamTradeRepository projectTeamTradeRepository,
             PersonTradeRepository personTradeRepository,
-            TaskAssignmentRepository taskAssignmentRepository) {
+            TaskAssignmentRepository taskAssignmentRepository,
+            AccountAuthorizationService authorization) {
         this.projectTeamRepository = projectTeamRepository;
         this.projectTeamTradeRepository = projectTeamTradeRepository;
         this.personTradeRepository = personTradeRepository;
         this.taskAssignmentRepository = taskAssignmentRepository;
+        this.authorization = authorization;
     }
 
     /**
@@ -57,6 +61,9 @@ public class TaskAssignmentService {
      * @throws IllegalArgumentException if eligibility is not met
      */
     public void validateAssignmentEligibility(Task task, Tradesperson tradesperson) {
+        authorization.requireActive(task.getProject().getHomeowner());
+        authorization.requireActive(tradesperson);
+        authorization.requireDifferentUsers(task.getProject().getHomeowner().getUser(), tradesperson.getUser());
         // Rule 1: Check ACTIVE project membership
         ProjectTeam membership = projectTeamRepository
                 .findActiveMembership(task.getProject(), tradesperson, ProjectTeamStatus.ACTIVE)

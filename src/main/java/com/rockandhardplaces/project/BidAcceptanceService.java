@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.rockandhardplaces.account.PersonTradeRepository;
+import com.rockandhardplaces.account.AccountAuthorizationService;
 import com.rockandhardplaces.account.Tradesperson;
 
 @Service
@@ -16,21 +17,28 @@ public class BidAcceptanceService {
     private final ProjectTeamRepository projectTeamRepository;
     private final ProjectTeamTradeRepository projectTeamTradeRepository;
     private final TaskAssignmentRepository taskAssignmentRepository;
+    private final AccountAuthorizationService authorization;
 
     public BidAcceptanceService(BidRepository bidRepository,
             PersonTradeRepository personTradeRepository,
             ProjectTeamRepository projectTeamRepository,
             ProjectTeamTradeRepository projectTeamTradeRepository,
-            TaskAssignmentRepository taskAssignmentRepository) {
+            TaskAssignmentRepository taskAssignmentRepository,
+            AccountAuthorizationService authorization) {
         this.bidRepository = bidRepository;
         this.personTradeRepository = personTradeRepository;
         this.projectTeamRepository = projectTeamRepository;
         this.projectTeamTradeRepository = projectTeamTradeRepository;
         this.taskAssignmentRepository = taskAssignmentRepository;
+        this.authorization = authorization;
     }
 
     @Transactional
     public Bid acceptBid(Bid bid) {
+        authorization.requireActive(bid.getTask().getProject().getHomeowner());
+        authorization.requireActive(bid.getTradesperson());
+        authorization.requireDifferentUsers(bid.getTask().getProject().getHomeowner().getUser(),
+                bid.getTradesperson().getUser());
         validateTaskTrade(bid);
         if (bid.getStatus() == BidStatus.ACCEPTED) {
             return bid;

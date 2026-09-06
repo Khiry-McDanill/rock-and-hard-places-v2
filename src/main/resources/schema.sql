@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS homeowners (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL UNIQUE,
     display_name VARCHAR(255) NOT NULL,
+    account_status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE' CHECK (account_status IN ('ACTIVE', 'SUSPENDED', 'DEACTIVATED')),
+    profile_image_reference VARCHAR(1000),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -14,6 +16,9 @@ CREATE TABLE IF NOT EXISTS tradespeople (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL UNIQUE,
     display_name VARCHAR(255) NOT NULL,
+    account_status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE' CHECK (account_status IN ('ACTIVE', 'SUSPENDED', 'DEACTIVATED')),
+    verification_status VARCHAR(32) NOT NULL DEFAULT 'NOT_SUBMITTED' CHECK (verification_status IN ('NOT_SUBMITTED', 'PENDING', 'VERIFIED', 'REJECTED')),
+    profile_image_reference VARCHAR(1000),
     base_zip VARCHAR(20) NOT NULL,
     service_radius INTEGER NOT NULL,
     availability_status VARCHAR(32) NOT NULL CHECK (availability_status IN ('AVAILABLE_NOW', 'AVAILABLE_SOON', 'BUSY', 'NOT_ACCEPTING_WORK')),

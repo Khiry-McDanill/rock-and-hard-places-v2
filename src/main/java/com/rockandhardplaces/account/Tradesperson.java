@@ -38,6 +38,17 @@ public class Tradesperson {
     @NotBlank
     private String displayName;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountStatus accountStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "verification_status", nullable = false)
+    private TradespersonVerificationStatus verificationStatus;
+
+    @Column(name = "profile_image_reference")
+    private String profileImageReference;
+
     @NotBlank
     @Column(name = "base_zip", nullable = false)
     private String baseZip;
@@ -78,6 +89,8 @@ public class Tradesperson {
             AvailabilityStatus availabilityStatus, LocalDate availableStartDate) {
         this.user = user;
         this.displayName = displayName;
+        this.accountStatus = AccountStatus.ACTIVE;
+        this.verificationStatus = TradespersonVerificationStatus.NOT_SUBMITTED;
         this.baseZip = baseZip;
         this.serviceRadius = serviceRadius;
         this.availabilityStatus = availabilityStatus;
@@ -130,5 +143,21 @@ public class Tradesperson {
 
     public List<Bid> getBids() {
         return bids;
+    }
+
+    public AccountStatus getAccountStatus() { return accountStatus; }
+
+    public void setAccountStatus(AccountStatus accountStatus) { this.accountStatus = accountStatus; }
+
+    public TradespersonVerificationStatus getVerificationStatus() { return verificationStatus; }
+
+    public void setVerificationStatus(TradespersonVerificationStatus verificationStatus) {
+        this.verificationStatus = verificationStatus;
+    }
+
+    public String getProfileImageReference() { return profileImageReference; }
+
+    public void setProfileImageReference(String profileImageReference) {
+        this.profileImageReference = profileImageReference;
     }
 }
