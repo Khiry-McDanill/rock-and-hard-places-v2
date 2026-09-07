@@ -33,6 +33,8 @@ class AccountPersistenceTests {
 
     @Test
     void persistsIndependentProfilesForTheSameUser() {
+        long homeownerCountBefore = homeownerRepository.count();
+        long tradespersonCountBefore = tradespersonRepository.count();
         User user = userRepository.saveAndFlush(new User("person@example.com"));
 
         Homeowner homeowner = homeownerRepository.saveAndFlush(
@@ -50,7 +52,7 @@ class AccountPersistenceTests {
                 .extracting(Tradesperson::getUser)
                 .extracting(User::getId)
                 .isEqualTo(user.getId());
-        assertThat(homeownerRepository.count()).isEqualTo(1);
-        assertThat(tradespersonRepository.count()).isEqualTo(1);
+        assertThat(homeownerRepository.count()).isEqualTo(homeownerCountBefore + 1);
+        assertThat(tradespersonRepository.count()).isEqualTo(tradespersonCountBefore + 1);
     }
 }

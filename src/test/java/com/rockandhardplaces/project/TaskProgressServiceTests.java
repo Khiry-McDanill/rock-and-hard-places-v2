@@ -210,6 +210,56 @@ class TaskProgressServiceTests {
         assertThat(service.progressPercentage(project)).isEqualTo(100);
     }
 
+    @Test
+    void taskProgressForStandaloneStatuses() {
+        for (TaskStatus status : TaskStatus.values()) {
+            assertThat(service.progressPercentage(task(status)))
+                    .isEqualTo(status == TaskStatus.COMPLETED ? 100 : 0);
+        }
+    }
+
+    @Test
+    void taskProgressUsesNestedLeavesAndRoundsWithoutCountingParentsOrUnrelatedWork() {
+        Task parent = task(TaskStatus.COMPLETED);
+        Task intermediate = child(parent, TaskStatus.COMPLETED);
+        child(intermediate, TaskStatus.COMPLETED);
+        child(intermediate, TaskStatus.IN_PROGRESS);
+        child(parent, TaskStatus.COMPLETED);
+        task(TaskStatus.IN_PROGRESS);
+        assertThat(service.progressPercentage(parent)).isEqualTo(67);
+        assertThat(service.progressPercentage(intermediate)).isEqualTo(50);
+    }
+
+    @Test
+    void taskProgressExcludesCancelledWorkAndEntireCancelledSubtrees() {
+        Task parent = task(TaskStatus.IN_PROGRESS);
+        child(parent, TaskStatus.COMPLETED);
+        Task cancelled = child(parent, TaskStatus.CANCELLED);
+        Task descendant = child(cancelled, TaskStatus.COMPLETED);
+        child(descendant, TaskStatus.IN_PROGRESS);
+        assertThat(service.progressPercentage(parent)).isEqualTo(100);
+        assertThat(service.progressPercentage(cancelled)).isZero();
+        assertThat(service.progressPercentage(descendant)).isZero();
+    }
+
+    @Test
+    void taskProgressIsZeroWhenAllDescendantsAreCancelled() {
+        Task parent = task(TaskStatus.COMPLETED);
+        child(parent, TaskStatus.CANCELLED);
+        assertThat(service.progressPercentage(parent)).isZero();
+    }
+
+    @Test
+    void reopeningChildLowersTaskAndParentProgress() {
+        Task parent = task(TaskStatus.COMPLETED);
+        Task child = child(parent, TaskStatus.COMPLETED);
+        child(parent, TaskStatus.COMPLETED);
+        assertThat(service.progressPercentage(parent)).isEqualTo(100);
+        service.reopen(child);
+        assertThat(service.progressPercentage(child)).isZero();
+        assertThat(service.progressPercentage(parent)).isEqualTo(50);
+    }
+
     private Task task(TaskStatus status) {
         return child(null, status);
     }
