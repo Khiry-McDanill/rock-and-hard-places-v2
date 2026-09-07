@@ -96,6 +96,12 @@ public class Project {
         return projectTeams;
     }
 
+    void updateDetails(String title, String description, String jobZip) {
+        this.title = title;
+        this.description = description;
+        this.jobZip = jobZip;
+    }
+
     void addTask(Task task) {
         tasks.add(task);
     }

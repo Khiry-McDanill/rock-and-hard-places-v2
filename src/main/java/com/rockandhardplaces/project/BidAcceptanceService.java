@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.rockandhardplaces.account.PersonTradeRepository;
 import com.rockandhardplaces.account.AccountAuthorizationService;
 import com.rockandhardplaces.account.Tradesperson;
+import com.rockandhardplaces.account.Homeowner;
 
 @Service
 public class BidAcceptanceService {
@@ -73,6 +74,20 @@ public class BidAcceptanceService {
                 });
         bid.accept();
         return bidRepository.saveAndFlush(bid);
+    }
+
+    /**
+     * Actor-aware entry point for delivery layers. Keeping this check here prevents
+     * callers from accidentally accepting a bid on somebody else's project.
+     */
+    @Transactional
+    public Bid acceptBid(Bid bid, Homeowner actor) {
+        authorization.requireActive(actor);
+        Homeowner owner = bid.getTask().getProject().getHomeowner();
+        if (actor != owner && (actor.getId() == null || !Objects.equals(actor.getId(), owner.getId()))) {
+            throw new SecurityException("Only the project homeowner may accept a bid");
+        }
+        return acceptBid(bid);
     }
 
     private ProjectTeam activateMembership(ProjectTeam projectTeam) {

@@ -64,6 +64,9 @@ public class TaskAssignmentService {
         authorization.requireActive(task.getProject().getHomeowner());
         authorization.requireActive(tradesperson);
         authorization.requireDifferentUsers(task.getProject().getHomeowner().getUser(), tradesperson.getUser());
+        if (tradesperson.getAvailabilityStatus() == com.rockandhardplaces.account.AvailabilityStatus.NOT_ACCEPTING_WORK) {
+            throw new IllegalArgumentException("Tradesperson is not accepting work");
+        }
         // Rule 1: Check ACTIVE project membership
         ProjectTeam membership = projectTeamRepository
                 .findActiveMembership(task.getProject(), tradesperson, ProjectTeamStatus.ACTIVE)
