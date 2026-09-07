@@ -23,6 +23,23 @@ public class TaskProgressService {
         return units.isEmpty() ? 0 : (int) Math.round(100.0 * completed(units) / units.size());
     }
 
+    public int progressPercentage(Task task) {
+        List<Task> units = task.getProject().getTasks().stream()
+                .filter(this::isIncluded)
+                .filter(candidate -> isWithinTask(candidate, task))
+                .filter(candidate -> children(candidate).isEmpty()).toList();
+        return units.isEmpty() ? 0 : (int) Math.round(100.0 * completed(units) / units.size());
+    }
+
+    private boolean isWithinTask(Task candidate, Task task) {
+        for (Task current = candidate; current != null; current = current.getParentTask()) {
+            if (sameTask(current, task)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public long completedTopLevelTasks(Project project) {
         return completed(topLevelTasks(project));
     }

@@ -44,7 +44,7 @@ class BidControllerContractTests {
 
         mvc.perform(post("/api/bids/44/accept"))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("Forbidden"));
+                .andExpect(jsonPath("$.error").value("FORBIDDEN"));
 
         verifyNoInteractions(acceptance);
     }

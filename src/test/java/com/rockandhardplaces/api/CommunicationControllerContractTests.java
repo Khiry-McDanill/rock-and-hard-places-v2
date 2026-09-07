@@ -29,7 +29,7 @@ class CommunicationControllerContractTests {
         when(communication.canAccess(conversation, user)).thenReturn(false);
         mvc.perform(get("/api/conversations/77/messages"))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("Forbidden"));
+                .andExpect(jsonPath("$.error").value("FORBIDDEN"));
         verifyNoInteractions(messages);
     }
 
@@ -38,7 +38,7 @@ class CommunicationControllerContractTests {
         when(conversations.findById(88L)).thenReturn(Optional.empty());
         mvc.perform(get("/api/conversations/88/messages"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("Not Found"))
+                .andExpect(jsonPath("$.error").value("NOT_FOUND"))
                 .andExpect(jsonPath("$.message").value("Resource not found"));
     }
 }

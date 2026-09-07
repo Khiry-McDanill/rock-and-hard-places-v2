@@ -44,7 +44,7 @@ class ProjectWorkflowControllerContractTests {
         mvc.perform(post("/api/projects").contentType("application/json")
                         .content("{\"title\":\"Kitchen\",\"description\":\"Renovate\",\"jobZip\":\"90210\"}"))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("Forbidden"));
+                .andExpect(jsonPath("$.error").value("FORBIDDEN"));
         verifyNoInteractions(workflow);
     }
 

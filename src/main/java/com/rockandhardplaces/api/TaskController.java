@@ -18,10 +18,13 @@ class TaskController {
     private final ProjectWorkflowService workflow;
     private final TaskAssignmentService assignmentService;
     private final TradespersonRepository tradespeople;
+    private final TaskProgressService progress;
 
     TaskController(ActiveAccountContext accountContext, ApiAccessService access,
             BidSubmissionService bidSubmission, ProjectWorkflowService workflow,
-            TaskAssignmentService assignmentService, TradespersonRepository tradespeople) {
+            TaskAssignmentService assignmentService, TradespersonRepository tradespeople,
+            TaskProgressService progress) {
+        this.progress = progress;
         this.accountContext = accountContext;
         this.access = access;
         this.bidSubmission = bidSubmission;
@@ -30,7 +33,7 @@ class TaskController {
 
     @GetMapping("/{taskId}")
     ApiDtos.TaskResponse task(@PathVariable Long taskId) {
-        return ApiDtos.TaskResponse.from(access.task(taskId, accountContext.activeProfile()));
+        return ApiDtos.TaskResponse.from(access.task(taskId, accountContext.activeProfile()), progress);
     }
 
     @GetMapping("/{taskId}/bids")
@@ -57,19 +60,19 @@ class TaskController {
     @PostMapping("/{taskId}/ready-for-review")
     ApiDtos.TaskResponse ready(@PathVariable Long taskId) {
         Tradesperson actor = activeTradesperson(); Task task = access.biddingTask(taskId);
-        workflow.readyForReview(actor, task); return ApiDtos.TaskResponse.from(task);
+        workflow.readyForReview(actor, task); return ApiDtos.TaskResponse.from(task, progress);
     }
 
     @PostMapping("/{taskId}/approve")
     ApiDtos.TaskResponse approve(@PathVariable Long taskId) {
         Homeowner actor = activeHomeowner(); Task task = access.task(taskId, actor);
-        workflow.approve(actor, task); return ApiDtos.TaskResponse.from(task);
+        workflow.approve(actor, task); return ApiDtos.TaskResponse.from(task, progress);
     }
 
     @PostMapping("/{taskId}/reject")
     ApiDtos.TaskResponse reject(@PathVariable Long taskId) {
         Homeowner actor = activeHomeowner(); Task task = access.task(taskId, actor);
-        workflow.reject(actor, task); return ApiDtos.TaskResponse.from(task);
+        workflow.reject(actor, task); return ApiDtos.TaskResponse.from(task, progress);
     }
 
     @PostMapping("/{taskId}/assignments")

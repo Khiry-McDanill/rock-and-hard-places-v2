@@ -54,7 +54,7 @@ class ProjectController {
     @GetMapping("/{projectId}/tasks")
     List<ApiDtos.TaskResponse> tasks(@PathVariable Long projectId) {
         var project = access.project(projectId, accountContext.activeProfile());
-        return project.getTasks().stream().map(ApiDtos.TaskResponse::from).toList();
+        return project.getTasks().stream().map(task -> ApiDtos.TaskResponse.from(task, progress)).toList();
     }
 
     @PostMapping("/{projectId}/tasks")
@@ -65,7 +65,7 @@ class ProjectController {
         Task parent = request.parentTaskId() == null ? null
                 : access.task(request.parentTaskId(), accountContext.activeProfile());
         return ApiDtos.TaskResponse.from(workflow.createTask(activeHomeowner(), project,
-                request.title(), request.description(), parent, request.requiredTradeIds()));
+                request.title(), request.description(), parent, request.requiredTradeIds()), progress);
     }
 
     @GetMapping("/{projectId}/team")

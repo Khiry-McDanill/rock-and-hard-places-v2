@@ -1,5 +1,8 @@
 package com.rockandhardplaces.account;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 /** Replaceable stand-in for credential-backed session context. */
@@ -30,6 +33,14 @@ public class DemoActiveAccountContext implements ActiveAccountContext {
         return activeRole == AccountRole.HOMEOWNER
                 ? homeowners.findByUser(user).orElseThrow()
                 : tradespeople.findByUser(user).orElseThrow();
+    }
+
+    @Override public List<Object> availableProfiles() {
+        User user = currentUser();
+        List<Object> profiles = new ArrayList<>();
+        homeowners.findByUser(user).ifPresent(profiles::add);
+        tradespeople.findByUser(user).ifPresent(profiles::add);
+        return profiles;
     }
 
     @Override public void switchTo(AccountRole role) {

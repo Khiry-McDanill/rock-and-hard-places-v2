@@ -20,7 +20,7 @@ class AccountController {
         return ApiDtos.AccountResponse.from(accountContext);
     }
 
-    @PostMapping("/active-role")
+    @PostMapping("/switch")
     @ResponseStatus(HttpStatus.OK)
     ApiDtos.AccountResponse switchRole(@Valid @RequestBody ApiDtos.SwitchRoleRequest request) {
         accountContext.switchTo(request.role());

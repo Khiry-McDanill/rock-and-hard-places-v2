@@ -17,27 +17,31 @@ final class ApiDtos {
     private ApiDtos() {
     }
 
-    record AccountResponse(Long userId, String email, AccountRole activeRole, ProfileResponse profile) {
+    record AccountResponse(Long userId, String email, AccountRole activeRole, ProfileResponse profile,
+            List<ProfileResponse> profiles) {
         static AccountResponse from(ActiveAccountContext context) {
             User user = context.currentUser();
             return new AccountResponse(user.getId(), user.getEmail(), context.activeRole(),
-                    ProfileResponse.from(context.activeProfile()));
+                    ProfileResponse.from(context.activeProfile()),
+                    context.availableProfiles().stream().map(ProfileResponse::from).toList());
         }
     }
 
-    record ProfileResponse(Long id, AccountRole role, String displayName, AccountStatus accountStatus,
-            TradespersonVerificationStatus verificationStatus, String baseZip, Integer serviceRadius,
-            AvailabilityStatus availabilityStatus) {
+    record ProfileResponse(Long id, AccountRole role, String displayName, String profileImageReference,
+            AccountStatus accountStatus, TradespersonVerificationStatus verificationStatus, String baseZip,
+            Integer serviceRadius, AvailabilityStatus availabilityStatus) {
         static ProfileResponse from(Object profile) {
             if (profile instanceof Homeowner homeowner) {
                 return new ProfileResponse(homeowner.getId(), AccountRole.HOMEOWNER,
-                        homeowner.getDisplayName(), homeowner.getAccountStatus(), null, null, null, null);
+                        homeowner.getDisplayName(), homeowner.getProfileImageReference(),
+                        homeowner.getAccountStatus(), null, null, null, null);
             }
             Tradesperson tradesperson = (Tradesperson) profile;
             return new ProfileResponse(tradesperson.getId(), AccountRole.TRADESPERSON,
-                    tradesperson.getDisplayName(), tradesperson.getAccountStatus(),
-                    tradesperson.getVerificationStatus(), tradesperson.getBaseZip(),
-                    tradesperson.getServiceRadius(), tradesperson.getAvailabilityStatus());
+                    tradesperson.getDisplayName(), tradesperson.getProfileImageReference(),
+                    tradesperson.getAccountStatus(), tradesperson.getVerificationStatus(),
+                    tradesperson.getBaseZip(), tradesperson.getServiceRadius(),
+                    tradesperson.getAvailabilityStatus());
         }
     }
 
@@ -57,12 +61,13 @@ final class ApiDtos {
             List<Long> requiredTradeIds) {}
 
     record TaskResponse(Long id, Long projectId, Long parentTaskId, String title, String description,
-            TaskStatus status, List<TaskTradeResponse> requiredTrades) {
-        static TaskResponse from(Task task) {
+            TaskStatus status, List<TaskTradeResponse> requiredTrades, int progressPercentage) {
+        static TaskResponse from(Task task, TaskProgressService progress) {
             return new TaskResponse(task.getId(), task.getProject().getId(),
                     task.getParentTask() == null ? null : task.getParentTask().getId(), task.getTitle(),
                     task.getDescription(), task.getStatus(),
-                    task.getTaskTrades().stream().map(TaskTradeResponse::from).toList());
+                    task.getTaskTrades().stream().map(TaskTradeResponse::from).toList(),
+                    progress.progressPercentage(task));
         }
     }
 
