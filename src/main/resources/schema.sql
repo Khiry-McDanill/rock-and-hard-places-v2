@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
-    status VARCHAR(32) NOT NULL CHECK (status IN ('PLANNING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED')),
+    status VARCHAR(32) NOT NULL CHECK (status IN ('PLANNING', 'IN_PROGRESS', 'READY_FOR_REVIEW', 'COMPLETED', 'CANCELLED')),
     project_id INTEGER NOT NULL,
     parent_task_id INTEGER,
     CHECK (parent_task_id IS NULL OR parent_task_id <> id),
@@ -297,3 +297,8 @@ CREATE TABLE IF NOT EXISTS portfolio_publication_requests (
     FOREIGN KEY (decided_by_homeowner_id) REFERENCES homeowners(id)
 );
 CREATE INDEX IF NOT EXISTS idx_portfolio_publication_status ON portfolio_publication_requests(status);
+
+-- Applied atomically with each demo dataset; never used by authorization.
+CREATE TABLE IF NOT EXISTS demo_seed_versions (
+    version VARCHAR(100) PRIMARY KEY
+);
