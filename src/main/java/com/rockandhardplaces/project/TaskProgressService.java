@@ -62,6 +62,12 @@ public class TaskProgressService {
     }
 
     @Transactional
+    public void start(Task task) {
+        requireStatus(task, TaskStatus.PLANNING);
+        changeStatus(task, TaskStatus.IN_PROGRESS);
+    }
+
+    @Transactional
     public void submitForReview(Task task) {
         requireStatus(task, TaskStatus.IN_PROGRESS);
         changeStatus(task, TaskStatus.READY_FOR_REVIEW);

@@ -40,7 +40,8 @@ class ApiExceptionHandler {
                 request, fieldErrors);
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, HttpMessageNotReadableException.class})
+    @ExceptionHandler({IllegalArgumentException.class, HttpMessageNotReadableException.class,
+            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class})
     ResponseEntity<Map<String, Object>> badRequest(Exception exception, HttpServletRequest request) {
         return response(HttpStatus.BAD_REQUEST, "BAD_REQUEST", message(exception, "Bad request"),
                 request, Map.of());

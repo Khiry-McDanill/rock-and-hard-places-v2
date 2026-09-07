@@ -49,6 +49,26 @@ public class ProjectWorkflowService {
         return task;
     }
 
+    public void start(Tradesperson actor, Task task) {
+        authorization.requireActive(actor);
+        authorization.requireDifferentUsers(actor.getUser(), task.getProject().getHomeowner().getUser());
+        if (assignments.findByTaskAndTradesperson(task, actor).isEmpty()
+                || task.getProject().getProjectTeams().stream().noneMatch(team ->
+                    team.getStatus() == ProjectTeamStatus.ACTIVE
+                    && Objects.equals(team.getTradesperson().getId(), actor.getId())))
+            throw new SecurityException("An assigned tradesperson with active membership is required");
+        if (task.getProject().getStatus() == ProjectStatus.COMPLETED
+                || task.getProject().getStatus() == ProjectStatus.CANCELLED)
+            throw new IllegalArgumentException("Project is closed");
+        for (Task current = task; current != null; current = current.getParentTask()) {
+            if (current.getStatus() == TaskStatus.CANCELLED)
+                throw new IllegalArgumentException("Task scope is cancelled");
+        }
+        if (task.getStatus() != TaskStatus.PLANNING)
+            throw new IllegalArgumentException("Task must be PLANNING");
+        progress.start(task);
+    }
+
     public void readyForReview(Tradesperson actor, Task task) {
         authorization.requireActive(actor);
         if (assignments.findByTaskAndTradesperson(task, actor).isEmpty())

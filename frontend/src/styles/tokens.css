@@ -1,0 +1,27 @@
+:root {
+  --sand: #F5EFE6;
+  --terracotta: #C56A3D;
+  --sage: #5B6B4F;
+  --navy: #183A5A;
+  --charcoal: #1F1F1F;
+  --surface: #FFFCF7;
+  --text: var(--charcoal);
+  --muted: #62594F;
+  --border: #C8BBAA;
+  --homeowner-action: #974821;
+  --accent: var(--navy);
+  --action: var(--navy);
+  --success: var(--sage);
+  --font-body: 'Inter', sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --radius: .375rem;
+}
+[data-role='homeowner'] { --accent: var(--terracotta); --action: var(--homeowner-action); }
+[data-role='tradesperson'] { --accent: var(--navy); --action: var(--navy); }
