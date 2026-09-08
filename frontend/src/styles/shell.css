@@ -1,0 +1,317 @@
+/* Shared shell proportions follow the approved dashboard reference. */
+.app-shell {
+  display: grid;
+  grid-template-columns: 196px minmax(0, 1fr);
+}
+.sidebar {
+  display: flex;
+  padding: 1rem 0.8rem 1rem;
+  gap: 0;
+  background: #202525;
+  border-right: 1px solid #ffffff0c;
+  overflow-y: auto;
+}
+.wordmark {
+  display: block;
+  padding: 0 0.3rem;
+  text-align: center;
+}
+.brand-lockup {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+.brand-mark {
+  width: 64px;
+  height: auto;
+}
+.brand-name {
+  display: block;
+  font: 600 1.05rem/1.03 var(--font-display);
+  letter-spacing: 0.015em;
+  margin-top: 0.18rem;
+  text-align: center;
+  white-space: nowrap;
+}
+.brand-name-top,
+.brand-name-bottom {
+  display: block;
+}
+.brand-name-top {
+  font-size: 1.2em;
+  letter-spacing: 0.085em;
+}
+.shell-role {
+  border: 0;
+  padding: 0;
+  margin: 1rem 0.8rem 0.4rem;
+  color: #b8bcb5;
+  font-size: 0.61rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.main-nav {
+  display: grid;
+  gap: 0.2rem;
+}
+.main-nav a {
+  padding: 0.68rem 0.7rem;
+  border: 0;
+  border-radius: 4px;
+  color: #e1e0db;
+  font-size: 0.75rem;
+  gap: 0.65rem;
+  min-height: 44px;
+}
+.main-nav a.active {
+  color: #fffaf5;
+  background: var(--accent);
+  box-shadow: inset 0 0 0 1px #ffffff15;
+}
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.shell-note {
+  padding: 2rem 0.7rem 0.9rem;
+  font: 400 0.76rem/1.6 var(--font-body);
+  color: #c8c9bd;
+}
+.sidebar-account {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 0.15rem 0.55rem;
+  border-top: 1px solid #ffffff20;
+  padding-top: 0.9rem;
+  align-items: center;
+}
+.sidebar-account .portrait {
+  width: 32px;
+  height: 32px;
+  font-size: 0.8rem;
+  border: 1px solid #e0ceae55;
+  background: #485043;
+  color: #eee5d5;
+}
+.sidebar-account strong,
+.sidebar-account small {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 0.67rem;
+}
+.sidebar-account small {
+  color: #b9bcb1;
+  font-size: 0.6rem;
+}
+.sidebar-switch {
+  grid-column: 2;
+  text-align: left;
+  background: none;
+  border: none;
+  color: #e5c4ab;
+  padding: 0;
+  font-size: 0.64rem;
+  min-height: 32px;
+}
+.account-bar {
+  min-height: 64px;
+  padding: 0.6rem clamp(1.25rem, 3vw, 2.5rem);
+  justify-content: flex-end;
+  gap: 1rem;
+  background: transparent;
+  border: none;
+}
+.account-bar .portrait {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  font-size: 0.85rem;
+  background: #e5d8c7;
+  border: 1px solid #cbb89d;
+}
+.account-identity {
+  min-width: 0;
+  gap: 0.5rem;
+}
+.account-identity strong {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 0.72rem;
+  line-height: 1.3;
+}
+.account-identity span:not(.portrait) {
+  font-size: 0.6rem;
+  color: var(--muted);
+}
+.account-bar label {
+  font-size: 0.59rem;
+}
+.account-bar select {
+  min-height: 32px;
+  margin-top: 0.1rem;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.67rem;
+  background: transparent;
+  border-color: #d9cebf;
+}
+.workspace > main {
+  max-width: 1200px;
+  padding-top: 1rem;
+}
+.mobile-brand,
+.mobile-nav {
+  display: none;
+}
+@media (min-width: 768px) and (max-width: 1000px) {
+  .app-shell {
+    grid-template-columns: 174px minmax(0, 1fr);
+  }
+  .sidebar {
+    padding-inline: 0.55rem;
+  }
+}
+@media (max-width: 767px) {
+  .app-shell {
+    display: block;
+  }
+  .sidebar {
+    display: none;
+  }
+  .workspace {
+    position: relative;
+  }
+  .mobile-brand {
+    --brand-stone: #183A5A;
+    --brand-stone-facet: #284B66;
+    display: block;
+    position: absolute;
+    top: 0.65rem;
+    left: 1rem;
+    color: var(--charcoal);
+    text-decoration: none;
+    z-index: 5;
+  }
+  .mobile-brand .brand-mark {
+    width: 34px;
+    height: auto;
+  }
+  .mobile-brand .brand-name {
+    font-size: 0.55rem;
+    margin-top: 0.1rem;
+  }
+  .account-bar {
+    min-height: 70px;
+    position: relative;
+    padding: 0.6rem 1rem 0.6rem 95px;
+    gap: 0.65rem;
+    flex-wrap: nowrap;
+  }
+  .account-bar label {
+    flex: 0 0 100px;
+  }
+  .account-bar select {
+    min-height: 44px;
+    font-size: 0.65rem;
+  }
+  .account-bar .portrait {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+  .account-identity strong {
+    font-size: 0.65rem;
+  }
+  .account-identity span:not(.portrait) {
+    font-size: 0.57rem;
+  }
+  .workspace > main {
+    padding: 0.85rem 1rem 6rem;
+  }
+  .mobile-nav {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    position: fixed;
+    z-index: 5;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding-bottom: max(0.3rem, env(safe-area-inset-bottom));
+    background: #fffdf8;
+    border-top: 1px solid #e1d9cb;
+    box-shadow: 0 -2px 8px #30271b07;
+    padding-top: 0.2rem;
+  }
+  .mobile-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-height: 54px;
+    font-size: 0.59rem;
+    color: var(--charcoal);
+    border: 0;
+  }
+  .mobile-nav a.active {
+    color: var(--action);
+    background: #c56a3d09;
+  }
+}
+@media (max-width: 359px) {
+  .account-identity > div {
+    display: none;
+  }
+}
+
+/* Native role selection stays accessible behind a restrained text action. */
+.account-bar .profile-switch-control {
+  position: relative;
+  flex: 0 0 auto;
+  font-size: 0.64rem;
+  color: var(--muted);
+  padding: 0.4rem 0;
+  min-width: 86px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.account-bar .profile-switch-control select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.profile-switch-control:focus-within {
+  outline: 2px solid var(--action);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+@media (min-width: 768px) {
+  .workspace:has(.home-overview) {
+    position: relative;
+  }
+  .workspace:has(.home-overview) > .account-bar {
+    position: absolute;
+    top: 0.4rem;
+    right: 0;
+    min-height: 38px;
+    padding-block: 0.3rem;
+  }
+  .workspace:has(.home-overview) > main {
+    padding-top: 1.25rem;
+  }
+}
+@media (max-width: 767px) {
+  .account-bar .profile-switch-control {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    min-width: 76px;
+  }
+  .account-bar {
+    min-height: 60px;
+  }
+}
