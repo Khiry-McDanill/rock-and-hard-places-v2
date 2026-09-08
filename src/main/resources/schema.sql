@@ -266,6 +266,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS uk_active_report_response
     ON moderation_reports(reporter_id, response_id) WHERE response_id IS NOT NULL AND status IN ('OPEN','UNDER_REVIEW');
 
 CREATE TABLE IF NOT EXISTS portfolio_items (
+    media_reference VARCHAR(1000),
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     tradesperson_id INTEGER NOT NULL,
     title VARCHAR(255) NOT NULL,

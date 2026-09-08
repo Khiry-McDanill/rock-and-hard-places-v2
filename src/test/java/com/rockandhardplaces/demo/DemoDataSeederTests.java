@@ -292,7 +292,7 @@ class DemoDataSeederTests {
     void reputationAndPhotosHaveCompletedWorkAndHomeownerConsent() {
         assertThat(count("reviews")).isEqualTo(7);
         assertThat(count("review_responses")).isEqualTo(3);
-        assertThat(count("portfolio_items")).isEqualTo(5);
+        assertThat(number("SELECT COUNT(*) FROM portfolio_items WHERE provenance = 'RHP_VERIFIED'")).isEqualTo(3);
         assertThat(count("message_attachments")).isEqualTo(14);
         assertThat(count("portfolio_publication_requests")).isEqualTo(6);
         assertThat(number("""
@@ -317,6 +317,45 @@ class DemoDataSeederTests {
             assertThat(p.getDecidedAt()).isAfter(p.getCreatedAt());
         });
         assertThat(publications.findAll()).filteredOn(p -> !p.isPublic()).hasSize(3);
+    }
+
+    @Test
+    void collaboratorExamplesAreIndependentQualifiedSelfReportedHistory() throws Exception {
+        var rows = jdbc.queryForList("SELECT * FROM portfolio_items WHERE media_reference LIKE '/seed-media/portfolios/rhp-029/%'");
+        assertThat(rows).isNotEmpty();
+        for (var row : rows) {
+            assertThat(row.get("provenance")).isEqualTo("SELF_REPORTED");
+            assertThat(row.get("project_id")).isNull();
+            assertThat(row.get("task_id")).isNull();
+            assertThat(row.get("description").toString()).contains("outside RH&P", "fictional demo history");
+            assertThat(java.nio.file.Files.isRegularFile(java.nio.file.Path.of("frontend/public" + row.get("media_reference")))).isTrue();
+            var response = mvc.perform(get("/api/tradespeople/{id}/portfolio", row.get("tradesperson_id")))
+                    .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+            assertThat(response).contains(row.get("media_reference").toString());
+        }
+        assertThat(number("""
+                SELECT COUNT(*) FROM tradespeople w WHERE NOT EXISTS
+                (SELECT 1 FROM portfolio_items i WHERE i.tradesperson_id = w.id)
+                """)).isZero();
+    }
+
+    @Test
+    void portfolioUpgradePreservesExistingRowsAndDoesNotRestoreLaterEdits() {
+        jdbc.update("DELETE FROM portfolio_items WHERE media_reference LIKE '/seed-media/portfolios/rhp-029/%'");
+        jdbc.update("DELETE FROM demo_seed_versions WHERE version = ?", DemoDataSeeder.COLLABORATOR_PORTFOLIO_VERSION);
+        em.clear();
+        var before = snapshot();
+        seeder.run(null);
+        var after = snapshot();
+        before.forEach((table, rows) -> {
+            if (table.equals("portfolio_items") || table.equals("demo_seed_versions"))
+                assertThat(after.get(table)).containsAll(rows);
+            else assertThat(after.get(table)).as(table).isEqualTo(rows);
+        });
+        jdbc.update("UPDATE portfolio_items SET description = 'Edited by owner', media_reference = NULL WHERE title = 'Compact built-in storage'");
+        var edited = snapshot();
+        seeder.run(null);
+        assertThat(snapshot()).isEqualTo(edited);
     }
 
     private Map<String, List<Map<String, Object>>> snapshot() {

@@ -1,0 +1,38 @@
+{
+  "tool": "Built-in image_gen",
+  "format": "Three vertically stacked views: Idea, Build, Result. Generated public inspiration only.",
+  "prompts": [
+    {
+      "slug": "homes",
+      "prompt": "Use case: photorealistic-natural. Asset type: public architectural inspiration story sprite. Create ONE image containing EXACTLY THREE equal-height landscape photographs STACKED VERTICALLY, edge-to-edge, no gutters, no borders, no text, no logos, no people. Overall portrait format; each of the three panels is a wide landscape frame. Every panel shows EXACTLY THE SAME physical space from EXACTLY THE SAME fixed camera viewpoint, with identical windows, structure, proportions and setting. Top = initial empty/stripped condition, middle = construction work underway with partially installed materials, bottom = envisioned finished result. This is generated architectural inspiration, no actual project claims. Editorial architectural photography, realistic construction details, warm natural light, restrained timber/cream/sage palette, believable scale, not luxury fantasy. Preserve strict spatial continuity across all three panels. HOMES: A Kitchen to Gather In. A narrow rowhome kitchen seen from the doorway, a single centered rear window, original timber floor, U-shaped work surfaces planned around that window. Top: cleared old cabinetry, bare plaster wall surfaces, retained window and floor. Middle: same view with timber base cabinet carcasses being fitted, sink plumbing at window, unfinished backsplash and worktop. Bottom: finished warm timber cabinetry and pale durable worktop, cream tile backsplash, sink below the SAME window, small open shelves, useful clear prep space. Do not add or move doors or windows across panels. Output a single vertical three-panel image."
+    },
+    {
+      "slug": "barns",
+      "prompt": "undefinedBARNS: Timber Workshop Conversion. Interior of one weathered timber barn looking along a central aisle toward large double barn doors, exposed heavy timber rafters, two small side windows. Top: empty worn shell, weathered boards, original beams. Middle: same shell with repaired boards and simple electrical conduit being fitted, long bench carcass along left wall, unfinished central assembly table. Bottom: same view finished working timber shop, warm timber benches, central assembly table, tool storage, practical pendant task lights, clear walking routes, preserved visible beams. Keep EXACT same doors, roof trusses and windows in all panels. Output a single vertical three-panel image."
+    },
+    {
+      "slug": "rvs",
+      "prompt": "undefinedRV: Compact Mobile Kitchen. Interior of a compact travel trailer seen from its entry toward a narrow galley under a curved cream ceiling. One rectangular window above sink on left, compact cooking appliance and right-side dinette visible, a rear sleeping alcove in same position. Top: stripped cabinets, exposed lightweight interior shell and old floor. Middle: same layout installing lightweight timber galley cabinets, accessible sink pipes and electrical conduits, unfinished counters. Bottom: finished warm wood compact galley with secure cupboard catches, compact sink below SAME left window, small cooktop, durable cream work surface, same aisle, dinette and rear sleeping alcove. Clearly a vehicle cabin, not a house kitchen. Output a single vertical three-panel image."
+    },
+    {
+      "slug": "buses",
+      "prompt": "undefinedBUSES / SKOOLIES: A Bus to Call Home. Fixed view from front looking down the length of a full-size converted school bus. Distinct rounded metal ceiling, consistent row of narrow bus windows on both sides, rear emergency door at center. Top: seats removed, exposed bus shell, bare floor. Middle: same view with lightweight wood seating frames on left near front, kitchen cabinets midway right, rear bed platform, partly installed wall lining and utility conduits. Bottom: same spatial arrangement with warm birch cabinetry, compact cream galley worktop, upholstered bench seating, rear bed, original window rhythm preserved. Clearly a skoolie interior. Output a single vertical three-panel image."
+    },
+    {
+      "slug": "tiny-homes",
+      "prompt": "undefinedTINY HOMES: Woodland Tiny Home. Fixed three-quarter exterior view of a small single-gable timber tiny home in a woodland clearing, one broad glazed opening facing camera, single entry door on right side, no extra story. Top: the exact footprint and simple timber framing on its base, same trees and camera. Middle: same structure with partly applied timber cladding, roof underway, window opening intact, visible interior finish work. Bottom: same modest tiny home with timber cladding, dark standing seam gable roof, generous glazed opening, warm interior visible and small entrance step. No extra decks or buildings appear. Retain identical structure, openings and woodland setting. Output a single vertical three-panel image."
+    },
+    {
+      "slug": "containers",
+      "prompt": "undefinedCONTAINERS: The Focused Studio. One single shipping container converted to a creative workspace. Fixed interior view from open front end looking toward one large rectangular window at far end, long desk along left wall, one storage run right, corrugated steel frame visible at edges. Top: empty bare steel shell with far-end window opening already cut, bare floor. Middle: same exact shell and opening, insulation and battens partly fitted, desk supports and electrical conduits being installed. Bottom: same view as warm studio with pale lining, timber desk on left, restrained shelves on right, visible original steel at entrance, natural light from same far-end window. Do not expand or combine containers. Output a single vertical three-panel image."
+    },
+    {
+      "slug": "outdoor-spaces",
+      "prompt": "undefinedOUTDOOR SPACES: Shade for Slow Afternoons / Timber Pergola. Fixed eye-level three-quarter view of one modest backyard, fence at rear, mature tree at left, house wall at right. Top: cleared rectangular patch of ground where a pergola will stand. Middle: same yard with four timber posts and partially installed overhead slats, simple paved seating surface being laid. Bottom: same four-post timber pergola, evenly spaced open roof slats, simple outdoor table and chairs, restrained garden planting, small discreet task lights. EXACT same footprint, fence, tree, house, camera and open structure in all three. No outdoor kitchen added. Output a single vertical three-panel image."
+    },
+    {
+      "slug": "beyond",
+      "prompt": "undefinedAND BEYOND: The Greenhouse Studio. Fixed interior view of a modest glazed gable greenhouse, same dark slender frame grid, central glass door at far end, dry timber maker bench on left and raised planting work surface on right. Top: empty glazed shell with bare floor and no furnishings. Middle: same shell, maker bench carcass being installed left, planting table frame right, partly finished floor, discreet wiring and water service placement. Bottom: same space as finished greenhouse maker studio, dry tools and creative materials on left bench, restrained living plants on right planting surface, warm daylight through identical roof and glazing, clear central walkway. The same frame, doorway and geometry in every panel; realistically glazed greenhouse, not a sunroom. Output a single vertical three-panel image."
+    }
+  ]
+}

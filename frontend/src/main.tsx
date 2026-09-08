@@ -14,6 +14,7 @@ import "./styles/homeowner.css";
 import "./styles/project-workspace.css";
 import "./styles/public-home.css";
 import "./styles/inspiration.css";
+import "./styles/see-it-built.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

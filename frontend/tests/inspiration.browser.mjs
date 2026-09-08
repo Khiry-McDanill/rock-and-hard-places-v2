@@ -45,8 +45,8 @@ try {
     assert.equal(await page.locator('.idea-concept[open]').count(), 0);
     assert.equal(await concepts.nth(2).locator('summary').evaluate(element => element === document.activeElement), true);
     assert.deepEqual(errors, []);
-    assert.deepEqual(apiRequests, []);
-    console.log(`${slug} ${width}x${height}: visuals, all three keyboard disclosures, exclusive expansion, close/focus, CTA and overflow checks passed; no public API calls.`);
+    assert.ok(apiRequests.every(url => new URL(url).pathname === '/api/discovery/tradespeople'));
+    console.log(`${slug} ${width}x${height}: visuals, all three keyboard disclosures, exclusive expansion, close/focus, CTA and overflow checks passed; only optional people discovery calls.`);
     if (width === 390) {
       await concepts.first().locator('summary').click();
       await concepts.first().locator('.concept-detail .public-button').click();

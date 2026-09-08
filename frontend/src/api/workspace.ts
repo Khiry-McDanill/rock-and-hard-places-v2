@@ -30,6 +30,7 @@ export interface Portfolio {
   projectId: number | null;
   taskId: number | null;
   approvedAttachmentIds: number[];
+  mediaReference?: string | null;
 }
 export type ProjectInput = Pick<Project, "title" | "description" | "jobZip">;
 const post = <T>(path: string, body?: unknown) =>

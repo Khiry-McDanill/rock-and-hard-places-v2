@@ -4,10 +4,12 @@ import { Brand } from '../../components/Brand';
 import { inspirationCategories } from './inspirationData';
 import { InspirationVisual } from './InspirationVisual';
 import { BuildSequence, ConceptPanel } from './ConceptPanel';
+import { SeeItBuilt } from './SeeItBuilt';
 
 export function InspirationPage() {
   const { slug } = useParams();
   const category = inspirationCategories.find(item => item.slug === slug);
+  const builtConcept = category?.possibilities.find(concept => concept.seeItBuilt);
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     const previousTitle = document.title;
@@ -53,7 +55,8 @@ export function InspirationPage() {
           <div><h3>The material direction</h3><p>{category.materials}</p><p>Choose details that suit how you’ll use and care for the space.</p></div>
         </div>
       </section>
-      <section className="public-closing ideas-closing"><div className="ideas-canvas"><p className="public-eyebrow">04 / Start</p><h2>Your idea defines the project.</h2><p>You don’t need every answer to begin. Bring the direction that excites you and start shaping the work.</p><Link className="public-button" to="/projects/new">{category.cta} ↗</Link></div></section>
+      {builtConcept && <SeeItBuilt key={builtConcept.key} concept={builtConcept} />}
+      <section className="public-closing ideas-closing"><div className="ideas-canvas"><p className="public-eyebrow">05 / Start</p><h2>Your idea defines the project.</h2><p>You don’t need every answer to begin. Bring the direction that excites you and start shaping the work.</p><Link className="public-button" to="/projects/new">{category.cta} ↗</Link></div></section>
     </main>}
     <footer className="public-footer"><Link to="/" className="public-brand" aria-label="Rock & Hard Places home"><Brand /></Link><p>People. Projects. Possibilities.</p><a href="/#inspiration">Back to all ideas ↑</a></footer>
   </div>;

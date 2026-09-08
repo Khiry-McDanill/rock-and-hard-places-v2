@@ -140,11 +140,11 @@ final class ApiDtos {
     }
     record PortfolioResponse(Long id, Long tradespersonId, String title, String description,
             PortfolioProvenance provenance, Long projectId, Long taskId, LocalDate completionDate,
-            List<Long> approvedAttachmentIds) {
+            List<Long> approvedAttachmentIds, String mediaReference) {
         static PortfolioResponse from(PortfolioItem item, List<PortfolioPublicationRequest> approvals) {
             return new PortfolioResponse(item.getId(), item.getTradesperson().getId(), item.getTitle(),
                     item.getDescription(), item.getProvenance(), item.getProject() == null ? null : item.getProject().getId(),
                     item.getTask() == null ? null : item.getTask().getId(), item.getCompletionDate(),
-                    approvals.stream().map(a -> a.getAttachment().getId()).toList()); }
+                    approvals.stream().map(a -> a.getAttachment().getId()).toList(), item.getMediaReference()); }
     }
 }

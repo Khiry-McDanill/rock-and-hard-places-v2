@@ -17,12 +17,27 @@ export interface InspirationConcept {
   materialDirection: string;
   systemsConsiderations: string;
   visual: IdeaVisual;
+  seeItBuilt?: SeeItBuiltStory;
 }
 export interface InspirationCategory {
   slug: string; name: string; headline: string; statement: string; cta: string;
   hero: IdeaVisual; possibilities: InspirationConcept[];
   exploreTitle: string; exploreIntroduction: string; storyTitle: string;
   trades: string[]; materials: string; systems: string;
+}
+export interface TeamSuggestion {
+  trade: string;
+  contribution: string;
+  specialtyHints: string[];
+}
+export interface SeeItBuiltStory {
+  title: string;
+  summary: string;
+  visuals: { src: string; layout: 'vertical-triptych'; width: number; height: number; frameHeight: number; frameOffsets: [number, number, number] }[];
+  visualStages: { label: 'Idea' | 'Build' | 'Result'; caption: string; alt: string; visualIndex: number; frame: 0 | 1 | 2 }[];
+  workAreas: { trade: string; description: string }[];
+  teamSuggestions: TeamSuggestion[];
+  ctaLabel: string;
 }
 export const inspirationCategories: readonly InspirationCategory[] = [
   {
@@ -81,7 +96,83 @@ export const inspirationCategories: readonly InspirationCategory[] = [
           "Try full-size cabinet outlines in the room before settling on an arrangement."
         ],
         "materialDirection": "Timber cabinet fronts, a durable pale worktop and warm tile.",
-        "systemsConsiderations": "Water, waste, appliance power and task lighting need to be considered together."
+        "systemsConsiderations": "Water, waste, appliance power and task lighting need to be considered together.",
+        "seeItBuilt": {
+          "title": "A kitchen made for gathering",
+          "summary": "Timber cabinets, a pale worktop and daylight around the sink bring this kitchen direction into focus. The room stays familiar while the surfaces and services begin to work together.",
+          "visuals": [
+            {
+              "src": "/images/see-it-built/homes-sequence.png",
+              "layout": "vertical-triptych",
+              "width": 1024,
+              "height": 1536,
+              "frameHeight": 480,
+              "frameOffsets": [
+                16,
+                528,
+                1040
+              ]
+            }
+          ],
+          "visualStages": [
+            {
+              "label": "Idea",
+              "caption": "The existing room, cleared back to its walls and retained timber floor.",
+              "alt": "Visualization of A Kitchen to Gather In: The existing room, cleared back to its walls and retained timber floor.",
+              "visualIndex": 0,
+              "frame": 0
+            },
+            {
+              "label": "Build",
+              "caption": "Cabinet carcasses and sink services begin to define the new arrangement.",
+              "alt": "Visualization of A Kitchen to Gather In: Cabinet carcasses and sink services begin to define the new arrangement.",
+              "visualIndex": 0,
+              "frame": 1
+            },
+            {
+              "label": "Result",
+              "caption": "Warm cabinetry and a clear worktop make room for cooking and company.",
+              "alt": "Visualization of A Kitchen to Gather In: Warm cabinetry and a clear worktop make room for cooking and company.",
+              "visualIndex": 0,
+              "frame": 2
+            }
+          ],
+          "workAreas": [
+            {
+              "trade": "Carpentry",
+              "description": "Cabinet fitting, shelving and finish details."
+            },
+            {
+              "trade": "Plumbing",
+              "description": "Sink supply, waste and accessible connections."
+            },
+            {
+              "trade": "Flooring",
+              "description": "Retained floor repairs and a durable finish."
+            }
+          ],
+          "teamSuggestions": [
+            {
+              "trade": "Carpentry",
+              "contribution": "Cabinet fitting, shelving and finish details.",
+              "specialtyHints": [
+                "Finish carpentry",
+                "Built-in cabinetry"
+              ]
+            },
+            {
+              "trade": "Plumbing",
+              "contribution": "Sink supply, waste and accessible connections.",
+              "specialtyHints": []
+            },
+            {
+              "trade": "Flooring",
+              "contribution": "Retained floor repairs and a durable finish.",
+              "specialtyHints": []
+            }
+          ],
+          "ctaLabel": "Start a Home Project"
+        }
       },
       {
         "title": "Room for the Everyday",
@@ -245,7 +336,82 @@ export const inspirationCategories: readonly InspirationCategory[] = [
           "Use a separate layer of joinery so new storage does not obscure the old frame."
         ],
         "materialDirection": "Retained timber, plywood storage and a durable, repairable work surface.",
-        "systemsConsiderations": "Tool power, task lighting and dust extraction depend on the work you intend to do."
+        "systemsConsiderations": "Tool power, task lighting and dust extraction depend on the work you intend to do.",
+        "seeItBuilt": {
+          "title": "A workshop within the timber frame",
+          "summary": "A long wall bench and a central assembly table turn the barn’s generous volume into a useful workshop. The exposed structure remains the backdrop while lighting, storage and repaired surfaces support the making.",
+          "visuals": [
+            {
+              "src": "/images/see-it-built/barns-sequence.png",
+              "layout": "vertical-triptych",
+              "width": 1024,
+              "height": 1536,
+              "frameHeight": 480,
+              "frameOffsets": [
+                10,
+                523,
+                1041
+              ]
+            }
+          ],
+          "visualStages": [
+            {
+              "label": "Idea",
+              "caption": "An empty timber shell, with its original doors and framing still visible.",
+              "alt": "Visualization of Timber Workshop Conversion: An empty timber shell, with its original doors and framing still visible.",
+              "visualIndex": 0,
+              "frame": 0
+            },
+            {
+              "label": "Build",
+              "caption": "Benches, repaired surfaces and service routes begin to take their places.",
+              "alt": "Visualization of Timber Workshop Conversion: Benches, repaired surfaces and service routes begin to take their places.",
+              "visualIndex": 0,
+              "frame": 1
+            },
+            {
+              "label": "Result",
+              "caption": "A usable workshop with room for assembly, tools and clear movement.",
+              "alt": "Visualization of Timber Workshop Conversion: A usable workshop with room for assembly, tools and clear movement.",
+              "visualIndex": 0,
+              "frame": 2
+            }
+          ],
+          "workAreas": [
+            {
+              "trade": "Carpentry",
+              "description": "Framing repairs, doors, benches and fitted storage."
+            },
+            {
+              "trade": "Electrical",
+              "description": "Workshop lighting and tool-power planning."
+            },
+            {
+              "trade": "Exterior Restoration",
+              "description": "Siding repairs and weatherproofing."
+            }
+          ],
+          "teamSuggestions": [
+            {
+              "trade": "Carpentry",
+              "contribution": "Framing repairs, doors, benches and fitted storage.",
+              "specialtyHints": [
+                "Decks and structural framing"
+              ]
+            },
+            {
+              "trade": "Electrical",
+              "contribution": "Workshop lighting and tool-power planning.",
+              "specialtyHints": []
+            },
+            {
+              "trade": "Exterior Restoration",
+              "contribution": "Siding repairs and weatherproofing.",
+              "specialtyHints": []
+            }
+          ],
+          "ctaLabel": "Start a Barn Project"
+        }
       },
       {
         "title": "Rustic Living Barn",
@@ -458,7 +624,82 @@ export const inspirationCategories: readonly InspirationCategory[] = [
           "Keep service access separate from heavily packed storage."
         ],
         "materialDirection": "Lightweight cabinet panels, a compact sink and easy-clean splash surfaces.",
-        "systemsConsiderations": "Water connections, appliance power and ventilation need accessible service points."
+        "systemsConsiderations": "Water connections, appliance power and ventilation need accessible service points.",
+        "seeItBuilt": {
+          "title": "A galley ready for the road",
+          "summary": "A compact sink, a short preparation surface and secure cabinetry make a useful kitchen within the curved trailer cabin. The unseen work matters too: accessible connections and considered equipment placement support everyday travel.",
+          "visuals": [
+            {
+              "src": "/images/see-it-built/rvs-sequence.png",
+              "layout": "vertical-triptych",
+              "width": 1024,
+              "height": 1536,
+              "frameHeight": 480,
+              "frameOffsets": [
+                14,
+                529,
+                1043
+              ]
+            }
+          ],
+          "visualStages": [
+            {
+              "label": "Idea",
+              "caption": "A stripped trailer cabin with the galley window and narrow aisle retained.",
+              "alt": "Visualization of Compact Mobile Kitchen: A stripped trailer cabin with the galley window and narrow aisle retained.",
+              "visualIndex": 0,
+              "frame": 0
+            },
+            {
+              "label": "Build",
+              "caption": "Lightweight cabinet frames and service access begin to shape the kitchen.",
+              "alt": "Visualization of Compact Mobile Kitchen: Lightweight cabinet frames and service access begin to shape the kitchen.",
+              "visualIndex": 0,
+              "frame": 1
+            },
+            {
+              "label": "Result",
+              "caption": "A compact timber galley, with the aisle and sleeping area still clear.",
+              "alt": "Visualization of Compact Mobile Kitchen: A compact timber galley, with the aisle and sleeping area still clear.",
+              "visualIndex": 0,
+              "frame": 2
+            }
+          ],
+          "workAreas": [
+            {
+              "trade": "Carpentry",
+              "description": "Lightweight cabinetry and secure storage."
+            },
+            {
+              "trade": "Electrical",
+              "description": "Appliance power and accessible circuit planning."
+            },
+            {
+              "trade": "Plumbing",
+              "description": "Compact sink connections and water-system planning."
+            }
+          ],
+          "teamSuggestions": [
+            {
+              "trade": "Carpentry",
+              "contribution": "Lightweight cabinetry and secure storage.",
+              "specialtyHints": [
+                "Finish carpentry"
+              ]
+            },
+            {
+              "trade": "Electrical",
+              "contribution": "Appliance power and accessible circuit planning.",
+              "specialtyHints": []
+            },
+            {
+              "trade": "Plumbing",
+              "contribution": "Compact sink connections and water-system planning.",
+              "specialtyHints": []
+            }
+          ],
+          "ctaLabel": "Start an RV Project"
+        }
       },
       {
         "title": "Off-grid Storage & Systems",
@@ -574,7 +815,82 @@ export const inspirationCategories: readonly InspirationCategory[] = [
           "Check circulation with doors, drawers and sleeping furniture in use."
         ],
         "materialDirection": "Lightweight timber-faced cabinetry and durable flooring through the cabin.",
-        "systemsConsiderations": "Vehicle condition, load planning and accessible utilities are part of the conversion conversation."
+        "systemsConsiderations": "Vehicle condition, load planning and accessible utilities are part of the conversion conversation.",
+        "seeItBuilt": {
+          "title": "A bus with room for everyday life",
+          "summary": "The bus’s window rhythm holds together a sequence of living zones. Seating at the front, a kitchen along the aisle and a quieter place to sleep show how several kinds of work can meet inside one shell.",
+          "visuals": [
+            {
+              "src": "/images/see-it-built/buses-sequence.png",
+              "layout": "vertical-triptych",
+              "width": 1024,
+              "height": 1536,
+              "frameHeight": 480,
+              "frameOffsets": [
+                12,
+                518,
+                1033
+              ]
+            }
+          ],
+          "visualStages": [
+            {
+              "label": "Idea",
+              "caption": "The cleared bus shell, preserving its windows and rear doorway.",
+              "alt": "Visualization of A Bus to Call Home: The cleared bus shell, preserving its windows and rear doorway.",
+              "visualIndex": 0,
+              "frame": 0
+            },
+            {
+              "label": "Build",
+              "caption": "Furniture frames, lining and utility routes organize the long interior.",
+              "alt": "Visualization of A Bus to Call Home: Furniture frames, lining and utility routes organize the long interior.",
+              "visualIndex": 0,
+              "frame": 1
+            },
+            {
+              "label": "Result",
+              "caption": "A connected living space with fitted seating, a galley and a rear bed.",
+              "alt": "Visualization of A Bus to Call Home: A connected living space with fitted seating, a galley and a rear bed.",
+              "visualIndex": 0,
+              "frame": 2
+            }
+          ],
+          "workAreas": [
+            {
+              "trade": "Carpentry",
+              "description": "Seating frames, interior lining and fitted furniture."
+            },
+            {
+              "trade": "Electrical",
+              "description": "Interior lighting and utility-power planning."
+            },
+            {
+              "trade": "Flooring",
+              "description": "A durable floor through the living zones."
+            }
+          ],
+          "teamSuggestions": [
+            {
+              "trade": "Carpentry",
+              "contribution": "Seating frames, interior lining and fitted furniture.",
+              "specialtyHints": [
+                "Decks and structural framing"
+              ]
+            },
+            {
+              "trade": "Electrical",
+              "contribution": "Interior lighting and utility-power planning.",
+              "specialtyHints": []
+            },
+            {
+              "trade": "Flooring",
+              "contribution": "A durable floor through the living zones.",
+              "specialtyHints": []
+            }
+          ],
+          "ctaLabel": "Start a Bus Conversion"
+        }
       },
       {
         "title": "A Layout That Flows",
@@ -736,7 +1052,82 @@ export const inspirationCategories: readonly InspirationCategory[] = [
           "Compact living works best when furniture and circulation are designed together."
         ],
         "materialDirection": "Timber lining, durable flooring and carefully proportioned windows.",
-        "systemsConsiderations": "Heating, ventilation, plumbing and power should be sized and arranged around the actual use."
+        "systemsConsiderations": "Heating, ventilation, plumbing and power should be sized and arranged around the actual use.",
+        "seeItBuilt": {
+          "title": "A small home at the woodland edge",
+          "summary": "The simple gable and a generous opening keep this small home connected to its setting. Timber cladding, interior finishes and compact utilities come together within the same modest footprint.",
+          "visuals": [
+            {
+              "src": "/images/see-it-built/tiny-homes-sequence.png",
+              "layout": "vertical-triptych",
+              "width": 1024,
+              "height": 1536,
+              "frameHeight": 480,
+              "frameOffsets": [
+                6,
+                505,
+                1026
+              ]
+            }
+          ],
+          "visualStages": [
+            {
+              "label": "Idea",
+              "caption": "A compact timber frame establishes the home’s footprint and main opening.",
+              "alt": "Visualization of Woodland Tiny Home: A compact timber frame establishes the home’s footprint and main opening.",
+              "visualIndex": 0,
+              "frame": 0
+            },
+            {
+              "label": "Build",
+              "caption": "Cladding, roofing and interior work begin to enclose the frame.",
+              "alt": "Visualization of Woodland Tiny Home: Cladding, roofing and interior work begin to enclose the frame.",
+              "visualIndex": 0,
+              "frame": 1
+            },
+            {
+              "label": "Result",
+              "caption": "A timber tiny home with a bright opening onto the surrounding trees.",
+              "alt": "Visualization of Woodland Tiny Home: A timber tiny home with a bright opening onto the surrounding trees.",
+              "visualIndex": 0,
+              "frame": 2
+            }
+          ],
+          "workAreas": [
+            {
+              "trade": "Carpentry",
+              "description": "Timber framing, cladding and built-in details."
+            },
+            {
+              "trade": "Plumbing",
+              "description": "Compact kitchen and bathroom service planning."
+            },
+            {
+              "trade": "Drywall",
+              "description": "Interior lining and finish coordination."
+            }
+          ],
+          "teamSuggestions": [
+            {
+              "trade": "Carpentry",
+              "contribution": "Timber framing, cladding and built-in details.",
+              "specialtyHints": [
+                "Decks and structural framing"
+              ]
+            },
+            {
+              "trade": "Plumbing",
+              "contribution": "Compact kitchen and bathroom service planning.",
+              "specialtyHints": []
+            },
+            {
+              "trade": "Drywall",
+              "contribution": "Interior lining and finish coordination.",
+              "specialtyHints": []
+            }
+          ],
+          "ctaLabel": "Start a Tiny Home Project"
+        }
       },
       {
         "title": "Compact Family Layout",
@@ -948,7 +1339,82 @@ export const inspirationCategories: readonly InspirationCategory[] = [
           "Keep the desk separate from the wall lining where future adjustment may help."
         ],
         "materialDirection": "Corrugated steel outside, pale lining and a timber work surface inside.",
-        "systemsConsiderations": "Ventilation, insulation and workstation power are integral to a usable studio."
+        "systemsConsiderations": "Ventilation, insulation and workstation power are integral to a usable studio.",
+        "seeItBuilt": {
+          "title": "A warmer workspace inside the steel",
+          "summary": "A long timber desk and a pale inner lining soften the industrial shell. The end window anchors the view, while insulation, ventilation and power make the studio more than a place to put a desk.",
+          "visuals": [
+            {
+              "src": "/images/see-it-built/containers-sequence.png",
+              "layout": "vertical-triptych",
+              "width": 1024,
+              "height": 1536,
+              "frameHeight": 480,
+              "frameOffsets": [
+                13,
+                527,
+                1042
+              ]
+            }
+          ],
+          "visualStages": [
+            {
+              "label": "Idea",
+              "caption": "An empty steel shell with the studio’s end opening already defined.",
+              "alt": "Visualization of The Focused Studio: An empty steel shell with the studio’s end opening already defined.",
+              "visualIndex": 0,
+              "frame": 0
+            },
+            {
+              "label": "Build",
+              "caption": "Insulation, battens, desk supports and service routes line the interior.",
+              "alt": "Visualization of The Focused Studio: Insulation, battens, desk supports and service routes line the interior.",
+              "visualIndex": 0,
+              "frame": 1
+            },
+            {
+              "label": "Result",
+              "caption": "A calm creative workspace within the same single-container shell.",
+              "alt": "Visualization of The Focused Studio: A calm creative workspace within the same single-container shell.",
+              "visualIndex": 0,
+              "frame": 2
+            }
+          ],
+          "workAreas": [
+            {
+              "trade": "Carpentry",
+              "description": "Desk construction, shelving and interior fitting."
+            },
+            {
+              "trade": "Electrical",
+              "description": "Task lighting and workstation power."
+            },
+            {
+              "trade": "Drywall",
+              "description": "Interior lining and finish details."
+            }
+          ],
+          "teamSuggestions": [
+            {
+              "trade": "Carpentry",
+              "contribution": "Desk construction, shelving and interior fitting.",
+              "specialtyHints": [
+                "Finish carpentry"
+              ]
+            },
+            {
+              "trade": "Electrical",
+              "contribution": "Task lighting and workstation power.",
+              "specialtyHints": []
+            },
+            {
+              "trade": "Drywall",
+              "contribution": "Interior lining and finish details.",
+              "specialtyHints": []
+            }
+          ],
+          "ctaLabel": "Start a Container Project"
+        }
       },
       {
         "title": "Office Within the Shell",
@@ -1064,7 +1530,82 @@ export const inspirationCategories: readonly InspirationCategory[] = [
           "Plan the structure around the space needed to pull chairs out."
         ],
         "materialDirection": "Exterior timber, suitable connectors and a durable ground surface.",
-        "systemsConsiderations": "Lighting routes and drainage should be considered alongside the ground and structure."
+        "systemsConsiderations": "Lighting routes and drainage should be considered alongside the ground and structure.",
+        "seeItBuilt": {
+          "title": "A gathering place under open beams",
+          "summary": "Four timber posts and a rhythm of slats give the garden a new place to gather. Ground preparation, exterior detailing and discreet lighting help the structure settle into the yard.",
+          "visuals": [
+            {
+              "src": "/images/see-it-built/outdoor-spaces-sequence.png",
+              "layout": "vertical-triptych",
+              "width": 1024,
+              "height": 1536,
+              "frameHeight": 460,
+              "frameOffsets": [
+                17,
+                507,
+                1027
+              ]
+            }
+          ],
+          "visualStages": [
+            {
+              "label": "Idea",
+              "caption": "A cleared garden footprint beside the same fence, tree and house.",
+              "alt": "Visualization of Shade for Slow Afternoons: A cleared garden footprint beside the same fence, tree and house.",
+              "visualIndex": 0,
+              "frame": 0
+            },
+            {
+              "label": "Build",
+              "caption": "Timber posts, overhead members and a seating surface take shape.",
+              "alt": "Visualization of Shade for Slow Afternoons: Timber posts, overhead members and a seating surface take shape.",
+              "visualIndex": 0,
+              "frame": 1
+            },
+            {
+              "label": "Result",
+              "caption": "An open pergola with a table, chairs and a clear connection to the garden.",
+              "alt": "Visualization of Shade for Slow Afternoons: An open pergola with a table, chairs and a clear connection to the garden.",
+              "visualIndex": 0,
+              "frame": 2
+            }
+          ],
+          "workAreas": [
+            {
+              "trade": "Carpentry",
+              "description": "Posts, overhead members and timber connections."
+            },
+            {
+              "trade": "Exterior Restoration",
+              "description": "Exterior surface and weatherproofing details."
+            },
+            {
+              "trade": "Electrical",
+              "description": "Outdoor lighting and power planning."
+            }
+          ],
+          "teamSuggestions": [
+            {
+              "trade": "Carpentry",
+              "contribution": "Posts, overhead members and timber connections.",
+              "specialtyHints": [
+                "Decks and structural framing"
+              ]
+            },
+            {
+              "trade": "Exterior Restoration",
+              "contribution": "Exterior surface and weatherproofing details.",
+              "specialtyHints": []
+            },
+            {
+              "trade": "Electrical",
+              "contribution": "Outdoor lighting and power planning.",
+              "specialtyHints": []
+            }
+          ],
+          "ctaLabel": "Start an Outdoor Project"
+        }
       },
       {
         "title": "A Deck That Connects",
@@ -1225,7 +1766,82 @@ export const inspirationCategories: readonly InspirationCategory[] = [
           "Keep delicate materials away from watering and planting activities."
         ],
         "materialDirection": "A glazed frame, durable planting surfaces and a timber making bench.",
-        "systemsConsiderations": "Ventilation, shading, drainage and electrical locations shape how comfortably the two uses coexist."
+        "systemsConsiderations": "Ventilation, shading, drainage and electrical locations shape how comfortably the two uses coexist.",
+        "seeItBuilt": {
+          "title": "Where the garden meets the workbench",
+          "summary": "A dry maker bench on one side and a planting surface on the other turn a glazed shell into a greenhouse studio. Water, light and materials need to support both uses without one crowding out the other.",
+          "visuals": [
+            {
+              "src": "/images/see-it-built/beyond-sequence.png",
+              "layout": "vertical-triptych",
+              "width": 1024,
+              "height": 1536,
+              "frameHeight": 480,
+              "frameOffsets": [
+                7,
+                506,
+                1027
+              ]
+            }
+          ],
+          "visualStages": [
+            {
+              "label": "Idea",
+              "caption": "An empty glazed shell with a clear central route to the far door.",
+              "alt": "Visualization of The Greenhouse Studio: An empty glazed shell with a clear central route to the far door.",
+              "visualIndex": 0,
+              "frame": 0
+            },
+            {
+              "label": "Build",
+              "caption": "Making and planting benches begin to define separate working edges.",
+              "alt": "Visualization of The Greenhouse Studio: Making and planting benches begin to define separate working edges.",
+              "visualIndex": 0,
+              "frame": 1
+            },
+            {
+              "label": "Result",
+              "caption": "A light-filled studio where plants and creative work share the same space.",
+              "alt": "Visualization of The Greenhouse Studio: A light-filled studio where plants and creative work share the same space.",
+              "visualIndex": 0,
+              "frame": 2
+            }
+          ],
+          "workAreas": [
+            {
+              "trade": "Carpentry",
+              "description": "Making benches, storage and planting-table frames."
+            },
+            {
+              "trade": "Plumbing",
+              "description": "Water access and drainage considerations."
+            },
+            {
+              "trade": "Exterior Restoration",
+              "description": "Glazing-edge and weatherproofing conversations."
+            }
+          ],
+          "teamSuggestions": [
+            {
+              "trade": "Carpentry",
+              "contribution": "Making benches, storage and planting-table frames.",
+              "specialtyHints": [
+                "Finish carpentry"
+              ]
+            },
+            {
+              "trade": "Plumbing",
+              "contribution": "Water access and drainage considerations.",
+              "specialtyHints": []
+            },
+            {
+              "trade": "Exterior Restoration",
+              "contribution": "Glazing-edge and weatherproofing conversations.",
+              "specialtyHints": []
+            }
+          ],
+          "ctaLabel": "Start Something Different"
+        }
       },
       {
         "title": "A Window to the Night Sky",
