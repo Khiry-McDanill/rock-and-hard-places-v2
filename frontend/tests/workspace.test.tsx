@@ -1,3 +1,4 @@
+import "./inspiration.test";
 import { resolvePortfolioMedia, storyStages } from "../src/components/seedMedia";
 import { PortfolioCard } from "../src/components/PortfolioCard";
 import { PersonProfile } from "../src/features/people";

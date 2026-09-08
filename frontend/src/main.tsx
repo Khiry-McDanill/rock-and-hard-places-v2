@@ -13,6 +13,7 @@ import "./styles/shell.css";
 import "./styles/homeowner.css";
 import "./styles/project-workspace.css";
 import "./styles/public-home.css";
+import "./styles/inspiration.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
