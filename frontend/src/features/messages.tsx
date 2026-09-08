@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { workspaceApi } from "../api/workspace";
+import { workspaceApi, type Conversation, type Message } from "../api/workspace";
 import type { Profile } from "../api/types";
 import { refreshProfileData } from "../app/query";
 import {
@@ -87,11 +87,7 @@ function ProjectConversations({
               onClick={() => setSelected(conversation.id)}
             >
               <strong>
-                {conversation.type === "PROJECT_TEAM"
-                  ? projectTitle?.trim()
-                    ? `${projectTitle.trim()} Project Team`
-                    : "Project Team"
-                  : "Direct conversation"}
+                {conversationTitle(conversation, userId, projectTitle)}
               </strong>
               <small>
                 Opened {new Date(conversation.createdAt).toLocaleDateString()}
@@ -122,7 +118,7 @@ function ProjectConversations({
     </State>
   );
 }
-function Thread({
+export function Thread({
   profile,
   userId,
   id,
@@ -162,9 +158,7 @@ function Thread({
               className={`message ${message.senderId === userId ? "mine" : ""}`}
             >
               <small>
-                {message.senderId === userId
-                  ? "You"
-                  : `Participant ${message.senderId}`}{" "}
+                {messageSender(message, userId)}{" "}
                 · {new Date(message.createdAt).toLocaleString()}
               </small>
               <p>
@@ -197,4 +191,23 @@ function Thread({
       </form>
     </section>
   );
+}
+
+function displayIdentity(name: string | null, trades: string[] = []) {
+  const displayName = name?.trim();
+  return displayName ? [displayName, ...trades].join(" · ") : null;
+}
+
+export function conversationTitle(conversation: Conversation, userId: number, projectTitle?: string) {
+  if (conversation.type === "PROJECT_TEAM") {
+    return projectTitle?.trim() ? `${projectTitle.trim()} Project Team` : "Project Team";
+  }
+  const other = conversation.participants?.find((participant) => participant.userId !== userId);
+  return (other && displayIdentity(other.displayName, other.trades)) || "Direct conversation";
+}
+
+export function messageSender(message: Message, userId: number) {
+  return message.senderId === userId
+    ? "You"
+    : displayIdentity(message.senderDisplayName, message.senderTrades) || "Unknown sender";
 }

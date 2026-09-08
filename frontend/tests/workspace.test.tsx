@@ -491,3 +491,43 @@ test("all shared and public RH&P wordmarks link to the public homepage accessibl
   }
   queryClient.clear();
 });
+
+import { Messages, Thread } from "../src/features/messages";
+test("thread uses API names, You for own messages, and no numeric identities", () => {
+  queryClient.clear();
+  queryClient.setQueryData(profileKey(homeowner, "messages-77"), [
+    { id: 1, senderId: 900, senderDisplayName: "Test Homeowner", senderTrades: [], body: "Thanks", createdAt: "2026-09-01T12:00:00Z" },
+    { id: 2, senderId: 93, senderDisplayName: "Nina Alvarez", senderTrades: ["Plumbing"], body: "Ready", createdAt: "2026-09-01T12:00:00Z" },
+    { id: 3, senderId: 94, senderDisplayName: null, senderTrades: [], body: "Hello", createdAt: "2026-09-01T12:00:00Z" },
+  ]);
+  const html = renderToStaticMarkup(<QueryClientProvider client={queryClient}>
+    <Thread profile={homeowner} userId={900} id={77} back={() => {}} />
+  </QueryClientProvider>);
+  assert.match(html, /You/);
+  assert.doesNotMatch(html, /Test Homeowner/);
+  assert.match(html, /Nina Alvarez · Plumbing/);
+  assert.match(html, /Unknown sender/);
+  assert.doesNotMatch(html, /(?:Participant|User) \d+/);
+});
+test("direct titles use the other participant and team titles remain project-based", () => {
+  queryClient.clear();
+  queryClient.setQueryData(profileKey(homeowner, "projects"), [{ id: 12, title: "Passyunk kitchen remodel" }]);
+  const base = { projectId: 12, createdAt: "2026-09-01T12:00:00Z" };
+  queryClient.setQueryData(profileKey(homeowner, "conversations-12"), [
+    { ...base, id: 77, type: "PRIVATE", participants: [
+      { userId: 900, displayName: "Test Homeowner", trades: [] },
+      { userId: 93, displayName: "Nina Alvarez", trades: ["Plumbing"] },
+    ] },
+    { ...base, id: 78, type: "PROJECT_TEAM", participants: [] },
+    { ...base, id: 79, type: "PRIVATE", participants: [{ userId: 94, displayName: null, trades: [] }] },
+    { ...base, id: 80, type: "PRIVATE", participants: [{ userId: 95, displayName: "Caleb Morgan", trades: [] }] },
+  ]);
+  const html = renderToStaticMarkup(<QueryClientProvider client={queryClient}>
+    <Messages profile={homeowner} userId={900} projectId={12} />
+  </QueryClientProvider>);
+  assert.match(html, /Nina Alvarez · Plumbing/);
+  assert.match(html, /Passyunk kitchen remodel Project Team/);
+  assert.match(html, /Direct conversation/);
+  assert.match(html, /<strong>Caleb Morgan<\/strong>/);
+  assert.doesNotMatch(html, /Test Homeowner|(?:Participant|User) \d+/);
+});
