@@ -1,85 +1,211 @@
-import { useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { Link, Navigate, Route, Routes, useNavigate } from 'react-router';
-import { api } from '../api/client';
-import type { HomeownerDashboard, TradespersonDashboard, Profile, Role } from '../api/types';
-import { accountKey, profileKey, queryClient } from './query';
+import { useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Link, Navigate, Route, Routes, useNavigate } from "react-router";
+import { api } from "../api/client";
+import type { Profile, Role } from "../api/types";
+import { Overview, Projects } from "../features/overview";
+import { ProjectForm, ProjectWorkspace } from "../features/projects";
+import { People, PersonProfile } from "../features/people";
+import { Opportunities, OpportunityDetail, MyBids } from "../features/work";
+import { Messages } from "../features/messages";
+import { Portrait, Empty, productError } from "../components/ui";
+import { AppShell } from "../components/AppShell";
+import { Homepage } from "../features/public/Homepage";
+import { accountKey, queryClient } from "./query";
 
 export function useRoleTheme(profile: Profile) {
-  return { theme: profile.role.toLowerCase(), roleLabel: profile.role === 'HOMEOWNER' ? 'Homeowner' : 'Tradesperson' };
-}
-
-function Overview({ profile }: { profile: Profile }) {
-  const summary = useQuery<HomeownerDashboard | TradespersonDashboard>({ queryKey: profileKey(profile, 'overview'), queryFn: ({ signal }) =>
-    profile.role === 'HOMEOWNER' ? api.homeownerDashboard(signal) : api.tradespersonDashboard(signal) });
-  return <section aria-labelledby="welcome-title">
-    <p className="eyebrow">Craft × Tech × Imagination</p>
-    <h1 id="welcome-title">Room for what you imagine.</h1>
-    <p>From homes and barns to buses, tiny homes, RVs and container conversions. A place to bring thoughtful work together.</p>
-    <div className="workspace-panel">
-      <h2>Your workspace</h2>
-      {summary.isPending ? <p role="status">Loading your workspace…</p> : summary.isError ?
-        <div role="alert"><p>{summary.error.message}</p><button onClick={() => void summary.refetch()}>Try again</button></div> :
-        <p role="status">Your {profile.role === 'HOMEOWNER' ? 'Homeowner' : 'Tradesperson'} workspace is connected. Overview tools are coming next.</p>}
-    </div>
-  </section>;
+  return {
+    theme: profile.role.toLowerCase(),
+    roleLabel: profile.role === "HOMEOWNER" ? "Homeowner" : "Tradesperson",
+  };
 }
 
 export function App() {
+  return <Routes><Route path="/" element={<Homepage />} /><Route path="*" element={<WorkspaceApp />} /></Routes>;
+}
+
+function WorkspaceApp() {
   const [switching, setSwitching] = useState(false);
-  const account = useQuery({ queryKey: accountKey, queryFn: ({ signal }) => api.account(signal), enabled: !switching });
+  const account = useQuery({
+    queryKey: accountKey,
+    queryFn: ({ signal }) => api.account(signal),
+    enabled: !switching,
+  });
   const navigate = useNavigate();
   const changeProfile = useMutation({
+    mutationKey: ["switch"],
     mutationFn: async (role: Role) => {
       setSwitching(true);
       await queryClient.cancelQueries();
       return api.switchProfile(role);
     },
     onSuccess: (next) => {
-      queryClient.removeQueries({ queryKey: ['profile'] });
+      queryClient.removeQueries({ queryKey: ["profile"] });
       queryClient.setQueryData(accountKey, next);
-      navigate('/overview', { replace: true });
+      navigate(window.location.pathname === "/projects/new" && next.profile.role === "HOMEOWNER" ? "/projects/new" : window.location.pathname === "/opportunities" && next.profile.role === "TRADESPERSON" ? "/opportunities" : "/overview", { replace: true });
     },
     // A lost response can follow a successful server switch: re-bootstrap either way.
     onSettled: async () => {
       await queryClient.cancelQueries();
-      queryClient.removeQueries({ queryKey: ['profile'] });
+      queryClient.removeQueries({ queryKey: ["profile"] });
       // Explicit fetch also runs while the account observer is disabled for switching.
       try {
-        await queryClient.fetchQuery({ queryKey: accountKey, queryFn: ({ signal }) => api.account(signal), staleTime: 0 });
+        await queryClient.fetchQuery({
+          queryKey: accountKey,
+          queryFn: ({ signal }) => api.account(signal),
+          staleTime: 0,
+        });
       } finally {
         setSwitching(false);
       }
     },
   });
-  if (account.isPending) return <main><p role="status">Opening Rock &amp; Hard Places…</p></main>;
-  if (account.isError) return <main role="alert"><h1>We couldn’t open your workspace.</h1><p>{account.error.message}</p><button onClick={() => void account.refetch()}>Try again</button></main>;
+  if (account.isPending)
+    return (
+      <main>
+        <p role="status">Opening Rock &amp; Hard Places…</p>
+      </main>
+    );
+  if (account.isError)
+    return (
+      <main role="alert">
+        <h1>We couldn’t open your workspace.</h1>
+        <p>{productError(account.error)}</p>
+        <button onClick={() => void account.refetch()}>Try again</button>
+      </main>
+    );
   const { profile, profiles } = account.data;
-  return <Shell profile={profile}>
-    <header className="account-bar">
-      <div><strong>{profile.displayName}</strong><span>{profile.role === 'HOMEOWNER' ? 'Homeowner' : 'Tradesperson'} mode</span></div>
-      <label>Active profile<select value={profile.role} disabled={switching} onChange={event => changeProfile.mutate(event.target.value as Role)}>
-        {profiles.map(p => <option key={`${p.role}-${p.id}`} value={p.role}>{p.role === 'HOMEOWNER' ? 'Homeowner' : 'Tradesperson'}</option>)}
-      </select></label>
-    </header>
-    {changeProfile.isError && <p role="alert">Profile switch could not be confirmed. {changeProfile.error.message}</p>}
-    <main id="main-content">
-      {switching ? <p role="status">Switching profile…</p> : <Routes>
-        <Route path="/" element={<Navigate to="/overview" replace />} />
-        <Route path="/overview" element={<Overview key={`${profile.role}-${profile.id}`} profile={profile} />} />
-        <Route path="*" element={<section><h1>Page not found</h1><Link to="/overview">Return to your workspace</Link></section>} />
-      </Routes>}
-    </main>
-  </Shell>;
-}
-
-function Shell({ profile, children }: { profile: Profile; children: React.ReactNode }) {
-  const { theme, roleLabel } = useRoleTheme(profile);
-  return <div className="app-shell" data-role={theme}>
-    <a className="skip-link" href="#main-content">Skip to workspace</a>
-    <aside className="sidebar"><Link className="wordmark" to="/overview">Rock &amp;<br />Hard Places</Link>
-      <p className="shell-role">{roleLabel} workspace</p><nav aria-label="Main navigation"><Link to="/overview" aria-current="page">Overview</Link></nav>
-      <p className="shell-note">Built on trust.<br />Backed by skill.</p>
-    </aside><div className="workspace">{children}</div>
-  </div>;
+  return (
+    <AppShell profile={profile}>
+      <header className="account-bar">
+        <div className="account-identity">
+          <Portrait name={profile.displayName} />
+          <div>
+            <strong>{profile.displayName}</strong>
+            <span>
+              {profile.role === "HOMEOWNER" ? "Homeowner" : "Tradesperson"}
+            </span>
+          </div>
+        </div>
+        <label className="profile-switch-control">
+          Switch profile
+          <select
+            id="profile-switch"
+            value={profile.role}
+            disabled={switching}
+            onChange={(event) => {
+              if (queryClient.isMutating() > 0) {
+                window.alert(
+                  "Wait for the current save to finish before switching profiles.",
+                );
+                return;
+              }
+              if (
+                document.querySelector("form") &&
+                !window.confirm(
+                  "Switch profiles and leave any unsaved form changes?",
+                )
+              )
+                return;
+              changeProfile.mutate(event.target.value as Role);
+            }}
+          >
+            {profiles.map((p) => (
+              <option key={`${p.role}-${p.id}`} value={p.role}>
+                {p.role === "HOMEOWNER" ? "Homeowner" : "Tradesperson"}
+              </option>
+            ))}
+          </select>
+        </label>
+      </header>
+      {changeProfile.isError && (
+        <p role="alert">
+          Profile switch could not be confirmed. {productError(changeProfile.error)}
+        </p>
+      )}
+      <main id="main-content">
+        {switching ? (
+          <p role="status">Switching profile…</p>
+        ) : profile.accountStatus !== "ACTIVE" ? (
+          <Empty title={`Account ${profile.accountStatus.toLowerCase()}`}>
+            This profile cannot access active work. You can switch to another
+            available profile.
+          </Empty>
+        ) : (
+          <Routes key={`${profile.role}-${profile.id}`}>
+            <Route path="/" element={<Navigate to="/overview" replace />} />
+            {profile.role !== "HOMEOWNER" && <Route path="/projects/new" element={<Empty title="Start with your homeowner profile">Use Switch profile above to choose Homeowner and start your project.</Empty>} />}
+            {profile.role !== "TRADESPERSON" && <Route path="/opportunities" element={<Empty title="Find work with your tradesperson profile">Use Switch profile above to choose Tradesperson and explore opportunities.</Empty>} />}
+            <Route
+              path="/overview"
+              element={
+                <Overview
+                  key={`${profile.role}-${profile.id}`}
+                  profile={profile}
+                />
+              }
+            />
+            {profile.role === "HOMEOWNER" ? (
+              <>
+                <Route
+                  path="/projects"
+                  element={<Projects profile={profile} />}
+                />
+                <Route
+                  path="/projects/new"
+                  element={<ProjectForm profile={profile} />}
+                />
+                <Route path="/people" element={<People profile={profile} />} />
+                <Route
+                  path="/people/:personId"
+                  element={<PersonProfile profile={profile} />}
+                />
+              </>
+            ) : (
+              <>
+                <Route path="/work" element={<Projects profile={profile} />} />
+                <Route
+                  path="/opportunities"
+                  element={<Opportunities profile={profile} />}
+                />
+                <Route
+                  path="/opportunities/:requirementId"
+                  element={<OpportunityDetail profile={profile} />}
+                />
+                <Route path="/bids" element={<MyBids profile={profile} />} />
+              </>
+            )}
+            <Route
+              path="/projects/:projectId/:section?"
+              element={
+                <ProjectWorkspace
+                  profile={profile}
+                  userId={account.data.userId}
+                />
+              }
+            />
+            <Route
+              path="/messages"
+              element={
+                <Messages profile={profile} userId={account.data.userId} />
+              }
+            />
+            <Route
+              path="/profile"
+              element={<PersonProfile profile={profile} own />}
+            />
+            <Route
+              path="*"
+              element={
+                <section>
+                  <h1>Page not found</h1>
+                  <Link to="/overview">Return to your workspace</Link>
+                </section>
+              }
+            />
+          </Routes>
+        )}
+      </main>
+    </AppShell>
+  );
 }

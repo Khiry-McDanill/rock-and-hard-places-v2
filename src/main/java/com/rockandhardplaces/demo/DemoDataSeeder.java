@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ConditionalOnProperty(name = "rhp.demo.enabled", havingValue = "true", matchIfMissing = true)
 public class DemoDataSeeder implements ApplicationRunner {
     static final String VERSION = "rhp-023-v1";
+    static final String WINDOW_RETURNS_VERSION = "rhp-025-window-returns-carpentry-v1";
     private final EntityManager em;
     private final JdbcTemplate jdbc;
     private final BidSubmissionService bidding;
@@ -49,8 +50,18 @@ public class DemoDataSeeder implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
+        // Repair only this exact legacy fixture copy, including already-seeded databases.
+        // Keep seed markers, identities, and media references intact for removal.
+        jdbc.update("UPDATE portfolio_items SET description = ? WHERE title = ? AND description = ? "
+                        + "AND tradesperson_id IN (SELECT id FROM tradespeople WHERE user_id IN "
+                        + "(SELECT id FROM users WHERE email LIKE '%@demo.rockandhardplaces.local'))",
+                "Pre-platform work with a checked client reference; not completed through RH&P.", "Germantown garden wall restoration",
+                "Pre-platform work; demo external verification represents a checked client reference, not RH&P completion.");
         if (jdbc.queryForObject("SELECT COUNT(*) FROM demo_seed_versions WHERE version = ?",
-                Integer.class, VERSION) != 0) return;
+                Integer.class, VERSION) != 0) {
+            seedWindowReturnsCarpentry();
+            return;
+        }
         List<Runnable> history = new ArrayList<>();
         Homeowner jordan = em.createQuery("select h from Homeowner h where h.user.email = :email", Homeowner.class)
                 .setParameter("email", DemoActiveAccountContext.DEMO_EMAIL).getSingleResult();
@@ -129,7 +140,7 @@ public class DemoDataSeeder implements ApplicationRunner {
                 new String[]{"Survey porch framing", "Replace porch boards", "Repair porch foundation"}, null);
 
         PortfolioItem external = portfolio.create(workers[5], "Germantown garden wall restoration",
-                "Pre-platform work; demo external verification represents a checked client reference, not RH&P completion.",
+                "Pre-platform work with a checked client reference; not completed through RH&P.",
                 PortfolioProvenance.EXTERNALLY_VERIFIED, null, null, LocalDate.of(2025, 10, 24));
         stamp(history, "portfolio_items", external.getId(), "created_at", "2026-01-05T12:00:00Z");
         PortfolioItem self = portfolio.create(dual, "Walnut reading nook",
@@ -139,7 +150,31 @@ public class DemoDataSeeder implements ApplicationRunner {
         em.flush();
         history.forEach(Runnable::run);
         jdbc.update("INSERT INTO demo_seed_versions(version) VALUES (?)", VERSION);
+        seedWindowReturnsCarpentry();
         em.clear();
+    }
+
+    private void seedWindowReturnsCarpentry() {
+        if (jdbc.queryForObject("SELECT COUNT(*) FROM demo_seed_versions WHERE version = ?",
+                Integer.class, WINDOW_RETURNS_VERSION) != 0) return;
+        // Window returns need finish carpentry alongside the existing drywall scope.
+        // Upgrade only the still-open fixture; retain its bids, history and user edits.
+        jdbc.update("""
+                INSERT INTO task_trades(task_id, trade_id)
+                SELECT t.id, tr.id FROM tasks t
+                JOIN projects p ON p.id = t.project_id
+                JOIN homeowners h ON h.id = p.homeowner_id
+                JOIN users u ON u.id = h.user_id
+                JOIN trades tr ON tr.name = 'Carpentry'
+                WHERE u.email = 'ruth-chen@demo.rockandhardplaces.local'
+                  AND p.title = 'Fairmount plaster and drywall repairs' AND p.status = 'PLANNING'
+                  AND t.title = 'Finish window returns' AND t.status = 'PLANNING'
+                  AND NOT EXISTS (SELECT 1 FROM task_assignments a WHERE a.task_id = t.id)
+                  AND NOT EXISTS (SELECT 1 FROM bids b WHERE b.task_id = t.id AND b.status = 'ACCEPTED')
+                  AND NOT EXISTS (SELECT 1 FROM task_trades tt WHERE tt.task_id = t.id AND tt.trade_id = tr.id)
+                """);
+        // Do not restore a requirement a user later removes, or retry a changed fixture.
+        jdbc.update("INSERT INTO demo_seed_versions(version) VALUES (?)", WINDOW_RETURNS_VERSION);
     }
 
     private void scenario(List<Runnable> history, Homeowner owner, String title, String zip, String description,

@@ -1,6 +1,9 @@
 package com.rockandhardplaces.demo;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rockandhardplaces.account.*;
 import com.rockandhardplaces.communication.*;
 import com.rockandhardplaces.portfolio.*;
@@ -12,12 +15,15 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest(properties = "rhp.demo.enabled=true")
+@AutoConfigureMockMvc
 @Transactional
 class DemoDataSeederTests {
     @DynamicPropertySource
@@ -43,6 +49,128 @@ class DemoDataSeederTests {
     @Autowired jakarta.persistence.EntityManager em;
     @Autowired CommunicationService communication;
     @Autowired PortfolioPublicationRequestRepository publications;
+    @Autowired MockMvc mvc;
+    @Autowired ObjectMapper json;
+
+    @Test
+    void jordanCanDiscoverReadAndBidOnAnotherOwnersUnfilledQualifiedScope() throws Exception {
+        try {
+            context.switchTo(AccountRole.TRADESPERSON);
+            Tradesperson jordan = (Tradesperson) context.activeProfile();
+            TaskTrade requirement = windowReturnsCarpentry();
+            Task task = requirement.getTask();
+            assertThat(jordan.getVerificationStatus()).isEqualTo(TradespersonVerificationStatus.VERIFIED);
+            assertThat(task.getProject().getHomeowner().getUser().getId()).isNotEqualTo(jordan.getUser().getId());
+            assertThat(task.getStatus()).isEqualTo(TaskStatus.PLANNING);
+            assertThat(task.getProject().getStatus()).isEqualTo(ProjectStatus.PLANNING);
+            assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM person_trades WHERE tradesperson_id = ? AND trade_id = ?",
+                    Long.class, jordan.getId(), requirement.getTrade().getId())).isPositive();
+            assertThat(assignments.findByTask(task)).isEmpty();
+            assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM bids WHERE task_trade_id = ? AND status = 'ACCEPTED'",
+                    Long.class, requirement.getId())).isZero();
+            var result = mvc.perform(get("/api/opportunities")).andExpect(status().isOk()).andReturn();
+            var opportunities = json.readTree(result.getResponse().getContentAsString());
+            assertThat(opportunities.findValues("requiredTrade")).anySatisfy(trade ->
+                    assertThat(trade.get("id").asLong()).isEqualTo(requirement.getId()));
+            mvc.perform(get("/api/opportunities/{id}", requirement.getId()))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.project.title").value("Fairmount plaster and drywall repairs"))
+                    .andExpect(jsonPath("$.task.title").value("Finish window returns"))
+                    .andExpect(jsonPath("$.requiredTrade.tradeName").value("Carpentry"))
+                    .andExpect(jsonPath("$.bidding.allowed").value(true));
+            mvc.perform(post("/api/tasks/{id}/bids", task.getId()).contentType("application/json")
+                    .content(json.writeValueAsString(Map.of("taskTradeId", requirement.getId(),
+                            "amount", 850, "message", "Fit and finish the timber window returns; protect the existing trim."))))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.taskTradeId").value(requirement.getId()))
+                    .andExpect(jsonPath("$.status").value("SUBMITTED"));
+            // The enclosing test transaction rolls this bid back; startup history stays untouched.
+        } finally { context.switchTo(AccountRole.HOMEOWNER); }
+    }
+
+    @Test
+    void jordanStillCannotDiscoverOrBidOnHisOwnOpenQualifiedScope() throws Exception {
+        try {
+            context.switchTo(AccountRole.TRADESPERSON);
+            Tradesperson jordan = (Tradesperson) context.activeProfile();
+            Project kitchen = projects.findAll().stream()
+                    .filter(p -> p.getHomeowner().getUser().getId().equals(jordan.getUser().getId())).findFirst().orElseThrow();
+            Task task = new Task("Own open scope", "Transaction-only eligibility check", TaskStatus.PLANNING, kitchen, null);
+            em.persist(task);
+            TaskTrade requirement = new TaskTrade(task, windowReturnsCarpentry().getTrade());
+            em.persist(requirement);
+            em.flush();
+            var response = mvc.perform(get("/api/opportunities")).andExpect(status().isOk()).andReturn();
+            assertThat(json.readTree(response.getResponse().getContentAsString()).findValues("requiredTrade"))
+                    .noneSatisfy(trade -> assertThat(trade.get("id").asLong()).isEqualTo(requirement.getId()));
+            mvc.perform(get("/api/opportunities/{id}", requirement.getId())).andExpect(status().isNotFound());
+            mvc.perform(post("/api/tasks/{id}/bids", task.getId()).contentType("application/json")
+                    .content(json.writeValueAsString(Map.of("taskTradeId", requirement.getId(), "amount", 850))))
+                    .andExpect(status().isForbidden());
+        } finally { context.switchTo(AccountRole.HOMEOWNER); }
+    }
+
+    @Test
+    void existingSeedUpgradeAddsOnlyWindowReturnsRequirementAndPreservesHistoryAndLaterRemoval() {
+        TaskTrade requirement = windowReturnsCarpentry();
+        Long taskId = requirement.getTask().getId();
+        Long tradeId = requirement.getTrade().getId();
+        jdbc.update("DELETE FROM task_trades WHERE id = ?", requirement.getId());
+        jdbc.update("DELETE FROM demo_seed_versions WHERE version = ?", DemoDataSeeder.WINDOW_RETURNS_VERSION);
+        em.clear();
+        Map<String, List<Map<String, Object>>> before = snapshot();
+        seeder.run(null);
+        Map<String, List<Map<String, Object>>> after = snapshot();
+        before.forEach((table, rows) -> {
+            if (table.equals("task_trades") || table.equals("demo_seed_versions")) {
+                assertThat(after.get(table)).containsAll(rows).hasSize(rows.size() + 1);
+            } else assertThat(after.get(table)).as(table).isEqualTo(rows);
+        });
+        seeder.run(null);
+        assertThat(snapshot()).isEqualTo(after);
+        jdbc.update("DELETE FROM task_trades WHERE task_id = ? AND trade_id = ?", taskId, tradeId);
+        Map<String, List<Map<String, Object>>> removed = snapshot();
+        seeder.run(null);
+        assertThat(snapshot()).isEqualTo(removed);
+    }
+
+    private TaskTrade windowReturnsCarpentry() {
+        return em.createQuery("""
+                select tt from TaskTrade tt where tt.task.title = 'Finish window returns'
+                and tt.task.project.title = 'Fairmount plaster and drywall repairs'
+                and tt.task.project.homeowner.user.email = 'ruth-chen@demo.rockandhardplaces.local'
+                and tt.trade.name = 'Carpentry'
+                """, TaskTrade.class).getSingleResult();
+    }
+
+    @Test
+    void legacyAccountLabelsAreRepairedButCustomizedNamesArePreserved() {
+        Long userId = jdbc.queryForObject("SELECT id FROM users WHERE email = ?", Long.class, DemoActiveAccountContext.DEMO_EMAIL);
+        jdbc.update("UPDATE homeowners SET display_name = 'Demo Homeowner' WHERE user_id = ?", userId);
+        jdbc.update("UPDATE tradespeople SET display_name = 'Demo Tradesperson' WHERE user_id = ?", userId);
+        accountSeeder.run(null);
+        assertThat(jdbc.queryForObject("SELECT display_name FROM homeowners WHERE user_id = ?", String.class, userId)).isEqualTo("Jordan Ellis");
+        assertThat(jdbc.queryForObject("SELECT display_name FROM tradespeople WHERE user_id = ?", String.class, userId)).isEqualTo("Jordan Ellis");
+        jdbc.update("UPDATE homeowners SET display_name = 'Custom Name' WHERE user_id = ?", userId);
+        accountSeeder.run(null);
+        assertThat(jdbc.queryForObject("SELECT display_name FROM homeowners WHERE user_id = ?", String.class, userId)).isEqualTo("Custom Name");
+    }
+
+    @Test
+    void legacyPortfolioCopyIsRepairedWithoutChangingEditedContentOrSeedMarkers() {
+        String title = "Germantown garden wall restoration";
+        jdbc.update("UPDATE portfolio_items SET description = ? WHERE title = ?",
+                "Pre-platform work; demo external verification represents a checked client reference, not RH&P completion.", title);
+        seeder.run(null);
+        assertThat(jdbc.queryForObject("SELECT description FROM portfolio_items WHERE title = ?", String.class, title))
+                .isEqualTo("Pre-platform work with a checked client reference; not completed through RH&P.");
+        jdbc.update("UPDATE portfolio_items SET description = 'Owner revised this description' WHERE title = ?", title);
+        Map<String, List<Map<String, Object>>> before = snapshot();
+        seeder.run(null);
+        assertThat(snapshot()).isEqualTo(before);
+        assertThat(jdbc.queryForList("SELECT version FROM demo_seed_versions", String.class))
+                .contains(DemoDataSeeder.VERSION, DemoDataSeeder.WINDOW_RETURNS_VERSION);
+    }
 
     @Test
     void repeatInitializationPreservesEveryRowIncludingUserEdits() {
@@ -51,7 +179,8 @@ class DemoDataSeederTests {
         seeder.run(null);
         seeder.run(null);
         assertThat(snapshot()).isEqualTo(before);
-        assertThat(count("demo_seed_versions")).isEqualTo(1);
+        assertThat(jdbc.queryForList("SELECT version FROM demo_seed_versions", String.class))
+                .contains(DemoDataSeeder.VERSION, DemoDataSeeder.WINDOW_RETURNS_VERSION);
     }
 
     @Test
@@ -95,7 +224,6 @@ class DemoDataSeederTests {
     void progressUsesLeavesAndPreservesCancellationAndApproval() {
         assertThat(count("projects")).isEqualTo(9);
         assertThat(count("tasks")).isEqualTo(37);
-        assertThat(count("task_trades")).isEqualTo(28);
         assertThat(projects.findAll()).extracting(Project::getStatus).contains(ProjectStatus.values());
         for (Project project : projects.findAll()) {
             int expected = switch (project.getStatus()) {

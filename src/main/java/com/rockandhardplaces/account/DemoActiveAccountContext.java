@@ -23,7 +23,7 @@ public class DemoActiveAccountContext implements ActiveAccountContext {
     }
 
     @Override public User currentUser() {
-        return users.findByEmail(DEMO_EMAIL).orElseThrow(() -> new IllegalStateException("Demo user is not seeded"));
+        return users.findByEmail(DEMO_EMAIL).orElseThrow(() -> new IllegalStateException("Your account is not available. Please try again later."));
     }
 
     @Override public AccountRole activeRole() { return activeRole; }

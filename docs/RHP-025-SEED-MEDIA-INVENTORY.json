@@ -1,0 +1,2704 @@
+{
+  "purpose": "Developer-only RH&P-023 seed graph inventory for removable presentation media; IDs are documentation only, never frontend mappings.",
+  "seedAdjustments": [{
+    "version": "rhp-025-window-returns-carpentry-v1",
+    "description": "The tables below record the original RH&P-023 graph. The RH&P-025 upgrade additionally registers Carpentry alongside Drywall on Ruth Chen's existing Finish window returns task in Fairmount plaster and drywall repairs. The new relationship ID is database-generated; all original rows and media mappings remain unchanged."
+  }],
+  "tables": {
+    "users": [
+      {
+        "id": 1,
+        "email": "demo@rockandhardplaces.local"
+      },
+      {
+        "id": 2,
+        "email": "maya-patel@demo.rockandhardplaces.local"
+      },
+      {
+        "id": 3,
+        "email": "andre-brooks@demo.rockandhardplaces.local"
+      },
+      {
+        "id": 4,
+        "email": "elena-rivera@demo.rockandhardplaces.local"
+      },
+      {
+        "id": 5,
+        "email": "ruth-chen@demo.rockandhardplaces.local"
+      },
+      {
+        "id": 6,
+        "email": "caleb-morgan@demo.rockandhardplaces.local"
+      },
+      {
+        "id": 7,
+        "email": "nina-alvarez@demo.rockandhardplaces.local"
+      },
+      {
+        "id": 8,
+        "email": "marcus-reed@demo.rockandhardplaces.local"
+      },
+      {
+        "id": 9,
+        "email": "sofia-nguyen@demo.rockandhardplaces.local"
+      },
+      {
+        "id": 10,
+        "email": "darius-cole@demo.rockandhardplaces.local"
+      },
+      {
+        "id": 11,
+        "email": "leah-bennett@demo.rockandhardplaces.local"
+      },
+      {
+        "id": 12,
+        "email": "owen-price@demo.rockandhardplaces.local"
+      }
+    ],
+    "homeowners": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "display_name": "Jordan Ellis",
+        "account_status": "ACTIVE",
+        "profile_image_reference": "demo/rhp-023/profiles/jordan-ellis.jpg"
+      },
+      {
+        "id": 2,
+        "user_id": 2,
+        "display_name": "Maya Patel",
+        "account_status": "ACTIVE",
+        "profile_image_reference": "demo/rhp-023/profiles/maya-patel.jpg"
+      },
+      {
+        "id": 3,
+        "user_id": 3,
+        "display_name": "Andre Brooks",
+        "account_status": "ACTIVE",
+        "profile_image_reference": "demo/rhp-023/profiles/andre-brooks.jpg"
+      },
+      {
+        "id": 4,
+        "user_id": 4,
+        "display_name": "Elena Rivera",
+        "account_status": "ACTIVE",
+        "profile_image_reference": "demo/rhp-023/profiles/elena-rivera.jpg"
+      },
+      {
+        "id": 5,
+        "user_id": 5,
+        "display_name": "Ruth Chen",
+        "account_status": "ACTIVE",
+        "profile_image_reference": "demo/rhp-023/profiles/ruth-chen.jpg"
+      }
+    ],
+    "tradespeople": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "display_name": "Jordan Ellis",
+        "account_status": "ACTIVE",
+        "verification_status": "VERIFIED",
+        "profile_image_reference": "demo/rhp-023/profiles/jordan-ellis.jpg",
+        "base_zip": "19147",
+        "service_radius": 20,
+        "availability_status": "AVAILABLE_NOW",
+        "available_start_date": null
+      },
+      {
+        "id": 2,
+        "user_id": 6,
+        "display_name": "Caleb Morgan",
+        "account_status": "ACTIVE",
+        "verification_status": "VERIFIED",
+        "profile_image_reference": "demo/rhp-023/profiles/caleb-morgan.jpg",
+        "base_zip": "19125",
+        "service_radius": 25,
+        "availability_status": "AVAILABLE_SOON",
+        "available_start_date": 1789358400000
+      },
+      {
+        "id": 3,
+        "user_id": 7,
+        "display_name": "Nina Alvarez",
+        "account_status": "ACTIVE",
+        "verification_status": "VERIFIED",
+        "profile_image_reference": "demo/rhp-023/profiles/nina-alvarez.jpg",
+        "base_zip": "19148",
+        "service_radius": 25,
+        "availability_status": "AVAILABLE_SOON",
+        "available_start_date": 1789358400000
+      },
+      {
+        "id": 4,
+        "user_id": 8,
+        "display_name": "Marcus Reed",
+        "account_status": "ACTIVE",
+        "verification_status": "VERIFIED",
+        "profile_image_reference": "demo/rhp-023/profiles/marcus-reed.jpg",
+        "base_zip": "19104",
+        "service_radius": 25,
+        "availability_status": "AVAILABLE_SOON",
+        "available_start_date": 1789358400000
+      },
+      {
+        "id": 5,
+        "user_id": 9,
+        "display_name": "Sofia Nguyen",
+        "account_status": "ACTIVE",
+        "verification_status": "VERIFIED",
+        "profile_image_reference": "demo/rhp-023/profiles/sofia-nguyen.jpg",
+        "base_zip": "19130",
+        "service_radius": 25,
+        "availability_status": "AVAILABLE_SOON",
+        "available_start_date": 1789358400000
+      },
+      {
+        "id": 6,
+        "user_id": 10,
+        "display_name": "Darius Cole",
+        "account_status": "ACTIVE",
+        "verification_status": "VERIFIED",
+        "profile_image_reference": "demo/rhp-023/profiles/darius-cole.jpg",
+        "base_zip": "19143",
+        "service_radius": 25,
+        "availability_status": "AVAILABLE_SOON",
+        "available_start_date": 1789358400000
+      },
+      {
+        "id": 7,
+        "user_id": 11,
+        "display_name": "Leah Bennett",
+        "account_status": "ACTIVE",
+        "verification_status": "VERIFIED",
+        "profile_image_reference": "demo/rhp-023/profiles/leah-bennett.jpg",
+        "base_zip": "19119",
+        "service_radius": 25,
+        "availability_status": "AVAILABLE_SOON",
+        "available_start_date": 1789358400000
+      },
+      {
+        "id": 8,
+        "user_id": 12,
+        "display_name": "Owen Price",
+        "account_status": "ACTIVE",
+        "verification_status": "VERIFIED",
+        "profile_image_reference": "demo/rhp-023/profiles/owen-price.jpg",
+        "base_zip": "19123",
+        "service_radius": 25,
+        "availability_status": "AVAILABLE_SOON",
+        "available_start_date": 1789358400000
+      }
+    ],
+    "trades": [
+      {
+        "id": 1,
+        "name": "Carpentry"
+      },
+      {
+        "id": 2,
+        "name": "Plumbing"
+      },
+      {
+        "id": 3,
+        "name": "Electrical"
+      },
+      {
+        "id": 4,
+        "name": "Drywall"
+      },
+      {
+        "id": 5,
+        "name": "Flooring"
+      },
+      {
+        "id": 6,
+        "name": "Exterior Restoration"
+      }
+    ],
+    "specialties": [
+      {
+        "id": 1,
+        "trade_id": 1,
+        "name": "Decks and structural framing"
+      },
+      {
+        "id": 2,
+        "trade_id": 2,
+        "name": "Bathroom rough-ins"
+      },
+      {
+        "id": 3,
+        "trade_id": 3,
+        "name": "Residential panel upgrades"
+      },
+      {
+        "id": 4,
+        "trade_id": 4,
+        "name": "Plaster repair and finishing"
+      },
+      {
+        "id": 5,
+        "trade_id": 5,
+        "name": "Hardwood restoration"
+      },
+      {
+        "id": 6,
+        "trade_id": 6,
+        "name": "Masonry and weatherproofing"
+      },
+      {
+        "id": 7,
+        "trade_id": 1,
+        "name": "Built-in cabinetry"
+      },
+      {
+        "id": 8,
+        "trade_id": 1,
+        "name": "Finish carpentry"
+      }
+    ],
+    "person_trades": [
+      {
+        "id": 1,
+        "tradesperson_id": 2,
+        "trade_id": 1
+      },
+      {
+        "id": 2,
+        "tradesperson_id": 3,
+        "trade_id": 2
+      },
+      {
+        "id": 3,
+        "tradesperson_id": 4,
+        "trade_id": 3
+      },
+      {
+        "id": 4,
+        "tradesperson_id": 5,
+        "trade_id": 4
+      },
+      {
+        "id": 5,
+        "tradesperson_id": 6,
+        "trade_id": 5
+      },
+      {
+        "id": 6,
+        "tradesperson_id": 7,
+        "trade_id": 6
+      },
+      {
+        "id": 7,
+        "tradesperson_id": 1,
+        "trade_id": 1
+      },
+      {
+        "id": 8,
+        "tradesperson_id": 8,
+        "trade_id": 1
+      }
+    ],
+    "person_specialties": [
+      {
+        "id": 1,
+        "tradesperson_id": 2,
+        "specialty_id": 1
+      },
+      {
+        "id": 2,
+        "tradesperson_id": 3,
+        "specialty_id": 2
+      },
+      {
+        "id": 3,
+        "tradesperson_id": 4,
+        "specialty_id": 3
+      },
+      {
+        "id": 4,
+        "tradesperson_id": 5,
+        "specialty_id": 4
+      },
+      {
+        "id": 5,
+        "tradesperson_id": 6,
+        "specialty_id": 5
+      },
+      {
+        "id": 6,
+        "tradesperson_id": 7,
+        "specialty_id": 6
+      },
+      {
+        "id": 7,
+        "tradesperson_id": 1,
+        "specialty_id": 7
+      },
+      {
+        "id": 8,
+        "tradesperson_id": 8,
+        "specialty_id": 8
+      }
+    ],
+    "projects": [
+      {
+        "id": 1,
+        "title": "Passyunk kitchen remodel",
+        "description": "Open up a narrow rowhouse kitchen, retain the original pine floor, and coordinate new sink and island circuits.",
+        "status": "IN_PROGRESS",
+        "job_zip": "19147",
+        "homeowner_id": 1
+      },
+      {
+        "id": 2,
+        "title": "Cedar Park bathroom renovation",
+        "description": "Replace a leaking upstairs bath with a walk-in shower, moisture-resistant wall finish, and safe dedicated circuits.",
+        "status": "COMPLETED",
+        "job_zip": "19143",
+        "homeowner_id": 2
+      },
+      {
+        "id": 3,
+        "title": "Fishtown cedar deck",
+        "description": "Rebuild the rear deck with cedar boards, code-compliant guards, and flashed ledger connections.",
+        "status": "IN_PROGRESS",
+        "job_zip": "19125",
+        "homeowner_id": 3
+      },
+      {
+        "id": 4,
+        "title": "Mount Airy attic framing",
+        "description": "Frame an attic office with a new partition and storage alcove while keeping the existing roof structure intact.",
+        "status": "IN_PROGRESS",
+        "job_zip": "19119",
+        "homeowner_id": 4
+      },
+      {
+        "id": 5,
+        "title": "Fairmount plaster and drywall repairs",
+        "description": "Repair old water damage after roof remediation; protect original trim and blend the new finish into adjacent plaster.",
+        "status": "PLANNING",
+        "job_zip": "19130",
+        "homeowner_id": 5
+      },
+      {
+        "id": 6,
+        "title": "Cedar Park oak floor restoration",
+        "description": "Restore the first-floor oak boards with matching repairs and a low-sheen finish suitable for a busy family home.",
+        "status": "COMPLETED",
+        "job_zip": "19143",
+        "homeowner_id": 2
+      },
+      {
+        "id": 7,
+        "title": "Fairmount utility room coordination",
+        "description": "Coordinate laundry supply, a dedicated appliance circuit, and wall repairs before the stacked washer arrives.",
+        "status": "IN_PROGRESS",
+        "job_zip": "19130",
+        "homeowner_id": 5
+      },
+      {
+        "id": 8,
+        "title": "Fishtown exterior water repairs",
+        "description": "Repoint the rear brickwork, restore damaged window trim, and seal the entry points found during spring rain.",
+        "status": "COMPLETED",
+        "job_zip": "19125",
+        "homeowner_id": 3
+      },
+      {
+        "id": 9,
+        "title": "Mount Airy side porch replacement",
+        "description": "Proposed side porch replacement deferred after the survey identified a boundary issue; no work was commissioned.",
+        "status": "CANCELLED",
+        "job_zip": "19119",
+        "homeowner_id": 4
+      }
+    ],
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Deliver passyunk kitchen remodel",
+        "description": "Coordinate the trade scopes and homeowner walkthrough.",
+        "status": "IN_PROGRESS",
+        "project_id": 1,
+        "parent_task_id": null
+      },
+      {
+        "id": 2,
+        "title": "Fit maple base cabinets",
+        "description": "Fit maple base cabinets; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 1,
+        "parent_task_id": 1
+      },
+      {
+        "id": 3,
+        "title": "Relocate sink supply and waste",
+        "description": "Relocate sink supply and waste; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "READY_FOR_REVIEW",
+        "project_id": 1,
+        "parent_task_id": 1
+      },
+      {
+        "id": 4,
+        "title": "Wire island outlets",
+        "description": "Wire island outlets; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "IN_PROGRESS",
+        "project_id": 1,
+        "parent_task_id": 1
+      },
+      {
+        "id": 5,
+        "title": "Add pantry niche",
+        "description": "Removed from scope to preserve the original chimney breast.",
+        "status": "CANCELLED",
+        "project_id": 1,
+        "parent_task_id": 1
+      },
+      {
+        "id": 6,
+        "title": "Deliver cedar park bathroom renovation",
+        "description": "Coordinate the trade scopes and homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 2,
+        "parent_task_id": null
+      },
+      {
+        "id": 7,
+        "title": "Install shower valve and drain",
+        "description": "Install shower valve and drain; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 2,
+        "parent_task_id": 6
+      },
+      {
+        "id": 8,
+        "title": "Finish moisture-resistant walls",
+        "description": "Finish moisture-resistant walls; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 2,
+        "parent_task_id": 6
+      },
+      {
+        "id": 9,
+        "title": "Install GFCI protection",
+        "description": "Install GFCI protection; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 2,
+        "parent_task_id": 6
+      },
+      {
+        "id": 10,
+        "title": "Deliver fishtown cedar deck",
+        "description": "Coordinate the trade scopes and homeowner walkthrough.",
+        "status": "IN_PROGRESS",
+        "project_id": 3,
+        "parent_task_id": null
+      },
+      {
+        "id": 11,
+        "title": "Replace ledger and joists",
+        "description": "Replace ledger and joists; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 3,
+        "parent_task_id": 10
+      },
+      {
+        "id": 12,
+        "title": "Lay cedar decking",
+        "description": "Lay cedar decking; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "READY_FOR_REVIEW",
+        "project_id": 3,
+        "parent_task_id": 10
+      },
+      {
+        "id": 13,
+        "title": "Fit stair guards",
+        "description": "Fit stair guards; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "IN_PROGRESS",
+        "project_id": 3,
+        "parent_task_id": 10
+      },
+      {
+        "id": 14,
+        "title": "Deliver mount airy attic framing",
+        "description": "Coordinate the trade scopes and homeowner walkthrough.",
+        "status": "IN_PROGRESS",
+        "project_id": 4,
+        "parent_task_id": null
+      },
+      {
+        "id": 15,
+        "title": "Frame office partition",
+        "description": "Frame office partition; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 4,
+        "parent_task_id": 14
+      },
+      {
+        "id": 16,
+        "title": "Build storage alcove",
+        "description": "Build storage alcove; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "READY_FOR_REVIEW",
+        "project_id": 4,
+        "parent_task_id": 14
+      },
+      {
+        "id": 17,
+        "title": "Hang attic drywall",
+        "description": "Hang attic drywall; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "IN_PROGRESS",
+        "project_id": 4,
+        "parent_task_id": 14
+      },
+      {
+        "id": 18,
+        "title": "Deliver fairmount plaster and drywall repairs",
+        "description": "Coordinate the trade scopes and homeowner walkthrough.",
+        "status": "PLANNING",
+        "project_id": 5,
+        "parent_task_id": null
+      },
+      {
+        "id": 19,
+        "title": "Patch stairwell ceiling",
+        "description": "Patch stairwell ceiling; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "PLANNING",
+        "project_id": 5,
+        "parent_task_id": 18
+      },
+      {
+        "id": 20,
+        "title": "Skim living room walls",
+        "description": "Skim living room walls; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "PLANNING",
+        "project_id": 5,
+        "parent_task_id": 18
+      },
+      {
+        "id": 21,
+        "title": "Finish window returns",
+        "description": "Finish window returns; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "PLANNING",
+        "project_id": 5,
+        "parent_task_id": 18
+      },
+      {
+        "id": 22,
+        "title": "Deliver cedar park oak floor restoration",
+        "description": "Coordinate the trade scopes and homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 6,
+        "parent_task_id": null
+      },
+      {
+        "id": 23,
+        "title": "Replace damaged oak boards",
+        "description": "Replace damaged oak boards; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 6,
+        "parent_task_id": 22
+      },
+      {
+        "id": 24,
+        "title": "Sand and seal first floor",
+        "description": "Sand and seal first floor; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 6,
+        "parent_task_id": 22
+      },
+      {
+        "id": 25,
+        "title": "Install matching thresholds",
+        "description": "Install matching thresholds; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 6,
+        "parent_task_id": 22
+      },
+      {
+        "id": 26,
+        "title": "Deliver fairmount utility room coordination",
+        "description": "Coordinate the trade scopes and homeowner walkthrough.",
+        "status": "IN_PROGRESS",
+        "project_id": 7,
+        "parent_task_id": null
+      },
+      {
+        "id": 27,
+        "title": "Move laundry shutoff valves",
+        "description": "Move laundry shutoff valves; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 7,
+        "parent_task_id": 26
+      },
+      {
+        "id": 28,
+        "title": "Run dedicated laundry circuit",
+        "description": "Run dedicated laundry circuit; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "READY_FOR_REVIEW",
+        "project_id": 7,
+        "parent_task_id": 26
+      },
+      {
+        "id": 29,
+        "title": "Close utility wall",
+        "description": "Close utility wall; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "IN_PROGRESS",
+        "project_id": 7,
+        "parent_task_id": 26
+      },
+      {
+        "id": 30,
+        "title": "Deliver fishtown exterior water repairs",
+        "description": "Coordinate the trade scopes and homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 8,
+        "parent_task_id": null
+      },
+      {
+        "id": 31,
+        "title": "Repoint rear brick joints",
+        "description": "Repoint rear brick joints; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 8,
+        "parent_task_id": 30
+      },
+      {
+        "id": 32,
+        "title": "Restore rear window trim",
+        "description": "Restore rear window trim; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 8,
+        "parent_task_id": 30
+      },
+      {
+        "id": 33,
+        "title": "Seal masonry transitions",
+        "description": "Seal masonry transitions; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "COMPLETED",
+        "project_id": 8,
+        "parent_task_id": 30
+      },
+      {
+        "id": 34,
+        "title": "Deliver mount airy side porch replacement",
+        "description": "Coordinate the trade scopes and homeowner walkthrough.",
+        "status": "CANCELLED",
+        "project_id": 9,
+        "parent_task_id": null
+      },
+      {
+        "id": 35,
+        "title": "Survey porch framing",
+        "description": "Survey porch framing; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "CANCELLED",
+        "project_id": 9,
+        "parent_task_id": 34
+      },
+      {
+        "id": 36,
+        "title": "Replace porch boards",
+        "description": "Replace porch boards; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "CANCELLED",
+        "project_id": 9,
+        "parent_task_id": 34
+      },
+      {
+        "id": 37,
+        "title": "Repair porch foundation",
+        "description": "Repair porch foundation; include protection, cleanup, and a homeowner walkthrough.",
+        "status": "CANCELLED",
+        "project_id": 9,
+        "parent_task_id": 34
+      }
+    ],
+    "task_trades": [
+      {
+        "id": 1,
+        "task_id": 2,
+        "trade_id": 1
+      },
+      {
+        "id": 2,
+        "task_id": 3,
+        "trade_id": 2
+      },
+      {
+        "id": 3,
+        "task_id": 4,
+        "trade_id": 3
+      },
+      {
+        "id": 4,
+        "task_id": 5,
+        "trade_id": 1
+      },
+      {
+        "id": 5,
+        "task_id": 7,
+        "trade_id": 2
+      },
+      {
+        "id": 6,
+        "task_id": 8,
+        "trade_id": 4
+      },
+      {
+        "id": 7,
+        "task_id": 9,
+        "trade_id": 3
+      },
+      {
+        "id": 8,
+        "task_id": 11,
+        "trade_id": 1
+      },
+      {
+        "id": 9,
+        "task_id": 12,
+        "trade_id": 1
+      },
+      {
+        "id": 10,
+        "task_id": 13,
+        "trade_id": 1
+      },
+      {
+        "id": 11,
+        "task_id": 15,
+        "trade_id": 1
+      },
+      {
+        "id": 12,
+        "task_id": 16,
+        "trade_id": 1
+      },
+      {
+        "id": 13,
+        "task_id": 17,
+        "trade_id": 4
+      },
+      {
+        "id": 14,
+        "task_id": 19,
+        "trade_id": 4
+      },
+      {
+        "id": 15,
+        "task_id": 20,
+        "trade_id": 4
+      },
+      {
+        "id": 16,
+        "task_id": 21,
+        "trade_id": 4
+      },
+      {
+        "id": 17,
+        "task_id": 23,
+        "trade_id": 5
+      },
+      {
+        "id": 18,
+        "task_id": 24,
+        "trade_id": 5
+      },
+      {
+        "id": 19,
+        "task_id": 25,
+        "trade_id": 5
+      },
+      {
+        "id": 20,
+        "task_id": 27,
+        "trade_id": 2
+      },
+      {
+        "id": 21,
+        "task_id": 28,
+        "trade_id": 3
+      },
+      {
+        "id": 22,
+        "task_id": 29,
+        "trade_id": 4
+      },
+      {
+        "id": 23,
+        "task_id": 31,
+        "trade_id": 6
+      },
+      {
+        "id": 24,
+        "task_id": 32,
+        "trade_id": 1
+      },
+      {
+        "id": 25,
+        "task_id": 33,
+        "trade_id": 6
+      },
+      {
+        "id": 26,
+        "task_id": 35,
+        "trade_id": 1
+      },
+      {
+        "id": 27,
+        "task_id": 36,
+        "trade_id": 1
+      },
+      {
+        "id": 28,
+        "task_id": 37,
+        "trade_id": 6
+      }
+    ],
+    "task_assignments": [
+      {
+        "id": 1,
+        "task_id": 2,
+        "tradesperson_id": 2
+      },
+      {
+        "id": 2,
+        "task_id": 3,
+        "tradesperson_id": 3
+      },
+      {
+        "id": 3,
+        "task_id": 4,
+        "tradesperson_id": 4
+      },
+      {
+        "id": 4,
+        "task_id": 7,
+        "tradesperson_id": 3
+      },
+      {
+        "id": 5,
+        "task_id": 8,
+        "tradesperson_id": 5
+      },
+      {
+        "id": 6,
+        "task_id": 9,
+        "tradesperson_id": 4
+      },
+      {
+        "id": 7,
+        "task_id": 11,
+        "tradesperson_id": 2
+      },
+      {
+        "id": 8,
+        "task_id": 12,
+        "tradesperson_id": 2
+      },
+      {
+        "id": 9,
+        "task_id": 13,
+        "tradesperson_id": 2
+      },
+      {
+        "id": 10,
+        "task_id": 15,
+        "tradesperson_id": 2
+      },
+      {
+        "id": 11,
+        "task_id": 16,
+        "tradesperson_id": 2
+      },
+      {
+        "id": 12,
+        "task_id": 17,
+        "tradesperson_id": 5
+      },
+      {
+        "id": 13,
+        "task_id": 23,
+        "tradesperson_id": 6
+      },
+      {
+        "id": 14,
+        "task_id": 24,
+        "tradesperson_id": 6
+      },
+      {
+        "id": 15,
+        "task_id": 25,
+        "tradesperson_id": 6
+      },
+      {
+        "id": 16,
+        "task_id": 27,
+        "tradesperson_id": 3
+      },
+      {
+        "id": 17,
+        "task_id": 28,
+        "tradesperson_id": 4
+      },
+      {
+        "id": 18,
+        "task_id": 29,
+        "tradesperson_id": 5
+      },
+      {
+        "id": 19,
+        "task_id": 31,
+        "tradesperson_id": 7
+      },
+      {
+        "id": 20,
+        "task_id": 32,
+        "tradesperson_id": 1
+      },
+      {
+        "id": 21,
+        "task_id": 33,
+        "tradesperson_id": 7
+      }
+    ],
+    "project_teams": [
+      {
+        "id": 1,
+        "project_id": 1,
+        "tradesperson_id": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "id": 2,
+        "project_id": 1,
+        "tradesperson_id": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "id": 3,
+        "project_id": 1,
+        "tradesperson_id": 4,
+        "status": "ACTIVE"
+      },
+      {
+        "id": 4,
+        "project_id": 2,
+        "tradesperson_id": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "id": 5,
+        "project_id": 2,
+        "tradesperson_id": 5,
+        "status": "ACTIVE"
+      },
+      {
+        "id": 6,
+        "project_id": 2,
+        "tradesperson_id": 4,
+        "status": "ACTIVE"
+      },
+      {
+        "id": 7,
+        "project_id": 3,
+        "tradesperson_id": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "id": 8,
+        "project_id": 4,
+        "tradesperson_id": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "id": 9,
+        "project_id": 4,
+        "tradesperson_id": 5,
+        "status": "ACTIVE"
+      },
+      {
+        "id": 10,
+        "project_id": 6,
+        "tradesperson_id": 6,
+        "status": "ACTIVE"
+      },
+      {
+        "id": 11,
+        "project_id": 7,
+        "tradesperson_id": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "id": 12,
+        "project_id": 7,
+        "tradesperson_id": 4,
+        "status": "ACTIVE"
+      },
+      {
+        "id": 13,
+        "project_id": 7,
+        "tradesperson_id": 5,
+        "status": "ACTIVE"
+      },
+      {
+        "id": 14,
+        "project_id": 8,
+        "tradesperson_id": 7,
+        "status": "ACTIVE"
+      },
+      {
+        "id": 15,
+        "project_id": 8,
+        "tradesperson_id": 1,
+        "status": "ACTIVE"
+      }
+    ],
+    "project_team_trades": [
+      {
+        "id": 1,
+        "project_team_id": 1,
+        "trade_id": 1
+      },
+      {
+        "id": 2,
+        "project_team_id": 2,
+        "trade_id": 2
+      },
+      {
+        "id": 3,
+        "project_team_id": 3,
+        "trade_id": 3
+      },
+      {
+        "id": 4,
+        "project_team_id": 4,
+        "trade_id": 2
+      },
+      {
+        "id": 5,
+        "project_team_id": 5,
+        "trade_id": 4
+      },
+      {
+        "id": 6,
+        "project_team_id": 6,
+        "trade_id": 3
+      },
+      {
+        "id": 7,
+        "project_team_id": 7,
+        "trade_id": 1
+      },
+      {
+        "id": 8,
+        "project_team_id": 8,
+        "trade_id": 1
+      },
+      {
+        "id": 9,
+        "project_team_id": 9,
+        "trade_id": 4
+      },
+      {
+        "id": 10,
+        "project_team_id": 10,
+        "trade_id": 5
+      },
+      {
+        "id": 11,
+        "project_team_id": 11,
+        "trade_id": 2
+      },
+      {
+        "id": 12,
+        "project_team_id": 12,
+        "trade_id": 3
+      },
+      {
+        "id": 13,
+        "project_team_id": 13,
+        "trade_id": 4
+      },
+      {
+        "id": 14,
+        "project_team_id": 14,
+        "trade_id": 6
+      },
+      {
+        "id": 15,
+        "project_team_id": 15,
+        "trade_id": 1
+      }
+    ],
+    "bids": [
+      {
+        "id": 1,
+        "task_id": 2,
+        "task_trade_id": 1,
+        "tradesperson_id": 8,
+        "amount": 4875,
+        "message": "Includes materials and cleanup. I can reserve two weeks once the scope is confirmed.",
+        "status": "REJECTED",
+        "created_at": 1777885200000,
+        "updated_at": 1778058000000
+      },
+      {
+        "id": 2,
+        "task_id": 2,
+        "task_trade_id": 1,
+        "tradesperson_id": 2,
+        "amount": 2350,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for fit maple base cabinets.",
+        "status": "ACCEPTED",
+        "created_at": 1777885200000,
+        "updated_at": 1778058000000
+      },
+      {
+        "id": 3,
+        "task_id": 3,
+        "task_trade_id": 2,
+        "tradesperson_id": 3,
+        "amount": 3425,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for relocate sink supply and waste.",
+        "status": "ACCEPTED",
+        "created_at": 1777885200000,
+        "updated_at": 1778058000000
+      },
+      {
+        "id": 4,
+        "task_id": 4,
+        "task_trade_id": 3,
+        "tradesperson_id": 4,
+        "amount": 4500,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for wire island outlets.",
+        "status": "ACCEPTED",
+        "created_at": 1777885200000,
+        "updated_at": 1778058000000
+      },
+      {
+        "id": 5,
+        "task_id": 7,
+        "task_trade_id": 5,
+        "tradesperson_id": 3,
+        "amount": 2775,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for install shower valve and drain.",
+        "status": "ACCEPTED",
+        "created_at": 1768208400000,
+        "updated_at": 1768381200000
+      },
+      {
+        "id": 6,
+        "task_id": 8,
+        "task_trade_id": 6,
+        "tradesperson_id": 5,
+        "amount": 4275,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for finish moisture-resistant walls.",
+        "status": "ACCEPTED",
+        "created_at": 1768208400000,
+        "updated_at": 1768381200000
+      },
+      {
+        "id": 7,
+        "task_id": 9,
+        "task_trade_id": 7,
+        "tradesperson_id": 4,
+        "amount": 4500,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for install gfci protection.",
+        "status": "ACCEPTED",
+        "created_at": 1768208400000,
+        "updated_at": 1768381200000
+      },
+      {
+        "id": 8,
+        "task_id": 11,
+        "task_trade_id": 8,
+        "tradesperson_id": 8,
+        "amount": 4875,
+        "message": "Includes materials and cleanup. I can reserve two weeks once the scope is confirmed.",
+        "status": "REJECTED",
+        "created_at": 1780304400000,
+        "updated_at": 1780477200000
+      },
+      {
+        "id": 9,
+        "task_id": 11,
+        "task_trade_id": 8,
+        "tradesperson_id": 2,
+        "amount": 2350,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for replace ledger and joists.",
+        "status": "ACCEPTED",
+        "created_at": 1780304400000,
+        "updated_at": 1780477200000
+      },
+      {
+        "id": 10,
+        "task_id": 12,
+        "task_trade_id": 9,
+        "tradesperson_id": 2,
+        "amount": 3000,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for lay cedar decking.",
+        "status": "ACCEPTED",
+        "created_at": 1780304400000,
+        "updated_at": 1780477200000
+      },
+      {
+        "id": 11,
+        "task_id": 13,
+        "task_trade_id": 10,
+        "tradesperson_id": 2,
+        "amount": 3650,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for fit stair guards.",
+        "status": "ACCEPTED",
+        "created_at": 1780304400000,
+        "updated_at": 1780477200000
+      },
+      {
+        "id": 12,
+        "task_id": 15,
+        "task_trade_id": 11,
+        "tradesperson_id": 2,
+        "amount": 2350,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for frame office partition.",
+        "status": "ACCEPTED",
+        "created_at": 1783328400000,
+        "updated_at": 1783501200000
+      },
+      {
+        "id": 13,
+        "task_id": 16,
+        "task_trade_id": 12,
+        "tradesperson_id": 2,
+        "amount": 3000,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for build storage alcove.",
+        "status": "ACCEPTED",
+        "created_at": 1783328400000,
+        "updated_at": 1783501200000
+      },
+      {
+        "id": 14,
+        "task_id": 17,
+        "task_trade_id": 13,
+        "tradesperson_id": 5,
+        "amount": 4925,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for hang attic drywall.",
+        "status": "ACCEPTED",
+        "created_at": 1783328400000,
+        "updated_at": 1783501200000
+      },
+      {
+        "id": 15,
+        "task_id": 19,
+        "task_trade_id": 14,
+        "tradesperson_id": 5,
+        "amount": 3625,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for patch stairwell ceiling.",
+        "status": "SUBMITTED",
+        "created_at": 1785747600000,
+        "updated_at": 1785747600000
+      },
+      {
+        "id": 16,
+        "task_id": 20,
+        "task_trade_id": 15,
+        "tradesperson_id": 5,
+        "amount": 4275,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for skim living room walls.",
+        "status": "SUBMITTED",
+        "created_at": 1785747600000,
+        "updated_at": 1785747600000
+      },
+      {
+        "id": 17,
+        "task_id": 21,
+        "task_trade_id": 16,
+        "tradesperson_id": 5,
+        "amount": 4925,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for finish window returns.",
+        "status": "SUBMITTED",
+        "created_at": 1785747600000,
+        "updated_at": 1785747600000
+      },
+      {
+        "id": 18,
+        "task_id": 23,
+        "task_trade_id": 17,
+        "tradesperson_id": 6,
+        "amount": 4050,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for replace damaged oak boards.",
+        "status": "ACCEPTED",
+        "created_at": 1772442000000,
+        "updated_at": 1772614800000
+      },
+      {
+        "id": 19,
+        "task_id": 24,
+        "task_trade_id": 18,
+        "tradesperson_id": 6,
+        "amount": 4700,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for sand and seal first floor.",
+        "status": "ACCEPTED",
+        "created_at": 1772442000000,
+        "updated_at": 1772614800000
+      },
+      {
+        "id": 20,
+        "task_id": 25,
+        "task_trade_id": 19,
+        "tradesperson_id": 6,
+        "amount": 5350,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for install matching thresholds.",
+        "status": "ACCEPTED",
+        "created_at": 1772442000000,
+        "updated_at": 1772614800000
+      },
+      {
+        "id": 21,
+        "task_id": 27,
+        "task_trade_id": 20,
+        "tradesperson_id": 3,
+        "amount": 2775,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for move laundry shutoff valves.",
+        "status": "ACCEPTED",
+        "created_at": 1786352400000,
+        "updated_at": 1786525200000
+      },
+      {
+        "id": 22,
+        "task_id": 28,
+        "task_trade_id": 21,
+        "tradesperson_id": 4,
+        "amount": 3850,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for run dedicated laundry circuit.",
+        "status": "ACCEPTED",
+        "created_at": 1786352400000,
+        "updated_at": 1786525200000
+      },
+      {
+        "id": 23,
+        "task_id": 29,
+        "task_trade_id": 22,
+        "tradesperson_id": 5,
+        "amount": 4925,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for close utility wall.",
+        "status": "ACCEPTED",
+        "created_at": 1786352400000,
+        "updated_at": 1786525200000
+      },
+      {
+        "id": 24,
+        "task_id": 31,
+        "task_trade_id": 23,
+        "tradesperson_id": 7,
+        "amount": 4475,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for repoint rear brick joints.",
+        "status": "ACCEPTED",
+        "created_at": 1775466000000,
+        "updated_at": 1775638800000
+      },
+      {
+        "id": 25,
+        "task_id": 32,
+        "task_trade_id": 24,
+        "tradesperson_id": 1,
+        "amount": 3000,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for restore rear window trim.",
+        "status": "ACCEPTED",
+        "created_at": 1775466000000,
+        "updated_at": 1775638800000
+      },
+      {
+        "id": 26,
+        "task_id": 33,
+        "task_trade_id": 25,
+        "tradesperson_id": 7,
+        "amount": 5775,
+        "message": "Includes labor, standard materials, floor protection, and daily cleanup for seal masonry transitions.",
+        "status": "ACCEPTED",
+        "created_at": 1775466000000,
+        "updated_at": 1775638800000
+      }
+    ],
+    "portfolio_items": [
+      {
+        "id": 1,
+        "tradesperson_id": 3,
+        "title": "Cedar Park bathroom renovation",
+        "description": "Replace a leaking upstairs bath with a walk-in shower, moisture-resistant wall finish, and safe dedicated circuits.",
+        "provenance": "RHP_VERIFIED",
+        "project_id": 2,
+        "task_id": 7,
+        "completion_date": 1769922000000,
+        "created_at": 1770282000000
+      },
+      {
+        "id": 2,
+        "tradesperson_id": 6,
+        "title": "Cedar Park oak floor restoration",
+        "description": "Restore the first-floor oak boards with matching repairs and a low-sheen finish suitable for a busy family home.",
+        "provenance": "RHP_VERIFIED",
+        "project_id": 6,
+        "task_id": 23,
+        "completion_date": 1774152000000,
+        "created_at": 1774515600000
+      },
+      {
+        "id": 3,
+        "tradesperson_id": 7,
+        "title": "Fishtown exterior water repairs",
+        "description": "Repoint the rear brickwork, restore damaged window trim, and seal the entry points found during spring rain.",
+        "provenance": "RHP_VERIFIED",
+        "project_id": 8,
+        "task_id": 31,
+        "completion_date": 1777176000000,
+        "created_at": 1777539600000
+      },
+      {
+        "id": 4,
+        "tradesperson_id": 7,
+        "title": "Germantown garden wall restoration",
+        "description": "Pre-platform work with a checked client reference; not completed through RH&P.",
+        "provenance": "EXTERNALLY_VERIFIED",
+        "project_id": null,
+        "task_id": null,
+        "completion_date": 1761278400000,
+        "created_at": 1767614400000
+      },
+      {
+        "id": 5,
+        "tradesperson_id": 1,
+        "title": "Walnut reading nook",
+        "description": "Self-reported workshop commission with fitted shelving and a window seat; no RH&P project or verified client claim.",
+        "provenance": "SELF_REPORTED",
+        "project_id": null,
+        "task_id": null,
+        "completion_date": 1763096400000,
+        "created_at": 1767700800000
+      }
+    ],
+    "message_attachments": [
+      {
+        "id": 1,
+        "message_id": 4,
+        "original_filename": "passyunk-kitchen-remodel-work.jpg",
+        "content_type": "image/jpeg",
+        "file_size": 248320,
+        "storage_key": "demo/rhp-023/passyunk-kitchen-remodel/work.jpg",
+        "uploader_id": 6,
+        "created_at": 1778774400000
+      },
+      {
+        "id": 2,
+        "message_id": 4,
+        "original_filename": "passyunk-kitchen-remodel-detail.jpg",
+        "content_type": "image/jpeg",
+        "file_size": 186420,
+        "storage_key": "demo/rhp-023/passyunk-kitchen-remodel/detail.jpg",
+        "uploader_id": 6,
+        "created_at": 1778774400000
+      },
+      {
+        "id": 3,
+        "message_id": 11,
+        "original_filename": "cedar-park-bathroom-renovation-work.jpg",
+        "content_type": "image/jpeg",
+        "file_size": 248320,
+        "storage_key": "demo/rhp-023/cedar-park-bathroom-renovation/work.jpg",
+        "uploader_id": 7,
+        "created_at": 1769097600000
+      },
+      {
+        "id": 4,
+        "message_id": 11,
+        "original_filename": "cedar-park-bathroom-renovation-detail.jpg",
+        "content_type": "image/jpeg",
+        "file_size": 186420,
+        "storage_key": "demo/rhp-023/cedar-park-bathroom-renovation/detail.jpg",
+        "uploader_id": 7,
+        "created_at": 1769097600000
+      },
+      {
+        "id": 5,
+        "message_id": 18,
+        "original_filename": "fishtown-cedar-deck-work.jpg",
+        "content_type": "image/jpeg",
+        "file_size": 248320,
+        "storage_key": "demo/rhp-023/fishtown-cedar-deck/work.jpg",
+        "uploader_id": 6,
+        "created_at": 1781193600000
+      },
+      {
+        "id": 6,
+        "message_id": 18,
+        "original_filename": "fishtown-cedar-deck-detail.jpg",
+        "content_type": "image/jpeg",
+        "file_size": 186420,
+        "storage_key": "demo/rhp-023/fishtown-cedar-deck/detail.jpg",
+        "uploader_id": 6,
+        "created_at": 1781193600000
+      },
+      {
+        "id": 7,
+        "message_id": 25,
+        "original_filename": "mount-airy-attic-framing-work.jpg",
+        "content_type": "image/jpeg",
+        "file_size": 248320,
+        "storage_key": "demo/rhp-023/mount-airy-attic-framing/work.jpg",
+        "uploader_id": 6,
+        "created_at": 1784217600000
+      },
+      {
+        "id": 8,
+        "message_id": 25,
+        "original_filename": "mount-airy-attic-framing-detail.jpg",
+        "content_type": "image/jpeg",
+        "file_size": 186420,
+        "storage_key": "demo/rhp-023/mount-airy-attic-framing/detail.jpg",
+        "uploader_id": 6,
+        "created_at": 1784217600000
+      },
+      {
+        "id": 9,
+        "message_id": 35,
+        "original_filename": "cedar-park-oak-floor-restoration-work.jpg",
+        "content_type": "image/jpeg",
+        "file_size": 248320,
+        "storage_key": "demo/rhp-023/cedar-park-oak-floor-restoration/work.jpg",
+        "uploader_id": 10,
+        "created_at": 1773331200000
+      },
+      {
+        "id": 10,
+        "message_id": 35,
+        "original_filename": "cedar-park-oak-floor-restoration-detail.jpg",
+        "content_type": "image/jpeg",
+        "file_size": 186420,
+        "storage_key": "demo/rhp-023/cedar-park-oak-floor-restoration/detail.jpg",
+        "uploader_id": 10,
+        "created_at": 1773331200000
+      },
+      {
+        "id": 11,
+        "message_id": 42,
+        "original_filename": "fairmount-utility-room-coordination-work.jpg",
+        "content_type": "image/jpeg",
+        "file_size": 248320,
+        "storage_key": "demo/rhp-023/fairmount-utility-room-coordination/work.jpg",
+        "uploader_id": 7,
+        "created_at": 1787241600000
+      },
+      {
+        "id": 12,
+        "message_id": 42,
+        "original_filename": "fairmount-utility-room-coordination-detail.jpg",
+        "content_type": "image/jpeg",
+        "file_size": 186420,
+        "storage_key": "demo/rhp-023/fairmount-utility-room-coordination/detail.jpg",
+        "uploader_id": 7,
+        "created_at": 1787241600000
+      },
+      {
+        "id": 13,
+        "message_id": 49,
+        "original_filename": "fishtown-exterior-water-repairs-work.jpg",
+        "content_type": "image/jpeg",
+        "file_size": 248320,
+        "storage_key": "demo/rhp-023/fishtown-exterior-water-repairs/work.jpg",
+        "uploader_id": 11,
+        "created_at": 1776355200000
+      },
+      {
+        "id": 14,
+        "message_id": 49,
+        "original_filename": "fishtown-exterior-water-repairs-detail.jpg",
+        "content_type": "image/jpeg",
+        "file_size": 186420,
+        "storage_key": "demo/rhp-023/fishtown-exterior-water-repairs/detail.jpg",
+        "uploader_id": 11,
+        "created_at": 1776355200000
+      }
+    ],
+    "portfolio_publication_requests": [
+      {
+        "id": 1,
+        "portfolio_item_id": 1,
+        "attachment_id": 3,
+        "status": "APPROVED",
+        "created_at": 1770285600000,
+        "decided_at": 1770372000000,
+        "decided_by_homeowner_id": 2
+      },
+      {
+        "id": 2,
+        "portfolio_item_id": 1,
+        "attachment_id": 4,
+        "status": "PENDING",
+        "created_at": 1770285600000,
+        "decided_at": null,
+        "decided_by_homeowner_id": null
+      },
+      {
+        "id": 3,
+        "portfolio_item_id": 2,
+        "attachment_id": 9,
+        "status": "APPROVED",
+        "created_at": 1774519200000,
+        "decided_at": 1774605600000,
+        "decided_by_homeowner_id": 2
+      },
+      {
+        "id": 4,
+        "portfolio_item_id": 2,
+        "attachment_id": 10,
+        "status": "DECLINED",
+        "created_at": 1774519200000,
+        "decided_at": 1774605600000,
+        "decided_by_homeowner_id": 2
+      },
+      {
+        "id": 5,
+        "portfolio_item_id": 3,
+        "attachment_id": 13,
+        "status": "APPROVED",
+        "created_at": 1777543200000,
+        "decided_at": 1777629600000,
+        "decided_by_homeowner_id": 3
+      },
+      {
+        "id": 6,
+        "portfolio_item_id": 3,
+        "attachment_id": 14,
+        "status": "PENDING",
+        "created_at": 1777543200000,
+        "decided_at": null,
+        "decided_by_homeowner_id": null
+      }
+    ],
+    "reviews": [
+      {
+        "id": 1,
+        "homeowner_id": 1,
+        "tradesperson_id": 2,
+        "project_id": 1,
+        "task_id": 2,
+        "level": "TASK",
+        "overall_rating": 4,
+        "quality_rating": 5,
+        "communication_rating": 4,
+        "reliability_rating": 4,
+        "professionalism_rating": 5,
+        "body": "The fit maple base cabinets work passed our walkthrough. Good attention to the existing house; the remaining scopes are still underway.",
+        "created_at": 1778954400000,
+        "edited_at": null,
+        "withdrawn_at": null,
+        "moderation_hidden_at": null
+      },
+      {
+        "id": 2,
+        "homeowner_id": 2,
+        "tradesperson_id": 3,
+        "project_id": 2,
+        "task_id": null,
+        "level": "PROJECT",
+        "overall_rating": 5,
+        "quality_rating": 5,
+        "communication_rating": 5,
+        "reliability_rating": 4,
+        "professionalism_rating": 5,
+        "body": "The install shower valve and drain scope was handled carefully. The rooms were left clean and the walkthrough was thorough. A delivery shifted the schedule, but we had advance notice.",
+        "created_at": 1770141600000,
+        "edited_at": null,
+        "withdrawn_at": null,
+        "moderation_hidden_at": null
+      },
+      {
+        "id": 3,
+        "homeowner_id": 3,
+        "tradesperson_id": 2,
+        "project_id": 3,
+        "task_id": 11,
+        "level": "TASK",
+        "overall_rating": 4,
+        "quality_rating": 5,
+        "communication_rating": 4,
+        "reliability_rating": 4,
+        "professionalism_rating": 5,
+        "body": "The replace ledger and joists work passed our walkthrough. Good attention to the existing house; the remaining scopes are still underway.",
+        "created_at": 1781373600000,
+        "edited_at": null,
+        "withdrawn_at": null,
+        "moderation_hidden_at": null
+      },
+      {
+        "id": 4,
+        "homeowner_id": 4,
+        "tradesperson_id": 2,
+        "project_id": 4,
+        "task_id": 15,
+        "level": "TASK",
+        "overall_rating": 4,
+        "quality_rating": 5,
+        "communication_rating": 4,
+        "reliability_rating": 4,
+        "professionalism_rating": 5,
+        "body": "The frame office partition work passed our walkthrough. Good attention to the existing house; the remaining scopes are still underway.",
+        "created_at": 1784397600000,
+        "edited_at": null,
+        "withdrawn_at": null,
+        "moderation_hidden_at": null
+      },
+      {
+        "id": 5,
+        "homeowner_id": 2,
+        "tradesperson_id": 6,
+        "project_id": 6,
+        "task_id": null,
+        "level": "PROJECT",
+        "overall_rating": 4,
+        "quality_rating": 5,
+        "communication_rating": 4,
+        "reliability_rating": 4,
+        "professionalism_rating": 5,
+        "body": "The replace damaged oak boards scope was handled carefully. The rooms were left clean and the walkthrough was thorough. A delivery shifted the schedule, but we had advance notice.",
+        "created_at": 1774375200000,
+        "edited_at": null,
+        "withdrawn_at": null,
+        "moderation_hidden_at": null
+      },
+      {
+        "id": 6,
+        "homeowner_id": 5,
+        "tradesperson_id": 3,
+        "project_id": 7,
+        "task_id": 27,
+        "level": "TASK",
+        "overall_rating": 4,
+        "quality_rating": 5,
+        "communication_rating": 4,
+        "reliability_rating": 4,
+        "professionalism_rating": 5,
+        "body": "The move laundry shutoff valves work passed our walkthrough. Good attention to the existing house; the remaining scopes are still underway.",
+        "created_at": 1787421600000,
+        "edited_at": null,
+        "withdrawn_at": null,
+        "moderation_hidden_at": null
+      },
+      {
+        "id": 7,
+        "homeowner_id": 3,
+        "tradesperson_id": 7,
+        "project_id": 8,
+        "task_id": null,
+        "level": "PROJECT",
+        "overall_rating": 5,
+        "quality_rating": 5,
+        "communication_rating": 5,
+        "reliability_rating": 4,
+        "professionalism_rating": 5,
+        "body": "The repoint rear brick joints scope was handled carefully. The rooms were left clean and the walkthrough was thorough. A delivery shifted the schedule, but we had advance notice.",
+        "created_at": 1777399200000,
+        "edited_at": null,
+        "withdrawn_at": null,
+        "moderation_hidden_at": null
+      }
+    ],
+    "review_responses": [
+      {
+        "id": 1,
+        "review_id": 2,
+        "tradesperson_id": 3,
+        "body": "Thank you for making access easy and reviewing the details with us. I appreciate your flexibility around the delivery.",
+        "created_at": 1770199200000,
+        "edited_at": null,
+        "moderation_hidden_at": null
+      },
+      {
+        "id": 2,
+        "review_id": 5,
+        "tradesperson_id": 6,
+        "body": "Thank you for making access easy and reviewing the details with us. I appreciate your flexibility around the delivery.",
+        "created_at": 1774432800000,
+        "edited_at": null,
+        "moderation_hidden_at": null
+      },
+      {
+        "id": 3,
+        "review_id": 7,
+        "tradesperson_id": 7,
+        "body": "Thank you for making access easy and reviewing the details with us. I appreciate your flexibility around the delivery.",
+        "created_at": 1777456800000,
+        "edited_at": null,
+        "moderation_hidden_at": null
+      }
+    ],
+    "conversations": [
+      {
+        "id": 1,
+        "type": "PROJECT_TEAM",
+        "project_id": 1,
+        "created_at": 1778140800000
+      },
+      {
+        "id": 2,
+        "type": "PRIVATE",
+        "project_id": 1,
+        "created_at": 1778313600000
+      },
+      {
+        "id": 3,
+        "type": "PROJECT_TEAM",
+        "project_id": 2,
+        "created_at": 1768464000000
+      },
+      {
+        "id": 4,
+        "type": "PRIVATE",
+        "project_id": 2,
+        "created_at": 1768636800000
+      },
+      {
+        "id": 5,
+        "type": "PROJECT_TEAM",
+        "project_id": 3,
+        "created_at": 1780560000000
+      },
+      {
+        "id": 6,
+        "type": "PRIVATE",
+        "project_id": 3,
+        "created_at": 1780732800000
+      },
+      {
+        "id": 7,
+        "type": "PROJECT_TEAM",
+        "project_id": 4,
+        "created_at": 1783584000000
+      },
+      {
+        "id": 8,
+        "type": "PRIVATE",
+        "project_id": 4,
+        "created_at": 1783756800000
+      },
+      {
+        "id": 9,
+        "type": "PRIVATE",
+        "project_id": 5,
+        "created_at": 1785830400000
+      },
+      {
+        "id": 10,
+        "type": "PROJECT_TEAM",
+        "project_id": 6,
+        "created_at": 1772697600000
+      },
+      {
+        "id": 11,
+        "type": "PRIVATE",
+        "project_id": 6,
+        "created_at": 1772870400000
+      },
+      {
+        "id": 12,
+        "type": "PROJECT_TEAM",
+        "project_id": 7,
+        "created_at": 1786608000000
+      },
+      {
+        "id": 13,
+        "type": "PRIVATE",
+        "project_id": 7,
+        "created_at": 1786780800000
+      },
+      {
+        "id": 14,
+        "type": "PROJECT_TEAM",
+        "project_id": 8,
+        "created_at": 1775721600000
+      },
+      {
+        "id": 15,
+        "type": "PRIVATE",
+        "project_id": 8,
+        "created_at": 1775894400000
+      }
+    ],
+    "conversation_participants": [
+      {
+        "id": 1,
+        "conversation_id": 1,
+        "user_id": 1,
+        "active": 1,
+        "joined_at": 1778140800000,
+        "revoked_at": null
+      },
+      {
+        "id": 2,
+        "conversation_id": 1,
+        "user_id": 6,
+        "active": 1,
+        "joined_at": 1778140800000,
+        "revoked_at": null
+      },
+      {
+        "id": 3,
+        "conversation_id": 1,
+        "user_id": 7,
+        "active": 1,
+        "joined_at": 1778140800000,
+        "revoked_at": null
+      },
+      {
+        "id": 4,
+        "conversation_id": 1,
+        "user_id": 8,
+        "active": 1,
+        "joined_at": 1778140800000,
+        "revoked_at": null
+      },
+      {
+        "id": 5,
+        "conversation_id": 2,
+        "user_id": 1,
+        "active": 1,
+        "joined_at": 1778313600000,
+        "revoked_at": null
+      },
+      {
+        "id": 6,
+        "conversation_id": 2,
+        "user_id": 6,
+        "active": 1,
+        "joined_at": 1778313600000,
+        "revoked_at": null
+      },
+      {
+        "id": 7,
+        "conversation_id": 3,
+        "user_id": 2,
+        "active": 1,
+        "joined_at": 1768464000000,
+        "revoked_at": null
+      },
+      {
+        "id": 8,
+        "conversation_id": 3,
+        "user_id": 7,
+        "active": 1,
+        "joined_at": 1768464000000,
+        "revoked_at": null
+      },
+      {
+        "id": 9,
+        "conversation_id": 3,
+        "user_id": 8,
+        "active": 1,
+        "joined_at": 1768464000000,
+        "revoked_at": null
+      },
+      {
+        "id": 10,
+        "conversation_id": 3,
+        "user_id": 9,
+        "active": 1,
+        "joined_at": 1768464000000,
+        "revoked_at": null
+      },
+      {
+        "id": 11,
+        "conversation_id": 4,
+        "user_id": 2,
+        "active": 1,
+        "joined_at": 1768636800000,
+        "revoked_at": null
+      },
+      {
+        "id": 12,
+        "conversation_id": 4,
+        "user_id": 7,
+        "active": 1,
+        "joined_at": 1768636800000,
+        "revoked_at": null
+      },
+      {
+        "id": 13,
+        "conversation_id": 5,
+        "user_id": 3,
+        "active": 1,
+        "joined_at": 1780560000000,
+        "revoked_at": null
+      },
+      {
+        "id": 14,
+        "conversation_id": 5,
+        "user_id": 6,
+        "active": 1,
+        "joined_at": 1780560000000,
+        "revoked_at": null
+      },
+      {
+        "id": 15,
+        "conversation_id": 6,
+        "user_id": 3,
+        "active": 1,
+        "joined_at": 1780732800000,
+        "revoked_at": null
+      },
+      {
+        "id": 16,
+        "conversation_id": 6,
+        "user_id": 6,
+        "active": 1,
+        "joined_at": 1780732800000,
+        "revoked_at": null
+      },
+      {
+        "id": 17,
+        "conversation_id": 7,
+        "user_id": 4,
+        "active": 1,
+        "joined_at": 1783584000000,
+        "revoked_at": null
+      },
+      {
+        "id": 18,
+        "conversation_id": 7,
+        "user_id": 6,
+        "active": 1,
+        "joined_at": 1783584000000,
+        "revoked_at": null
+      },
+      {
+        "id": 19,
+        "conversation_id": 7,
+        "user_id": 9,
+        "active": 1,
+        "joined_at": 1783584000000,
+        "revoked_at": null
+      },
+      {
+        "id": 20,
+        "conversation_id": 8,
+        "user_id": 4,
+        "active": 1,
+        "joined_at": 1783756800000,
+        "revoked_at": null
+      },
+      {
+        "id": 21,
+        "conversation_id": 8,
+        "user_id": 6,
+        "active": 1,
+        "joined_at": 1783756800000,
+        "revoked_at": null
+      },
+      {
+        "id": 22,
+        "conversation_id": 9,
+        "user_id": 5,
+        "active": 1,
+        "joined_at": 1785830400000,
+        "revoked_at": null
+      },
+      {
+        "id": 23,
+        "conversation_id": 9,
+        "user_id": 9,
+        "active": 1,
+        "joined_at": 1785830400000,
+        "revoked_at": null
+      },
+      {
+        "id": 24,
+        "conversation_id": 10,
+        "user_id": 2,
+        "active": 1,
+        "joined_at": 1772697600000,
+        "revoked_at": null
+      },
+      {
+        "id": 25,
+        "conversation_id": 10,
+        "user_id": 10,
+        "active": 1,
+        "joined_at": 1772697600000,
+        "revoked_at": null
+      },
+      {
+        "id": 26,
+        "conversation_id": 11,
+        "user_id": 2,
+        "active": 1,
+        "joined_at": 1772870400000,
+        "revoked_at": null
+      },
+      {
+        "id": 27,
+        "conversation_id": 11,
+        "user_id": 10,
+        "active": 1,
+        "joined_at": 1772870400000,
+        "revoked_at": null
+      },
+      {
+        "id": 28,
+        "conversation_id": 12,
+        "user_id": 5,
+        "active": 1,
+        "joined_at": 1786608000000,
+        "revoked_at": null
+      },
+      {
+        "id": 29,
+        "conversation_id": 12,
+        "user_id": 7,
+        "active": 1,
+        "joined_at": 1786608000000,
+        "revoked_at": null
+      },
+      {
+        "id": 30,
+        "conversation_id": 12,
+        "user_id": 8,
+        "active": 1,
+        "joined_at": 1786608000000,
+        "revoked_at": null
+      },
+      {
+        "id": 31,
+        "conversation_id": 12,
+        "user_id": 9,
+        "active": 1,
+        "joined_at": 1786608000000,
+        "revoked_at": null
+      },
+      {
+        "id": 32,
+        "conversation_id": 13,
+        "user_id": 5,
+        "active": 1,
+        "joined_at": 1786780800000,
+        "revoked_at": null
+      },
+      {
+        "id": 33,
+        "conversation_id": 13,
+        "user_id": 7,
+        "active": 1,
+        "joined_at": 1786780800000,
+        "revoked_at": null
+      },
+      {
+        "id": 34,
+        "conversation_id": 14,
+        "user_id": 3,
+        "active": 1,
+        "joined_at": 1775721600000,
+        "revoked_at": null
+      },
+      {
+        "id": 35,
+        "conversation_id": 14,
+        "user_id": 1,
+        "active": 1,
+        "joined_at": 1775721600000,
+        "revoked_at": null
+      },
+      {
+        "id": 36,
+        "conversation_id": 14,
+        "user_id": 11,
+        "active": 1,
+        "joined_at": 1775721600000,
+        "revoked_at": null
+      },
+      {
+        "id": 37,
+        "conversation_id": 15,
+        "user_id": 3,
+        "active": 1,
+        "joined_at": 1775894400000,
+        "revoked_at": null
+      },
+      {
+        "id": 38,
+        "conversation_id": 15,
+        "user_id": 11,
+        "active": 1,
+        "joined_at": 1775894400000,
+        "revoked_at": null
+      }
+    ],
+    "messages": [
+      {
+        "id": 1,
+        "conversation_id": 1,
+        "sender_id": 1,
+        "body": "Welcome to the passyunk kitchen remodel team. Please protect the occupied rooms and post schedule changes here.",
+        "created_at": 1778144400000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 2,
+        "conversation_id": 1,
+        "sender_id": 6,
+        "body": "Materials are confirmed. We will start with fit maple base cabinets and leave a clear access route each evening.",
+        "created_at": 1778234400000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 3,
+        "conversation_id": 1,
+        "sender_id": 7,
+        "body": "I have checked the handoff. Please leave the connections accessible until we have inspected them together.",
+        "created_at": 1778421600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 4,
+        "conversation_id": 1,
+        "sender_id": 6,
+        "body": "Progress photos attached for the walkthrough. Please check the finish and clearances before the next stage.",
+        "created_at": 1778774400000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 5,
+        "conversation_id": 1,
+        "sender_id": 1,
+        "body": "Thanks for documenting the work. I will review the completed scope during Friday's walkthrough.",
+        "created_at": 1778835600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 6,
+        "conversation_id": 2,
+        "sender_id": 1,
+        "body": "Please confirm the arrival window so I can arrange access around school pickup.",
+        "created_at": 1778317200000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 7,
+        "conversation_id": 2,
+        "sender_id": 6,
+        "body": "We can arrive between 8 and 8:30. I will message here if the supplier delivery changes that.",
+        "created_at": 1778320800000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 8,
+        "conversation_id": 3,
+        "sender_id": 2,
+        "body": "Welcome to the cedar park bathroom renovation team. Please protect the occupied rooms and post schedule changes here.",
+        "created_at": 1768467600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 9,
+        "conversation_id": 3,
+        "sender_id": 7,
+        "body": "Materials are confirmed. We will start with install shower valve and drain and leave a clear access route each evening.",
+        "created_at": 1768557600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 10,
+        "conversation_id": 3,
+        "sender_id": 9,
+        "body": "I have checked the handoff. Please leave the connections accessible until we have inspected them together.",
+        "created_at": 1768744800000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 11,
+        "conversation_id": 3,
+        "sender_id": 7,
+        "body": "Progress photos attached for the walkthrough. Please check the finish and clearances before the next stage.",
+        "created_at": 1769097600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 12,
+        "conversation_id": 3,
+        "sender_id": 2,
+        "body": "Thanks for documenting the work. I will review the completed scope during Friday's walkthrough.",
+        "created_at": 1769158800000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 13,
+        "conversation_id": 4,
+        "sender_id": 2,
+        "body": "Please confirm the arrival window so I can arrange access around school pickup.",
+        "created_at": 1768640400000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 14,
+        "conversation_id": 4,
+        "sender_id": 7,
+        "body": "We can arrive between 8 and 8:30. I will message here if the supplier delivery changes that.",
+        "created_at": 1768644000000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 15,
+        "conversation_id": 5,
+        "sender_id": 3,
+        "body": "Welcome to the fishtown cedar deck team. Please protect the occupied rooms and post schedule changes here.",
+        "created_at": 1780563600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 16,
+        "conversation_id": 5,
+        "sender_id": 6,
+        "body": "Materials are confirmed. We will start with replace ledger and joists and leave a clear access route each evening.",
+        "created_at": 1780653600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 17,
+        "conversation_id": 5,
+        "sender_id": 6,
+        "body": "I have checked the handoff. Please leave the connections accessible until we have inspected them together.",
+        "created_at": 1780840800000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 18,
+        "conversation_id": 5,
+        "sender_id": 6,
+        "body": "Progress photos attached for the walkthrough. Please check the finish and clearances before the next stage.",
+        "created_at": 1781193600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 19,
+        "conversation_id": 5,
+        "sender_id": 3,
+        "body": "Thanks for documenting the work. I will review the completed scope during Friday's walkthrough.",
+        "created_at": 1781254800000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 20,
+        "conversation_id": 6,
+        "sender_id": 3,
+        "body": "Please confirm the arrival window so I can arrange access around school pickup.",
+        "created_at": 1780736400000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 21,
+        "conversation_id": 6,
+        "sender_id": 6,
+        "body": "We can arrive between 8 and 8:30. I will message here if the supplier delivery changes that.",
+        "created_at": 1780740000000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 22,
+        "conversation_id": 7,
+        "sender_id": 4,
+        "body": "Welcome to the mount airy attic framing team. Please protect the occupied rooms and post schedule changes here.",
+        "created_at": 1783587600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 23,
+        "conversation_id": 7,
+        "sender_id": 6,
+        "body": "Materials are confirmed. We will start with frame office partition and leave a clear access route each evening.",
+        "created_at": 1783677600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 24,
+        "conversation_id": 7,
+        "sender_id": 6,
+        "body": "I have checked the handoff. Please leave the connections accessible until we have inspected them together.",
+        "created_at": 1783864800000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 25,
+        "conversation_id": 7,
+        "sender_id": 6,
+        "body": "Progress photos attached for the walkthrough. Please check the finish and clearances before the next stage.",
+        "created_at": 1784217600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 26,
+        "conversation_id": 7,
+        "sender_id": 4,
+        "body": "Thanks for documenting the work. I will review the completed scope during Friday's walkthrough.",
+        "created_at": 1784278800000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 27,
+        "conversation_id": 8,
+        "sender_id": 4,
+        "body": "Please confirm the arrival window so I can arrange access around school pickup.",
+        "created_at": 1783760400000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 28,
+        "conversation_id": 8,
+        "sender_id": 6,
+        "body": "We can arrive between 8 and 8:30. I will message here if the supplier delivery changes that.",
+        "created_at": 1783764000000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 29,
+        "conversation_id": 9,
+        "sender_id": 5,
+        "body": "The roof leak is resolved. Can you assess the plaster before we agree on the finish?",
+        "created_at": 1785841200000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 30,
+        "conversation_id": 9,
+        "sender_id": 9,
+        "body": "Yes. I will check adhesion and moisture first, then confirm which areas need boarding rather than a skim coat.",
+        "created_at": 1785920400000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 31,
+        "conversation_id": 9,
+        "sender_id": 5,
+        "body": "Tuesday morning works. Please use the side entrance; the hallway trim is original.",
+        "created_at": 1785931200000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 32,
+        "conversation_id": 10,
+        "sender_id": 2,
+        "body": "Welcome to the cedar park oak floor restoration team. Please protect the occupied rooms and post schedule changes here.",
+        "created_at": 1772701200000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 33,
+        "conversation_id": 10,
+        "sender_id": 10,
+        "body": "Materials are confirmed. We will start with replace damaged oak boards and leave a clear access route each evening.",
+        "created_at": 1772791200000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 34,
+        "conversation_id": 10,
+        "sender_id": 10,
+        "body": "I have checked the handoff. Please leave the connections accessible until we have inspected them together.",
+        "created_at": 1772978400000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 35,
+        "conversation_id": 10,
+        "sender_id": 10,
+        "body": "Progress photos attached for the walkthrough. Please check the finish and clearances before the next stage.",
+        "created_at": 1773331200000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 36,
+        "conversation_id": 10,
+        "sender_id": 2,
+        "body": "Thanks for documenting the work. I will review the completed scope during Friday's walkthrough.",
+        "created_at": 1773392400000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 37,
+        "conversation_id": 11,
+        "sender_id": 2,
+        "body": "Please confirm the arrival window so I can arrange access around school pickup.",
+        "created_at": 1772874000000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 38,
+        "conversation_id": 11,
+        "sender_id": 10,
+        "body": "We can arrive between 8 and 8:30. I will message here if the supplier delivery changes that.",
+        "created_at": 1772877600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 39,
+        "conversation_id": 12,
+        "sender_id": 5,
+        "body": "Welcome to the fairmount utility room coordination team. Please protect the occupied rooms and post schedule changes here.",
+        "created_at": 1786611600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 40,
+        "conversation_id": 12,
+        "sender_id": 7,
+        "body": "Materials are confirmed. We will start with move laundry shutoff valves and leave a clear access route each evening.",
+        "created_at": 1786701600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 41,
+        "conversation_id": 12,
+        "sender_id": 8,
+        "body": "I have checked the handoff. Please leave the connections accessible until we have inspected them together.",
+        "created_at": 1786888800000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 42,
+        "conversation_id": 12,
+        "sender_id": 7,
+        "body": "Progress photos attached for the walkthrough. Please check the finish and clearances before the next stage.",
+        "created_at": 1787241600000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 43,
+        "conversation_id": 12,
+        "sender_id": 5,
+        "body": "Thanks for documenting the work. I will review the completed scope during Friday's walkthrough.",
+        "created_at": 1787302800000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 44,
+        "conversation_id": 13,
+        "sender_id": 5,
+        "body": "Please confirm the arrival window so I can arrange access around school pickup.",
+        "created_at": 1786784400000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 45,
+        "conversation_id": 13,
+        "sender_id": 7,
+        "body": "We can arrive between 8 and 8:30. I will message here if the supplier delivery changes that.",
+        "created_at": 1786788000000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 46,
+        "conversation_id": 14,
+        "sender_id": 3,
+        "body": "Welcome to the fishtown exterior water repairs team. Please protect the occupied rooms and post schedule changes here.",
+        "created_at": 1775725200000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 47,
+        "conversation_id": 14,
+        "sender_id": 11,
+        "body": "Materials are confirmed. We will start with repoint rear brick joints and leave a clear access route each evening.",
+        "created_at": 1775815200000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 48,
+        "conversation_id": 14,
+        "sender_id": 1,
+        "body": "I have checked the handoff. Please leave the connections accessible until we have inspected them together.",
+        "created_at": 1776002400000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 49,
+        "conversation_id": 14,
+        "sender_id": 11,
+        "body": "Progress photos attached for the walkthrough. Please check the finish and clearances before the next stage.",
+        "created_at": 1776355200000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 50,
+        "conversation_id": 14,
+        "sender_id": 3,
+        "body": "Thanks for documenting the work. I will review the completed scope during Friday's walkthrough.",
+        "created_at": 1776416400000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 51,
+        "conversation_id": 15,
+        "sender_id": 3,
+        "body": "Please confirm the arrival window so I can arrange access around school pickup.",
+        "created_at": 1775898000000,
+        "edited_at": null,
+        "removed_at": null
+      },
+      {
+        "id": 52,
+        "conversation_id": 15,
+        "sender_id": 11,
+        "body": "We can arrive between 8 and 8:30. I will message here if the supplier delivery changes that.",
+        "created_at": 1775901600000,
+        "edited_at": null,
+        "removed_at": null
+      }
+    ]
+  }
+}
