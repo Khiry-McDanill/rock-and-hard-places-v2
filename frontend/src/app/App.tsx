@@ -10,6 +10,7 @@ import { Opportunities, OpportunityDetail, MyBids } from "../features/work";
 import { Messages } from "../features/messages";
 import { Portrait, Empty, productError } from "../components/ui";
 import { AppShell } from "../components/AppShell";
+import { InspirationPage } from "../features/public/InspirationPage";
 import { Homepage } from "../features/public/Homepage";
 import { accountKey, queryClient } from "./query";
 
@@ -21,7 +22,7 @@ export function useRoleTheme(profile: Profile) {
 }
 
 export function App() {
-  return <Routes><Route path="/" element={<Homepage />} /><Route path="*" element={<WorkspaceApp />} /></Routes>;
+  return <Routes><Route path="/" element={<Homepage />} /><Route path="/ideas/:slug" element={<InspirationPage />} /><Route path="/ideas/*" element={<InspirationPage />} /><Route path="*" element={<WorkspaceApp />} /></Routes>;
 }
 
 function WorkspaceApp() {
