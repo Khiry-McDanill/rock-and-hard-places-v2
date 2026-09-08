@@ -101,16 +101,18 @@ final class ApiDtos {
                 team.getTradesperson().getId(), team.getTradesperson().getDisplayName(), team.getStatus(),
                 team.getProjectTeamTrades().stream().map(t -> t.getTrade().getName()).toList()); }
     }
-    record ConversationResponse(Long id, Long projectId, ConversationType type, Instant createdAt) {
-        static ConversationResponse from(Conversation c) { return new ConversationResponse(c.getId(),
-                c.getProject().getId(), c.getType(), c.getCreatedAt()); }
+    record ParticipantResponse(Long userId, String displayName, List<String> trades) {}
+    record ConversationResponse(Long id, Long projectId, ConversationType type, Instant createdAt,
+            List<ParticipantResponse> participants) {
+        static ConversationResponse from(Conversation c, List<ParticipantResponse> participants) { return new ConversationResponse(c.getId(),
+                c.getProject().getId(), c.getType(), c.getCreatedAt(), participants); }
     }
     record MessageRequest(@NotNull String body) {}
     record MessageResponse(Long id, Long conversationId, Long senderId, String body, Instant createdAt,
-            Instant editedAt, boolean removed) {
-        static MessageResponse from(Message m) { return new MessageResponse(m.getId(),
+            Instant editedAt, boolean removed, String senderDisplayName, List<String> senderTrades) {
+        static MessageResponse from(Message m, ParticipantResponse sender) { return new MessageResponse(m.getId(),
                 m.getConversation().getId(), m.getSender().getId(), m.isRemoved() ? null : m.getBody(),
-                m.getCreatedAt(), m.getEditedAt(), m.isRemoved()); }
+                m.getCreatedAt(), m.getEditedAt(), m.isRemoved(), sender.displayName(), sender.trades()); }
     }
     record ReviewRequest(@NotNull Long tradespersonId, @NotNull Long projectId, Long taskId,
             @NotNull ReviewLevel level, @NotNull @jakarta.validation.constraints.Min(1)

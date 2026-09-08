@@ -15,12 +15,13 @@ class CommunicationController {
     private final ConversationRepository conversations;
     private final MessageRepository messages;
     private final CommunicationService communication;
+    private final CommunicationResponseMapper responses;
 
     CommunicationController(ActiveAccountContext account, ApiAccessService access,
             ConversationRepository conversations, MessageRepository messages,
-            CommunicationService communication) {
+            CommunicationService communication, CommunicationResponseMapper responses) {
         this.account = account; this.access = access; this.conversations = conversations;
-        this.messages = messages; this.communication = communication;
+        this.messages = messages; this.communication = communication; this.responses = responses;
     }
 
     @GetMapping("/api/projects/{projectId}/conversations")
@@ -28,21 +29,21 @@ class CommunicationController {
         Project project = access.project(projectId, account.activeProfile());
         return conversations.findByProjectOrderByCreatedAt(project).stream()
                 .filter(c -> communication.canAccess(c, account.currentUser()))
-                .map(ApiDtos.ConversationResponse::from).toList();
+                .map(responses::conversation).toList();
     }
 
     @GetMapping("/api/conversations/{conversationId}/messages")
     List<ApiDtos.MessageResponse> messages(@PathVariable Long conversationId) {
         Conversation conversation = conversation(conversationId);
         return messages.findByConversationOrderByCreatedAt(conversation).stream()
-                .map(ApiDtos.MessageResponse::from).toList();
+                .map(responses::message).toList();
     }
 
     @PostMapping("/api/conversations/{conversationId}/messages")
     @ResponseStatus(HttpStatus.CREATED)
     ApiDtos.MessageResponse send(@PathVariable Long conversationId,
             @Valid @RequestBody ApiDtos.MessageRequest request) {
-        return ApiDtos.MessageResponse.from(communication.send(conversation(conversationId),
+        return responses.message(communication.send(conversation(conversationId),
                 account.currentUser(), request.body()));
     }
 

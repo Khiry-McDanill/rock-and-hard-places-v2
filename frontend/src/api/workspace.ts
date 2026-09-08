@@ -1,6 +1,12 @@
 import { request, personDisplayName } from "./client";
 import type { Project, Task, Team, Bid, Profile } from "./types";
+export interface ConversationParticipant {
+  userId: number;
+  displayName: string | null;
+  trades: string[];
+}
 export interface Conversation {
+  participants: ConversationParticipant[];
   id: number;
   projectId: number;
   type: string;
@@ -9,6 +15,8 @@ export interface Conversation {
 export interface Message {
   id: number;
   senderId: number;
+  senderDisplayName: string | null;
+  senderTrades: string[];
   body: string | null;
   createdAt: string;
   removed: boolean;
