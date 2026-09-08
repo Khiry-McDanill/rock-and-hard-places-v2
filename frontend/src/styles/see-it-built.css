@@ -1,0 +1,57 @@
+.see-it-built { padding-block: 56px; background: #e7e3d9; }
+.built-provenance { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+.built-provenance > span { font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; color: #974821; border: 1px solid #b9a18d; padding: 6px 10px; }
+.built-provenance p { margin: 0; font-size: .8rem; color: var(--muted); }
+.built-provenance a { color: #974821; text-decoration: underline; text-underline-offset: 3px; }
+.built-stage-window { position: relative; aspect-ratio: 2; overflow: hidden; background: #243b3c; }
+.built-stage-window > img { display: block; position: absolute; top: 0; left: 0; width: 100%; object-fit: fill; }
+.built-visual figcaption { display: flex; gap: 24px; padding: 17px 20px; background: #243b3c; color: var(--sand); font-size: .8rem; }
+.built-visual figcaption strong { min-width: 44px; color: #dd9c70; }
+.built-stage-controls { display: flex; justify-content: center; gap: 8px; margin: 18px 0 36px; }
+.built-stage-controls button { min-width: 100px; min-height: 44px; padding: 10px 22px; background: transparent; color: var(--charcoal); border: 1px solid #b9a18d; font-size: .8rem; }
+.built-stage-controls button[aria-pressed="true"] { background: #243b3c; border-color: #243b3c; color: var(--sand); }
+.built-direction { display: grid; grid-template-columns: 1.15fr 1fr; gap: 8%; margin-bottom: 36px; }
+.built-direction h3 { font-size: 2rem; margin-bottom: 18px; }
+.built-direction > div:last-child h3 { font-size: 1.45rem; }
+.built-direction p { font-size: .9rem; color: var(--muted); max-width: 54ch; }
+.built-direction ul { list-style: none; padding: 0; margin: 0; }
+.built-direction li { display: grid; grid-template-columns: 145px 1fr; gap: 16px; padding: 12px 0; border-top: 1px solid #b9b0a2; font-size: .8rem; }
+.built-direction li span { color: var(--muted); }
+.built-team { border-top: 1px solid #b9b0a2; padding-top: 28px; }
+.built-team > h3 { font-size: 1.8rem; margin-bottom: 14px; }
+.built-team > p { font-size: .85rem; color: var(--muted); }
+.built-collaborators { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 30px; margin-top: 28px; }
+.built-person { display: grid; grid-template-columns: 80px 1fr; gap: 18px; align-items: start; }
+.built-person .portrait { width: 80px; height: 96px; border-radius: 2px; overflow: hidden; }
+.built-person .portrait img { width: 100%; height: 100%; object-fit: cover; }
+.built-person h4 { font: 600 1.25rem/1.2 var(--font-display); margin: 0 0 8px; }
+.built-person p { font-size: .75rem; color: var(--muted); margin-bottom: 10px; }
+.built-person .built-person-trade { color: #974821; font-weight: 600; }
+.built-person a { display: inline-block; font-size: .8rem; padding-block: 8px; color: #974821; text-decoration: underline; text-underline-offset: 4px; }
+.built-people-status { font-size: .85rem; }
+.built-people-status button { font-size: .8rem; background: transparent; border-color: #974821; color: #974821; }
+.built-cta { display: flex; align-items: center; justify-content: space-between; gap: 24px; border-top: 1px solid #b9b0a2; padding-top: 26px; margin-top: 30px; }
+.built-cta p { font: 1.65rem var(--font-display); margin: 0; }
+.built-media-unavailable { color: var(--sand); padding: 30px; }
+@media(max-width:1000px) {
+  .built-collaborators { gap: 24px; }
+  .built-person { grid-template-columns: 64px 1fr; gap: 12px; }
+  .built-person .portrait { width: 64px; height: 80px; }
+  .built-direction li { grid-template-columns: 1fr; gap: 4px; }
+}
+@media(max-width:600px) {
+  .see-it-built { padding-block: 40px; }
+  .built-provenance { display: block; }
+  .built-provenance > span { display: inline-block; margin-bottom: 10px; }
+  .built-stage-window { aspect-ratio: 2; }
+  .built-visual figcaption { display: block; padding: 14px; }
+  .built-visual figcaption strong { display: block; margin-bottom: 6px; }
+  .built-stage-controls button { min-width: 0; flex: 1; padding-inline: 12px; }
+  .built-direction { grid-template-columns: 1fr; gap: 24px; }
+  .built-collaborators { grid-template-columns: 1fr; gap: 26px; }
+  .built-person { grid-template-columns: 80px 1fr; gap: 18px; }
+  .built-person .portrait { width: 80px; height: 96px; }
+  .built-person a { min-height: 44px; }
+  .built-cta { display: block; }
+  .built-cta .public-button { margin-top: 18px; }
+}

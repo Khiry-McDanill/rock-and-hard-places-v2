@@ -1,3 +1,5 @@
+import "./collaboratorPortfolio.test";
+import "./seeItBuilt.test";
 import "./inspiration.test";
 import { resolvePortfolioMedia, storyStages } from "../src/components/seedMedia";
 import { PortfolioCard } from "../src/components/PortfolioCard";

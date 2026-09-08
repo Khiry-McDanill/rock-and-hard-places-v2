@@ -1,0 +1,22 @@
+{
+  "tool": "Built-in image_gen",
+  "purpose": "Fictional self-reported outside-work demo imagery; not documentation of actual work or See It Built stories.",
+  "images": [
+    {
+      "file": "compact-built-in-storage.png",
+      "prompt": "Photorealistic natural portfolio photograph of a small residential study's fitted birch plywood storage wall, low cabinets with inset doors and clean reveals, open shelves and a compact built-in desk, visible joinery and finished edges. Focus on skilled compact cabinetry and finish carpentry. Daylight, believable modest lived-in Philadelphia rowhouse, no people, no text, no logos. Single landscape photograph, not collage. Fictional demo work, distinct from RV or inspiration concept."
+    },
+    {
+      "file": "timber-workbench-storage.png",
+      "prompt": "Photorealistic natural portfolio photograph of a sturdy timber workbench with carefully joined posts and rails, fitted lower storage and a timber wall storage rack in a modest residential workshop. Focus on structural timber connections, framing and useful fitted woodwork. Soft daylight, real wood grain and believable craftsmanship, no people, no text, no logos. Single landscape photograph, not collage. Fictional independent demo commission."
+    },
+    {
+      "file": "workshop-lighting-power.png",
+      "prompt": "Photorealistic natural portfolio photograph focusing on a modest residential workshop electrical upgrade: two linear ceiling LED fixtures illuminate a clean utility workspace, neatly aligned metal surface conduit runs to covered duplex outlets above a simple utility counter, closed small electrical panel on wall. Electrical fixtures and conduit prominently visible. No exposed live wires, no people, no text, no logos. Single landscape photograph, not collage. Fictional independent demo work."
+    },
+    {
+      "file": "studio-plaster-finish.png",
+      "prompt": "Photorealistic natural portfolio photograph of a small residential studio with newly finished smooth plaster walls and crisp drywall window returns, soft side daylight revealing flat even surfaces, one small protected work area with finishing trowel and joint compound pan. Focus on plaster repair and wall finishing craftsmanship, modest believable room, no people, no text, no logos. Single landscape photograph, not collage. Fictional independent demo commission."
+    }
+  ]
+}

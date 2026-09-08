@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DemoDataSeeder implements ApplicationRunner {
     static final String VERSION = "rhp-023-v1";
     static final String WINDOW_RETURNS_VERSION = "rhp-025-window-returns-carpentry-v1";
+    static final String COLLABORATOR_PORTFOLIO_VERSION = "rhp-029-collaborator-portfolio-v1";
     private final EntityManager em;
     private final JdbcTemplate jdbc;
     private final BidSubmissionService bidding;
@@ -60,6 +61,7 @@ public class DemoDataSeeder implements ApplicationRunner {
         if (jdbc.queryForObject("SELECT COUNT(*) FROM demo_seed_versions WHERE version = ?",
                 Integer.class, VERSION) != 0) {
             seedWindowReturnsCarpentry();
+            seedCollaboratorPortfolios();
             return;
         }
         List<Runnable> history = new ArrayList<>();
@@ -151,7 +153,40 @@ public class DemoDataSeeder implements ApplicationRunner {
         history.forEach(Runnable::run);
         jdbc.update("INSERT INTO demo_seed_versions(version) VALUES (?)", VERSION);
         seedWindowReturnsCarpentry();
+        seedCollaboratorPortfolios();
         em.clear();
+    }
+
+    /** Independent outside-work history; never linked to editorial inspiration or platform projects. */
+    private void seedCollaboratorPortfolios() {
+        if (jdbc.queryForObject("SELECT COUNT(*) FROM demo_seed_versions WHERE version = ?",
+                Integer.class, COLLABORATOR_PORTFOLIO_VERSION) != 0) return;
+        String[][] examples = {
+            {"owen-price", "Carpentry", "Compact built-in storage", "Fitted low cabinets, shelving and a compact desk for a small residential study, with clean reveals and finished plywood edges.", "compact-built-in-storage", "2025-09-18"},
+            {"caleb-morgan", "Carpentry", "Timber workbench and storage wall", "Built a timber workbench with joined posts and rails, lower storage and a wall rack for a home workshop.", "timber-workbench-storage", "2025-10-09"},
+            {"marcus-reed", "Electrical", "Workshop lighting and power upgrade", "Installed workshop LED lighting, surface conduit and accessible counter outlets with a dedicated circuit layout.", "workshop-lighting-power", "2025-11-06"},
+            {"sofia-nguyen", "Drywall", "Small studio plaster and wall finish", "Repaired plaster, finished drywall window returns and blended the wall surfaces in a small residential studio.", "studio-plaster-finish", "2025-12-04"}
+        };
+        for (String[] example : examples) {
+            var owners = em.createQuery("select t from Tradesperson t where t.user.email = :email", Tradesperson.class)
+                    .setParameter("email", example[0] + "@demo.rockandhardplaces.local").getResultList();
+            if (owners.isEmpty()) continue;
+            Tradesperson owner = owners.get(0);
+            // Do not restore removed qualifications or overwrite customized accounts/history.
+            if (owner.getAccountStatus() != AccountStatus.ACTIVE || jdbc.queryForObject(
+                    "SELECT COUNT(*) FROM person_trades pt JOIN trades tr ON tr.id = pt.trade_id WHERE pt.tradesperson_id = ? AND tr.name = ?",
+                    Integer.class, owner.getId(), example[1]) == 0) continue;
+            if (jdbc.queryForObject("SELECT COUNT(*) FROM portfolio_items WHERE tradesperson_id = ? AND title = ?",
+                    Integer.class, owner.getId(), example[2]) != 0) continue;
+            PortfolioItem item = portfolio.create(owner, example[2], example[3]
+                    + " Self-reported work performed outside RH&P; fictional demo history with illustrative imagery.",
+                    PortfolioProvenance.SELF_REPORTED, null, null, LocalDate.parse(example[5]));
+            item.setMediaReference("/seed-media/portfolios/rhp-029/" + example[4] + ".png");
+            em.flush();
+            jdbc.update("UPDATE portfolio_items SET created_at = ? WHERE id = ?",
+                    Instant.parse("2026-01-07T12:00:00Z").toEpochMilli(), item.getId());
+        }
+        jdbc.update("INSERT INTO demo_seed_versions(version) VALUES (?)", COLLABORATOR_PORTFOLIO_VERSION);
     }
 
     private void seedWindowReturnsCarpentry() {

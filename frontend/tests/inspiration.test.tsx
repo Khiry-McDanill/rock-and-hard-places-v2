@@ -74,7 +74,7 @@ test('all 24 concepts contain complete editorial direction without business prov
       assert.ok(concept.designNotes.length >= 2);
       assert.deepEqual(concept.buildStages.map(stage => stage.label), [...buildStageLabels]);
       assert.ok(concept.buildStages.every(stage => stage.description.length > 20));
-      assert.deepEqual(Object.keys(concept).sort(), ['key', 'category', 'title', 'subtype', 'description', 'narrative', 'conceptGoals', 'possibleTrades', 'buildStages', 'designNotes', 'materialDirection', 'systemsConsiderations', 'visual'].sort());
+      assert.deepEqual(Object.keys(concept).filter(key => key !== "seeItBuilt").sort(), ['key', 'category', 'title', 'subtype', 'description', 'narrative', 'conceptGoals', 'possibleTrades', 'buildStages', 'designNotes', 'materialDirection', 'systemsConsiderations', 'visual'].sort());
       assert.doesNotMatch(JSON.stringify(concept), /seed-media|verified|completed project|completion date/i);
     }
   }

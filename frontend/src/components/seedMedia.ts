@@ -106,7 +106,7 @@ export const seedPortfolios = [
 /** RH&P work shares the project registry; external work never acquires project media by title. */
 export function resolvePortfolioMedia(
   name: string,
-  item: { title: string; provenance: string },
+  item: { title: string; provenance: string; mediaReference?: string | null },
   delivered: readonly ProjectMediaFrame[] = [],
 ): WorkMedia {
   const actual = delivered.filter((image) => deliveredMediaUrl(image.url));
@@ -114,6 +114,11 @@ export function resolvePortfolioMedia(
     source: 'delivered', frames: actual,
     cover: actual.find((image) => image.stage === 'Completed') ?? actual.at(-1),
   };
+  const reference = deliveredMediaUrl(item.mediaReference);
+  if (reference && item.provenance !== 'RHP_VERIFIED') {
+    const image = { url: reference, alt: item.title, caption: 'Work photo' };
+    return { source: 'delivered', frames: [image], cover: image };
+  }
   if (item.provenance === 'RHP_VERIFIED') {
     // Only a coherent, registered project story can represent platform work.
     const known = seedProjectStories.find((title) => title === item.title);
