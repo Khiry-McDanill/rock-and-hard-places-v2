@@ -3,8 +3,8 @@ import { Link } from "react-router";
 import { Brand } from "../../components/Brand";
 
 const inspiration = [
-  { title: "Homes", detail: "Restore. Renovate. Reimagine.", image: "/images/kitchen-remodel.png" },
-  { title: "Barns", detail: "Old character. New purpose.", image: "/images/build-inspiration.png" },
+  { title: "Homes", detail: "Restore. Renovate. Reimagine." },
+  { title: "Barns", detail: "Old character. New purpose." },
   { title: "RVs", detail: "Make room for the open road." },
   { title: "Buses / Skoolies", detail: "A different way to feel at home." },
   { title: "Tiny Homes", detail: "Small footprint. Big possibility." },
@@ -13,13 +13,15 @@ const inspiration = [
   { title: "And Beyond", detail: "Your idea defines the project." },
 ];
 
-/** Lightweight architectural sketches, replaceable by dedicated category photography. */
+/** Shared architectural sketches for the homepage inspiration categories. */
 function BuildSketch({ kind }: { kind: string }) {
   return <svg className="build-sketch" viewBox="0 0 320 230" fill="none" aria-hidden="true">
     <circle cx="256" cy="48" r="25" fill="#C56A3D" opacity=".65" />
     <path d="M0 191 66 157l57 22 80-34 117 46v39H0Z" fill="#5B6B4F" opacity=".35" />
     <g stroke="#F5EFE6" strokeWidth="2" strokeLinejoin="round">
-      {kind === "RVs" ? <><path d="M57 166V112q0-38 40-38h114q41 0 47 40l8 52Z" fill="#aeb4a8" /><path d="M83 94h46v34H83zm66 0h44v34h-44zm64 4h27l9 30h-36M165 166v-28h29v28M56 146h208" /></> :
+      {kind === "Homes" ? <><path d="m54 116 74-61 74 61h-17l-57-46-57 46Z" fill="#C56A3D" /><path d="m185 116-30-25h75l35 25Z" fill="#C56A3D" /><path d="M71 116v65h179v-65M185 116v65M91 126h27v28H91zm0 14h27m-14-14v28M136 181v-55h30v55M205 130h26v24h-26M63 181h195" /></> :
+      kind === "Barns" ? <><path d="m55 117 30-48 66-25 65 25 30 48h-15l-26-38-54-21-55 21-26 38Z" fill="#C56A3D" /><path d="M70 117v64h161v-64M112 181v-65h78v65Zm0-65 78 65m0-65-78 65m39-65v65M137 78h28v23h-28ZM84 126v43m14-43v43m105-43v43m14-43v43M61 181h179" /></> :
+      kind === "RVs" ? <><path d="M57 166V112q0-38 40-38h114q41 0 47 40l8 52Z" fill="#aeb4a8" /><path d="M83 94h46v34H83zm66 0h44v34h-44zm64 4h27l9 30h-36M165 166v-28h29v28M56 146h208" /></> :
       kind === "Buses / Skoolies" ? <><path d="M43 163V88q0-10 12-10h189l28 40v45Z" fill="#aa733f" /><path d="M59 94h28v29H59zm41 0h28v29h-28zm41 0h28v29h-28zm41 0h28v29h-28zm43 0h14l21 29h-35M44 140h171M225 163v-31h35v31" /></> :
       kind === "Tiny Homes" ? <><path d="m68 113 80-68 99 68-12 5-87-57-68 57Z" fill="#C56A3D" /><path d="M80 118v63h155v-63M148 61v120M99 131h29v35H99zm67-15h47v65h-47M167 147h46" /></> :
       kind === "Containers" ? <><path d="m50 98 156-26 66 25v83H50Z" fill="#183A5A" /><path d="M50 98h156v82m0-82 66-1M62 111v57m12-57v57m12-57v57m109-57v57M99 115h82v65H99zm40 0v65M220 110l38-1v56l-38 8Z" /></> :
@@ -117,7 +119,7 @@ export function Homepage() {
       </section>
       <div className="public-principles"><p><strong>01 / Plan the build</strong><span>Turn the idea into clear work.</span></p><p><strong>02 / Build your team</strong><span>Find the right people for each part.</span></p><p><strong>03 / See it take shape</strong><span>Follow the work from first task to final review.</span></p></div>
       <section className="inspiration-section public-section" id="inspiration"><div className="public-section-heading"><div><p className="public-eyebrow">Same foundation. A wider world.</p><h2>What do you have in mind?</h2></div><p>A place to live. A space to create. Something no one’s built before. <strong>Your idea defines the project.</strong></p></div><div className="inspiration-grid">{inspiration.map(item => <Link key={item.title} className="inspiration-card" to="/projects/new" aria-label={`Start a project: ${item.title}`}>
-        {item.image ? <img src={item.image} alt="" loading="lazy" /> : <BuildSketch kind={item.title} />}<div><h3>{item.title}<span aria-hidden="true">↗</span></h3><p>{item.detail}</p></div>
+        <BuildSketch kind={item.title} /><div><h3>{item.title}<span aria-hidden="true">↗</span></h3><p>{item.detail}</p></div>
       </Link>)}</div></section>
       <section className="public-process public-section"><p className="public-eyebrow">A little structure. A lot of possibility.</p><h2>From “what if” to well built.</h2><ol>{[["Vision", "Bring the idea."], ["Plan", "Break it into manageable work."], ["People", "Find the right tradespeople."], ["Work", "Coordinate tasks, bids, teams and progress."], ["Completion", "Review the work and finish strong."]].map(([title, copy], i) => <li key={title}><span className="process-number">0{i + 1}<span aria-hidden="true"> →</span></span><h3>{title}</h3><p>{copy}</p></li>)}</ol></section>
       <section className="public-roles public-section" aria-label="A place for both sides of the build"><article id="homeowners"><p className="public-eyebrow">For Homeowners</p><h2>Your vision.<br />The right people.</h2><p>Turn your idea into a project with a clear scope. Find tradespeople, compare bids and build a team you can work with.</p><p>Keep the tasks and progress together, from the first plan to the finishing touches.</p><Link className="public-button" to="/projects/new">Start a Project ↗</Link></article><article id="tradespeople"><p className="public-eyebrow">For Tradespeople</p><h2>Your craft.<br />New possibilities.</h2><p>Find worthwhile opportunities with scope you can understand. Submit bids, join project teams and manage your assigned work.</p><p>Let your work speak for itself. Build your reputation through your portfolio and reviews.</p><Link className="public-button" to="/opportunities">Find Work ↗</Link></article></section>
