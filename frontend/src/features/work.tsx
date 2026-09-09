@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useParams } from "react-router";
-import { api } from "../api/client";
+import { api, request } from "../api/client";
 import type { Profile } from "../api/types";
 import { refreshProfileData } from "../app/query";
 import {
   Empty,
+  words,
   Header,
   MutationNotice,
   State,
   useData,
 } from "../components/ui";
-import { BidCard } from "./projects";
 export function Opportunities({ profile }: { profile: Profile }) {
   const [zip, setZip] = useState("");
   const [trade, setTrade] = useState("");
@@ -25,11 +25,11 @@ export function Opportunities({ profile }: { profile: Profile }) {
   return (
     <>
       <Header eyebrow="Find work" title="Good work starts with clear scope.">
-        Explore open requirements that match your recorded trades.
+        Find open project scopes matching your qualified trades.
       </Header>
       <div className="filters">
         <label>
-          Project ZIP
+          Work ZIP
           <input
             value={zip}
             onChange={(e) => setZip(e.target.value)}
@@ -70,7 +70,7 @@ export function Opportunities({ profile }: { profile: Profile }) {
         </div>
         {query.data?.length === 0 && (
           <Empty title="No matching open scopes right now.">
-            Try another ZIP or check back as homeowners plan new work.
+            Projects without an open trade requirement won’t appear. Try another ZIP or check back for new work.
           </Empty>
         )}
       </State>
@@ -119,7 +119,9 @@ export function OpportunityDetail({ profile }: { profile: Profile }) {
               </section>
               <section className="panel">
                 <h2>Put your skills forward</h2>
-                {query.data.bidding.allowed ? (
+                {query.data.ownBids.length > 0 ? (
+                  <p>Your proposal is shown below. Its status determines the available actions.</p>
+                ) : query.data.bidding.allowed ? (
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
@@ -163,12 +165,7 @@ export function OpportunityDetail({ profile }: { profile: Profile }) {
             </div>
             <h2>Your proposals for this scope</h2>
             {query.data.ownBids.map((bid) => (
-              <BidCard
-                key={bid.id}
-                bid={bid}
-                task={query.data!.task}
-                profile={profile}
-              />
+              <ProposalCard key={bid.id} item={{bid, task: query.data!.task, project: query.data!.project}} />
             ))}
           </>
         )}
@@ -177,31 +174,36 @@ export function OpportunityDetail({ profile }: { profile: Profile }) {
   );
 }
 export function MyBids({ profile }: { profile: Profile }) {
-  const query = useData(profile, "overview", api.tradespersonDashboard);
+  const query = useData(profile, "my-bids", () => request<ProposalSummary[]>("/bids"));
   return (
     <>
       <Header eyebrow="Your proposals" title="My bids">
-        Track your submitted proposals, each tied to a specific piece of work.
+        View your proposals and their history. Edit or withdraw a submitted proposal before a decision.
       </Header>
       <State query={query}>
-        {query.data?.activeBids.map((item) => (
-          <BidCard
-            key={item.bid.id}
-            profile={profile}
-            bid={item.bid}
-            task={item.task}
-          />
+        {query.data?.map((item) => (
+          <ProposalCard key={item.bid.id} item={item} />
         ))}
-        {query.data?.activeBids.length === 0 && (
-          <Empty title="No submitted bids.">
+        {query.data?.length === 0 && (
+          <Empty title="No proposals yet.">
             <Link to="/opportunities">Find your next opportunity →</Link>
           </Empty>
         )}
       </State>
-      <p className="footnote">
-        Your submitted bids appear here. To see accepted, rejected, or withdrawn
-        proposals, open the bids for the project task.
-      </p>
+
     </>
   );
+}
+
+type ProposalSummary = {bid: {id:number;amount:number;message:string|null;status:string;tradespersonId:number};task:{title:string}|null;project:{title:string}|null};
+export function ProposalCard({item}: {item:ProposalSummary}) {
+ const {bid}=item;const [view,setView]=useState(false);const [editing,setEditing]=useState(false);
+ const mutation=useMutation({mutationFn: async (action:{withdraw?:boolean;form?:FormData}) => request(`/bids/${bid.id}${action.withdraw?'/withdraw':''}`,{method:action.withdraw?'POST':'PUT',...(action.form?{body:JSON.stringify({amount:Number(action.form.get('amount')),message:String(action.form.get('message'))})}:{})}),onSuccess:async()=>{setEditing(false);await refreshProfileData();}});
+ return <article className="panel proposal-card"><h2>{item.task?.title || "Proposal history"}</h2><p>{item.project?.title || "Scope details are no longer available."}</p><p>{new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(bid.amount)} · {words(bid.status)}</p>
+ <div className="actions"><button className="secondary" aria-expanded={view} onClick={()=>setView(!view)}>{view?'Close proposal':'View proposal'}</button>
+ {bid.status==='SUBMITTED' && <><button className="secondary" disabled={mutation.isPending} onClick={()=>setEditing(!editing)}>Edit proposal</button><button className="secondary" disabled={mutation.isPending} onClick={()=>{if(window.confirm('Withdraw this proposal? It will remain in your history.'))mutation.mutate({withdraw:true});}}>Withdraw proposal</button></>}</div>
+ {view && <p className="proposal-message">{bid.message || 'No proposal message provided.'}</p>}
+ {editing && bid.status==='SUBMITTED' && <form className="profile-editor" onSubmit={e=>{e.preventDefault();mutation.mutate({form:new FormData(e.currentTarget)});}}><label>Proposal amount (USD)<input name="amount" type="number" min="0.01" step="0.01" max="9999999999.99" defaultValue={bid.amount} required /></label><label>Your proposal<textarea name="message" defaultValue={bid.message || ''} maxLength={2000}/></label><button disabled={mutation.isPending}>Save proposal</button><button className="secondary" type="button" onClick={()=>setEditing(false)}>Cancel</button></form>}
+ {mutation.isError && <p role="alert">Your proposal could not be changed. It may already have a decision. Refresh and try again.</p>}
+ </article>;
 }

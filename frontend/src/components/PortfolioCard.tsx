@@ -1,6 +1,6 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { TrustBadge } from './TrustBadge';
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { Portfolio } from "../api/workspace";
-import { Link } from "react-router";
 import { resolvePortfolioMedia, type ProjectMediaFrame } from "./seedMedia";
 
 const provenance = {
@@ -9,8 +9,9 @@ const provenance = {
   SELF_REPORTED: "Self-reported",
 };
 
-export function PortfolioCard({ item, name, delivered = [] }: {
+export function PortfolioCard({ item, name, delivered = [], ownerActions }: {
   item: Portfolio;
+  ownerActions?: ReactNode;
   name: string;
   // Only portfolio-approved, delivered media may enter this gallery.
   // Attachment IDs from the current endpoint are not deliverable URLs.
@@ -55,7 +56,7 @@ export function PortfolioCard({ item, name, delivered = [] }: {
         aria-label={`View portfolio: ${item.title}`} onClick={() => { setSelected(undefined); setOpen(true); }}>
         {image(cover)}
         <span className="portfolio-card-copy">
-          <span className="provenance">{provenance[item.provenance]}</span>
+          <span className="provenance">{isProject && item.projectId != null ? <TrustBadge kind="project" /> : provenance[item.provenance]}</span>
           <span className="portfolio-card-title">{item.title}</span>
           <span className="portfolio-card-description">{item.description}</span>
           {item.completionDate && <span>Completed <time dateTime={item.completionDate}>{item.completionDate}</time></span>}
@@ -63,6 +64,7 @@ export function PortfolioCard({ item, name, delivered = [] }: {
           <span className="portfolio-card-open">{isProject ? "View project story" : "View work"} <span aria-hidden="true">→</span></span>
         </span>
       </button>
+      {!isProject && ownerActions && <div className="portfolio-owner-actions">{ownerActions}</div>}
       {open && <dialog ref={dialog} className="portfolio-dialog" aria-labelledby={titleId}
         onCancel={() => setOpen(false)} onClose={() => setOpen(false)}>
         <div className="portfolio-dialog-toolbar">
@@ -70,13 +72,10 @@ export function PortfolioCard({ item, name, delivered = [] }: {
           <button autoFocus className="secondary" onClick={() => setOpen(false)} aria-label="Close portfolio detail">Close ×</button>
         </div>
         <div className="portfolio-detail-copy">
-          <p className="provenance">{provenance[item.provenance]}</p>
+          <p className="provenance">{isProject && item.projectId != null ? <TrustBadge kind="project" /> : provenance[item.provenance]}</p>
           <h2 id={titleId}>{item.title}</h2>
           {item.completionDate && <p>Completed <time dateTime={item.completionDate}>{item.completionDate}</time></p>}
           <p className="portfolio-full-description">{item.description}</p>
-          {isProject && item.projectId != null && (
-            <Link to={`/projects/${item.projectId}`}>View RH&amp;P project →</Link>
-          )}
         </div>
         <section className="portfolio-gallery" aria-label={isProject ? "Project stage gallery" : "Work gallery"}>
           {image(current)}

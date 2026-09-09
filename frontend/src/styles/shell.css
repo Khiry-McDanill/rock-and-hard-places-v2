@@ -46,9 +46,9 @@
   padding: 0;
   margin: 1rem 0.8rem 0.4rem;
   color: #b8bcb5;
-  font-size: 0.61rem;
+  font-size: 0.8125rem;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
 }
 .main-nav {
   display: grid;
@@ -59,7 +59,7 @@
   border: 0;
   border-radius: 4px;
   color: #e1e0db;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   gap: 0.65rem;
   min-height: 44px;
 }
@@ -75,7 +75,7 @@
 }
 .shell-note {
   padding: 2rem 0.7rem 0.9rem;
-  font: 400 0.76rem/1.6 var(--font-body);
+  font: 400 0.875rem/1.6 var(--font-body);
   color: #c8c9bd;
 }
 .sidebar-account {
@@ -98,11 +98,11 @@
 .sidebar-account small {
   display: block;
   overflow-wrap: anywhere;
-  font-size: 0.67rem;
+  font-size: 0.875rem;
 }
 .sidebar-account small {
   color: #b9bcb1;
-  font-size: 0.6rem;
+  font-size: 0.875rem;
 }
 .sidebar-switch {
   grid-column: 2;
@@ -111,7 +111,7 @@
   border: none;
   color: #e5c4ab;
   padding: 0;
-  font-size: 0.64rem;
+  font-size: 0.875rem;
   min-height: 32px;
 }
 .account-bar {
@@ -137,21 +137,21 @@
 .account-identity strong {
   display: block;
   overflow-wrap: anywhere;
-  font-size: 0.72rem;
+  font-size: 0.875rem;
   line-height: 1.3;
 }
 .account-identity span:not(.portrait) {
-  font-size: 0.6rem;
+  font-size: 0.875rem;
   color: var(--muted);
 }
 .account-bar label {
-  font-size: 0.59rem;
+  font-size: 0.875rem;
 }
 .account-bar select {
   min-height: 32px;
   margin-top: 0.1rem;
   padding: 0.2rem 0.4rem;
-  font-size: 0.67rem;
+  font-size: 0.875rem;
   background: transparent;
   border-color: #d9cebf;
 }
@@ -197,7 +197,7 @@
     height: auto;
   }
   .mobile-brand .brand-name {
-    font-size: 0.55rem;
+    font-size: 0.75rem;
     margin-top: 0.1rem;
   }
   .account-bar {
@@ -212,18 +212,18 @@
   }
   .account-bar select {
     min-height: 44px;
-    font-size: 0.65rem;
+    font-size: 0.875rem;
   }
   .account-bar .portrait {
     width: 28px;
     height: 28px;
-    font-size: 0.75rem;
+    font-size: 0.875rem;
   }
   .account-identity strong {
-    font-size: 0.65rem;
+    font-size: 0.875rem;
   }
   .account-identity span:not(.portrait) {
-    font-size: 0.57rem;
+    font-size: 0.875rem;
   }
   .workspace > main {
     padding: 0.85rem 1rem 6rem;
@@ -249,7 +249,7 @@
     flex-direction: column;
     gap: 0.25rem;
     min-height: 54px;
-    font-size: 0.59rem;
+    font-size: 0.875rem;
     color: var(--charcoal);
     border: 0;
   }
@@ -268,7 +268,7 @@
 .account-bar .profile-switch-control {
   position: relative;
   flex: 0 0 auto;
-  font-size: 0.64rem;
+  font-size: 0.875rem;
   color: var(--muted);
   padding: 0.4rem 0;
   min-width: 86px;
@@ -314,4 +314,10 @@
   .account-bar {
     min-height: 60px;
   }
+}
+
+@media(max-width:767px) {
+  .account-bar { flex-wrap:wrap; min-height:84px; padding-left:110px; }
+  .account-identity { flex:1 1 8rem; }
+  .mobile-nav a { line-height:1.3; padding-inline:2px; overflow-wrap:anywhere; text-align:center; }
 }

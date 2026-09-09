@@ -5,10 +5,11 @@ import { resolve } from 'node:path';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router';
 import { App } from '../src/app/App';
-import type { Person } from '../src/api/types';
+import { api, ApiError } from '../src/api/client';
+import type { Person, Account } from '../src/api/types';
 import { inspirationCategories } from '../src/features/public/inspirationData';
-import { selectCollaborators } from '../src/features/public/seeItBuiltPeople';
-import { CollaboratorCards } from '../src/features/public/SeeItBuilt';
+import { selectCollaborators, loadSuggestedPeople } from '../src/features/public/seeItBuiltPeople';
+import { CollaboratorCards, PeopleSuggestions } from '../src/features/public/SeeItBuilt';
 
 const person = (id: number, name: string, trade: string, specialty = ''): Person => ({
   profile: { id, displayName: name, role: 'TRADESPERSON', accountStatus: 'ACTIVE', availabilityStatus: 'AVAILABLE_SOON', profileImageReference: null, verificationStatus: null, baseZip: null, serviceRadius: null },
@@ -86,4 +87,40 @@ test('specialty fit uses the person’s specialties, not the trade catalog’s a
   const need = [{ trade: 'Carpentry', contribution: 'Cabinet fitting.', specialtyHints: ['Finish carpentry'] }];
   assert.equal(selectCollaborators([framing, finish], need, 'rvs-2')[0].person, finish);
   assert.equal(selectCollaborators([finish], [...need, ...need], 'rvs-2').length, 1);
+});
+
+const homeownerAccount: Account={userId:1,email:'test@example.invalid',activeRole:'HOMEOWNER',profile:{...person(1,'Homeowner','').profile,role:'HOMEOWNER'},profiles:[]};
+test('suggestions respect active role and only call discovery in active Homeowner context',async t=>{
+  const account=t.mock.method(api,'account',async()=>({...homeownerAccount,activeRole:'TRADESPERSON' as const,profile:person(2,'Worker','Carpentry').profile}));
+  const discovery=t.mock.method(api,'people',async()=>[person(3,'Builder','Carpentry')]);
+  assert.deepEqual(await loadSuggestedPeople(),{status:'homeowner-required'});
+  assert.equal(discovery.mock.callCount(),0);
+  account.mock.mockImplementation(async()=>homeownerAccount);
+  const result=await loadSuggestedPeople();
+  assert.equal(result.status,'ready');assert.equal(discovery.mock.callCount(),1);
+  if(result.status==='ready') assert.equal(result.people[0].profile.id,3);
+});
+test('discovery errors remain failures, while successful empty results mean no matches',async t=>{
+  t.mock.method(api,'account',async()=>homeownerAccount);
+  const discovery=t.mock.method(api,'people',async()=>{throw new ApiError(500,'Unavailable');});
+  const failed=await loadSuggestedPeople();assert.equal(failed.status,'failed');
+  const story=inspirationCategories[1].possibilities[0].seeItBuilt!;
+  const render=(state: Awaited<ReturnType<typeof loadSuggestedPeople>>) => renderToStaticMarkup(<MemoryRouter><PeopleSuggestions state={state} story={story} direction="barns" retry={()=>{}} /></MemoryRouter>);
+  assert.match(render(failed),/Try people again/);assert.doesNotMatch(render(failed),/aren’t matching people/);
+  discovery.mock.mockImplementation(async()=>[]);
+  const empty=await loadSuggestedPeople();assert.equal(empty.status,'ready');
+  assert.match(render(empty),/aren’t matching people/);assert.doesNotMatch(render(empty),/Try people again/);
+});
+test('public inspiration access states are distinct from request failure',async t=>{
+  const account=t.mock.method(api,'account',async()=>{throw new ApiError(401,'Sign in');});
+  const discovery=t.mock.method(api,'people',async()=>[]);
+  assert.deepEqual(await loadSuggestedPeople(),{status:'sign-in-required'});
+  account.mock.mockImplementation(async()=>({...homeownerAccount,profile:{...homeownerAccount.profile,accountStatus:'SUSPENDED' as const}}));
+  assert.deepEqual(await loadSuggestedPeople(),{status:'restricted'});assert.equal(discovery.mock.callCount(),0);
+});
+test('not accepting work and unqualified people cannot become collaborators',()=>{
+  const stopped=person(991,'Unavailable carpenter','Carpentry');stopped.profile.availabilityStatus='NOT_ACCEPTING_WORK';
+  const unqualified=person(992,'No qualification','Carpentry');unqualified.qualifications=[];
+  const story=inspirationCategories[1].possibilities[0].seeItBuilt!;
+  assert.deepEqual(selectCollaborators([stopped,unqualified],story.teamSuggestions,'barns'),[]);
 });

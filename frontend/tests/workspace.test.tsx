@@ -1,3 +1,6 @@
+import "./demoBlockers.test";
+import "./workActions.test";
+import "./professionalProfile.test";
 import "./collaboratorPortfolio.test";
 import "./seeItBuilt.test";
 import "./inspiration.test";
@@ -63,6 +66,8 @@ function shell(profile: Profile) {
 }
 test("role-specific shell uses server identity and exposes mobile navigation", () => {
   const home = shell(homeowner);
+  assert.match(home, /Dashboard/);
+  assert.doesNotMatch(home, />Overview</);
   assert.match(home, /Homeowner/);
   assert.match(home, /Find tradespeople/);
   assert.doesNotMatch(home, /Find work/);
@@ -294,7 +299,7 @@ test("bathroom portfolio never substitutes unrelated media and stays coherent wi
   assert.equal(registered.cover?.url, "/seed-media/projects/cedar-park-bathroom-renovation/completed.jpg");
   assert.deepEqual(projectPresentation(item), registered.cover);
   const html = renderToStaticMarkup(<PortfolioCard item={item} name="Nina Alvarez" />);
-  assert.match(html, /RH&amp;P verified/);
+  assert.match(html, /RH&amp;P project/);
   assert.match(html, /View project story/);
   assert.match(html, /4 stages/);
   assert.match(html, /src="\/seed-media\/projects\/cedar-park-bathroom-renovation\/completed.jpg"/);
@@ -313,6 +318,7 @@ test("bathroom portfolio never substitutes unrelated media and stays coherent wi
 test("profile sections retain portfolio provenance independently of account verification", () => {
   queryClient.clear();
   const profile = { ...tradesperson, displayName: "Leah Bennett" };
+  queryClient.setQueryData(profileKey(profile, `professional-profile-${profile.id}`), {profile,identity:{presentation:"PERSON_FIRST"},business:null,qualifications:[],specialties:[],credentials:[]});
   const base = { description: "Published work", completionDate: null, approvedAttachmentIds: [], projectId: null, taskId: null };
   queryClient.setQueryData(profileKey(profile, `person-${profile.id}`), profile);
   queryClient.setQueryData(profileKey(profile, "people"), []);
@@ -327,7 +333,7 @@ test("profile sections retain portfolio provenance independently of account veri
   assert.match(html, /Work with a story/);
   const platform = html.slice(html.indexOf('aria-label="RH&amp;P Projects"'), html.indexOf('aria-label="External Portfolio"'));
   const external = html.slice(html.indexOf('aria-label="External Portfolio"'));
-  assert.match(platform, /RH&amp;P verified/);
+  assert.match(platform, /RH&amp;P project/);
   assert.doesNotMatch(platform, /Germantown|Self-reported/);
   assert.match(external, /Externally verified/);
   assert.match(external, /Self-reported/);

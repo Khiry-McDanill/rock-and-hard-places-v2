@@ -174,7 +174,7 @@ function TeamList({ team }: { team: Team[] }) {
     <>
       {team.map((member) => (
         <article className="person-row" key={member.id}>
-          <Portrait name={member.displayName} />
+          <Portrait name={member.displayName} reference={member.profileImageReference} />
           <div>
             <h3>{member.displayName}</h3>
             <p>Membership: {words(member.status)}</p>

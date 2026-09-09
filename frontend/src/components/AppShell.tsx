@@ -39,14 +39,14 @@ function Navigation({
   const home = profile.role === "HOMEOWNER";
   const items = home
     ? [
-        ["/overview", "Overview"],
+        ["/overview", "Dashboard"],
         ["/projects", mobile ? "Projects" : "My projects"],
         ["/people", mobile ? "Find people" : "Find tradespeople"],
         ["/messages", "Messages"],
         ["/profile", mobile ? "Profile" : "My profile"],
       ]
     : [
-        ["/overview", "Overview"],
+        ["/overview", "Dashboard"],
         ["/work", "My work"],
         ["/opportunities", "Find work"],
         ...(!mobile ? [["/bids", "My bids"]] : []),

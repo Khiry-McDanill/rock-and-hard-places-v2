@@ -1,3 +1,4 @@
+import { ProfessionalProfile, ExternalPortfolio } from "./professionalProfile";
 import { useState } from "react";
 import { PortfolioCard } from "../components/PortfolioCard";
 import "../styles/portfolio.css";
@@ -158,67 +159,27 @@ export function PersonProfile({
 }) {
   const { personId } = useParams();
   const id = own ? profile.id : Number(personId);
+  const canManage = profile.role === "TRADESPERSON" && profile.id === id;
   const person = useData(profile, `person-${id}`, (signal) =>
-    own ? Promise.resolve(profile) : workspaceApi.person(id, signal),
+    own && profile.role === "HOMEOWNER" ? Promise.resolve(profile) : workspaceApi.person(id, signal),
   );
-  const people = useData(profile, "people", (signal) =>
-    profile.role === "HOMEOWNER" && !own
-      ? api.people({}, signal)
-      : Promise.resolve([] as Person[]),
-  );
-  const facts = people.data?.find((p) => p.profile.id === id);
   return (
     <State query={person}>
       {person.data && (
         <>
           <Header
             eyebrow={own ? "My profile" : "Meet the craftsperson"}
-            title={person.data.displayName}
+            title={person.data.role === "HOMEOWNER" ? person.data.displayName : own ? "My professional profile" : "Professional profile"}
           />
-          <section className="profile-intro">
-            <Portrait name={person.data.displayName} reference={person.data.profileImageReference} />
-            <div>
-              <p>
-                {words(person.data.role)} · Account{" "}
-                {words(person.data.accountStatus)}
-              </p>
-              {person.data.verificationStatus && (
-                <p>
-                  Account verification: {words(person.data.verificationStatus)}
-                  <br />
-                  <small>
-                    This is not verification of licenses or insurance.
-                  </small>
-                </p>
-              )}
-            </div>
-          </section>
-          {facts ? (
-            <section className="panel">
-              <PersonFacts person={facts} />
-            </section>
-          ) : (
-            person.data.role === "TRADESPERSON" && (
-              <section className="panel">
-                <h2>Availability & service area</h2>
-                <p>
-                  {person.data.availabilityStatus
-                    ? words(person.data.availabilityStatus)
-                    : "Availability not provided"}{" "}
-                  · Base ZIP {person.data.baseZip || "not provided"}
-                </p>
-              </section>
-            )
-          )}
           {person.data.role === "TRADESPERSON" && (
-            <Portfolio profile={profile} id={id} name={person.data.displayName} />
+            <><ProfessionalProfile profile={profile} id={id} own={canManage}><Portfolio profile={profile} id={id} name={person.data.displayName} own={canManage} /></ProfessionalProfile></>
           )}
         </>
       )}
     </State>
   );
 }
-function Portfolio({ profile, id, name }: { profile: Profile; id: number; name: string }) {
+function Portfolio({ profile, id, name, own }: { profile: Profile; id: number; name: string; own: boolean }) {
   const query = useData(profile, `portfolio-${id}`, (signal) =>
     workspaceApi.portfolio(id, signal),
   );
@@ -237,17 +198,8 @@ function Portfolio({ profile, id, name }: { profile: Profile; id: number; name: 
           {query.data && !query.data.some((item) => item.provenance === "RHP_VERIFIED") &&
             <p>No published RH&amp;P projects yet.</p>}
         </section>
-        {query.data?.some((item) => item.provenance !== "RHP_VERIFIED") && (
-          <section className="portfolio-section" aria-label="External Portfolio">
-            <h3>External Portfolio</h3>
-            <p>Work performed outside Rock &amp; Hard Places.</p>
-            <div className="portfolio-grid">
-              {query.data.filter((item) => item.provenance !== "RHP_VERIFIED").map((item) => (
-                <PortfolioCard key={item.id} item={item} name={name} />
-              ))}
-            </div>
-          </section>
-        )}
+        {query.data && (own || query.data.some(item => item.provenance !== "RHP_VERIFIED")) &&
+          <ExternalPortfolio id={id} items={query.data} name={name} own={own} />}
         {query.data?.length === 0 && (
           <Empty title="No published portfolio work yet.">
             Published work will appear here with its provenance.

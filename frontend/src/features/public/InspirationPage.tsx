@@ -31,6 +31,9 @@ export function InspirationPage() {
       <p>There isn’t an inspiration page at this address. Your idea still has a place here.</p>
       <a className="public-button" href="/#inspiration">Explore all ideas ↗</a>
     </main> : <main id="ideas-main" key={category.slug}>
+      <nav className="ideas-category-nav ideas-canvas" aria-label="Inspiration categories">
+        {inspirationCategories.map(item => <Link key={item.slug} to={`/ideas/${item.slug}`} aria-current={item.slug === slug ? 'page' : undefined}>{item.name}</Link>)}
+      </nav>
       <section className="ideas-hero ideas-canvas">
         <div className="ideas-intro"><a className="ideas-back" href="/#inspiration">← All ideas</a>
           <p className="public-eyebrow">Inspiration / {category.name}</p>
@@ -57,6 +60,11 @@ export function InspirationPage() {
       </section>
       {builtConcept && <SeeItBuilt key={builtConcept.key} concept={builtConcept} />}
       <section className="public-closing ideas-closing"><div className="ideas-canvas"><p className="public-eyebrow">05 / Start</p><h2>Your idea defines the project.</h2><p>You don’t need every answer to begin. Bring the direction that excites you and start shaping the work.</p><Link className="public-button" to="/projects/new">{category.cta} ↗</Link></div></section>
+      <nav className="ideas-category-nav ideas-canvas" aria-label="Continue exploring">
+        {inspirationCategories[inspirationCategories.indexOf(category) - 1] && <Link to={`/ideas/${inspirationCategories[inspirationCategories.indexOf(category) - 1].slug}`}>← {inspirationCategories[inspirationCategories.indexOf(category) - 1].name}</Link>}
+        <a href="/#inspiration">Explore all ideas</a>
+        {inspirationCategories[inspirationCategories.indexOf(category) + 1] && <Link to={`/ideas/${inspirationCategories[inspirationCategories.indexOf(category) + 1].slug}`}>{inspirationCategories[inspirationCategories.indexOf(category) + 1].name} →</Link>}
+      </nav>
     </main>}
     <footer className="public-footer"><Link to="/" className="public-brand" aria-label="Rock & Hard Places home"><Brand /></Link><p>People. Projects. Possibilities.</p><a href="/#inspiration">Back to all ideas ↑</a></footer>
   </div>;

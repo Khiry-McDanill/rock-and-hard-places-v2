@@ -105,3 +105,17 @@ test('category rhythm ends with the project CTA and avoids repeated gallery labe
     assert.ok(html.indexOf('ideas-planning') < html.indexOf('ideas-closing'));
   }
 });
+
+for (const [slug] of categories) {
+  test(`${slug} has all category links, an accessible current category, and one final conversion CTA`, () => {
+    const html = publicRoute(`/ideas/${slug}`);
+    const nav = html.match(/<nav[^>]*aria-label="Inspiration categories"[^>]*>([\s\S]*?)<\/nav>/)?.[1] || '';
+    for (const [other] of categories) assert.ok(nav.includes(`href="/ideas/${other}"`));
+    assert.equal((nav.match(/aria-current="page"/g) || []).length, 1);
+    assert.match(nav, new RegExp(`<a[^>]*aria-current="page"[^>]*href="/ideas/${slug}"`));
+    assert.doesNotMatch(html, /Inspired by this direction|built-cta/);
+    assert.match(html, /05 \/ Start/);
+    assert.equal((html.match(/<h2>Your idea defines the project\.<\/h2>/g) || []).length, 1);
+    assert.match(html, /aria-label="Continue exploring"/);
+  });
+}

@@ -141,7 +141,7 @@ export function TaskRow({
             <div className="task-assignees">
               {assignments.data.map((assignment) => (
                 <span key={assignment.id} title={assignment.displayName}>
-                  <Portrait name={assignment.displayName} />
+                  <Portrait name={assignment.displayName} reference={assignment.profileImageReference} />
                 </span>
               ))}
             </div>
@@ -218,7 +218,7 @@ export function TaskRow({
     </article>
   );
 }
-export function TaskBids({ task, profile }: { task: Task; profile: Profile }) {
+export function TaskBids({ task, profile, hasSubtasks = false }: { task: Task; profile: Profile; hasSubtasks?: boolean }) {
   const query = useData(profile, `bids-${task.id}`, (signal) =>
     workspaceApi.bids(task.id, signal),
   );
@@ -242,7 +242,7 @@ export function TaskBids({ task, profile }: { task: Task; profile: Profile }) {
           ))}
         </div>
         {query.data?.length === 0 && (
-          <p className="bid-empty">No proposals for this task.</p>
+          <p className="bid-empty">{hasSubtasks ? "Proposals are recorded under the individual scopes below." : profile.role === "TRADESPERSON" ? "You have no proposals for this task." : "No proposals for this task."}</p>
         )}
       </State>
     </section>

@@ -1,3 +1,4 @@
+import { api, ApiError } from '../../api/client';
 import type { Person } from '../../api/types';
 import type { TeamSuggestion } from './inspirationData';
 
@@ -25,4 +26,27 @@ export function selectCollaborators(people: readonly Person[], suggestions: read
     if (person) { used.add(person.profile.id); selected.push({ person, suggestion }); }
   }
   return selected;
+}
+
+export type PeopleSuggestionState =
+  | { status: 'loading' }
+  | { status: 'ready'; people: Person[] }
+  | { status: 'homeowner-required' }
+  | { status: 'sign-in-required' }
+  | { status: 'restricted' }
+  | { status: 'failed' };
+
+/** Public inspiration does not grant access to Homeowner-only people discovery. */
+export async function loadSuggestedPeople(signal?: AbortSignal): Promise<PeopleSuggestionState> {
+  try {
+    const account = await api.account(signal);
+    if (account.profile.accountStatus !== 'ACTIVE') return { status: 'restricted' };
+    if (account.activeRole !== 'HOMEOWNER') return { status: 'homeowner-required' };
+    return { status: 'ready', people: await api.people({}, signal) };
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    if (error instanceof ApiError && error.status === 401) return { status: 'sign-in-required' };
+    if (error instanceof ApiError && error.status === 403) return { status: 'restricted' };
+    return { status: 'failed' };
+  }
 }

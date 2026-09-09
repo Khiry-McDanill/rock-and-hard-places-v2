@@ -91,15 +91,15 @@ final class ApiDtos {
     }
 
     record AssignmentRequest(@NotNull Long tradespersonId) {}
-    record AssignmentResponse(Long id, Long taskId, Long tradespersonId, String displayName) {
+    record AssignmentResponse(Long id, Long taskId, Long tradespersonId, String displayName, String profileImageReference) {
         static AssignmentResponse from(TaskAssignment a) { return new AssignmentResponse(a.getId(),
-                a.getTask().getId(), a.getTradesperson().getId(), a.getTradesperson().getDisplayName()); }
+                a.getTask().getId(), a.getTradesperson().getId(), a.getTradesperson().getDisplayName(), a.getTradesperson().getProfileImageReference()); }
     }
     record TeamResponse(Long id, Long tradespersonId, String displayName, ProjectTeamStatus status,
-            List<String> trades) {
+            List<String> trades, String profileImageReference) {
         static TeamResponse from(ProjectTeam team) { return new TeamResponse(team.getId(),
                 team.getTradesperson().getId(), team.getTradesperson().getDisplayName(), team.getStatus(),
-                team.getProjectTeamTrades().stream().map(t -> t.getTrade().getName()).toList()); }
+                team.getProjectTeamTrades().stream().map(t -> t.getTrade().getName()).toList(), team.getTradesperson().getProfileImageReference()); }
     }
     record ParticipantResponse(Long userId, String displayName, List<String> trades) {}
     record ConversationResponse(Long id, Long projectId, ConversationType type, Instant createdAt,
@@ -126,12 +126,12 @@ final class ApiDtos {
     record ReviewResponseDto(Long id, Long homeownerId, Long tradespersonId, Long projectId,
             Long taskId, ReviewLevel level, Integer overallRating, Integer qualityRating,
             Integer communicationRating, Integer reliabilityRating, Integer professionalismRating,
-            String body, boolean withdrawn) {
+            String body, boolean withdrawn, String authorDisplayName, String tradespersonDisplayName, Instant createdAt, Instant editedAt, Instant withdrawnAt) {
         static ReviewResponseDto from(Review r) { return new ReviewResponseDto(r.getId(),
                 r.getHomeowner().getId(), r.getTradesperson().getId(), r.getProject().getId(),
                 r.getTask() == null ? null : r.getTask().getId(), r.getLevel(), r.getOverallRating(),
                 r.getQualityRating(), r.getCommunicationRating(), r.getReliabilityRating(),
-                r.getProfessionalismRating(), r.getBody(), r.isWithdrawn()); }
+                r.getProfessionalismRating(), r.getBody(), r.isWithdrawn(), r.getHomeowner().getDisplayName(), r.getTradesperson().getDisplayName(), r.getCreatedAt(), r.getEditedAt(), r.getWithdrawnAt()); }
     }
     record ReviewResponseRequest(@NotNull String body) {}
     record ReviewReplyResponse(Long id, Long reviewId, Long tradespersonId, String body) {

@@ -22,7 +22,7 @@ export function HomeOverview({ profile }: { profile: Profile }) {
   return (
     <div className="home-overview">
       <Header
-        eyebrow="Homeowner overview"
+        eyebrow="Homeowner dashboard"
         title={firstName ? `Good morning, ${firstName}.` : "Good morning."}
         action={
           <Link className="button" to="/projects/new">
@@ -121,7 +121,7 @@ function Team({ summary }: { summary: ProjectSummary }) {
                 aria-label={`${member.displayName}${member.trades.length ? ` — ${member.trades.join(", ")}` : ""}`}
                 title={`${member.displayName} · ${member.trades.join(", ")}`}
               >
-                <Portrait name={member.displayName} />
+                <Portrait name={member.displayName} reference={member.profileImageReference} />
               </Link>
             ))}
           </div>

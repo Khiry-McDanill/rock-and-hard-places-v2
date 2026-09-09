@@ -13,8 +13,8 @@ export interface Account { userId: number; email: string; activeRole: Role; prof
 export interface Project { id: number; title: string; description: string; status: ProjectStatus; jobZip: string; progressPercentage: number }
 export interface RequiredTrade { id: number; tradeId: number; tradeName: string }
 export interface Task { id: number; projectId: number; parentTaskId: number | null; title: string; description: string; status: TaskStatus; requiredTrades: RequiredTrade[]; progressPercentage: number }
-export interface Assignment { id: number; taskId: number; tradespersonId: number; displayName: string }
-export interface Team { id: number; tradespersonId: number; displayName: string; status: 'ACTIVE' | 'INVITED' | 'PENDING' | 'SUSPENDED'; trades: string[] }
+export interface Assignment { profileImageReference?: string | null; id: number; taskId: number; tradespersonId: number; displayName: string }
+export interface Team { profileImageReference?: string | null; id: number; tradespersonId: number; displayName: string; status: 'ACTIVE' | 'INVITED' | 'PENDING' | 'SUSPENDED'; trades: string[] }
 export interface Bid { id: number; taskId: number; taskTradeId: number; tradespersonId: number; amount: number; message: string | null; status: 'SUBMITTED' | 'ACCEPTED' | 'REJECTED' | 'WITHDRAWN'; createdAt: string; updatedAt: string }
 export interface Specialty { id: number; name: string }
 export interface Trade extends Specialty { specialties: Specialty[] }

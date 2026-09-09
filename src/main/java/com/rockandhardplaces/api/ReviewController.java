@@ -22,6 +22,16 @@ class ReviewController {
         this.reviews = reviews; this.service = service;
     }
 
+    @GetMapping
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    java.util.List<ApiDtos.ReviewResponseDto> forTask(@RequestParam Long taskId) {
+        Homeowner actor = homeowner();
+        new AccountAuthorizationService().requireActive(actor);
+        Task task = access.task(taskId, actor);
+        return reviews.findByHomeownerAndTaskOrderByIdAsc(actor, task).stream()
+                .map(ApiDtos.ReviewResponseDto::from).toList();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     ApiDtos.ReviewResponseDto create(@Valid @RequestBody ApiDtos.ReviewRequest request) {

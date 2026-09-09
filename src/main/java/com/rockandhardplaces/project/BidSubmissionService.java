@@ -21,6 +21,13 @@ public class BidSubmissionService {
             BigDecimal amount, String message) {
         authorization.requireVerifiedBidder(bidder);
         authorization.requireDifferentUsers(bidder.getUser(), task.getProject().getHomeowner().getUser());
-        return bids.saveAndFlush(new Bid(task, taskTrade, bidder, amount, message));
+        if (bids.existsByTaskTradeAndTradesperson(taskTrade, bidder))
+            throw new IllegalStateException("You already have a proposal for this scope. View your existing proposal.");
+        try {
+            return bids.saveAndFlush(new Bid(task, taskTrade, bidder, amount, message));
+        } catch (org.springframework.dao.DataIntegrityViolationException conflict) {
+            // The database remains the final guard when two submissions race.
+            throw new IllegalStateException("The proposal could not be submitted because this scope or proposal changed. Refresh and view your proposals.", conflict);
+        }
     }
 }

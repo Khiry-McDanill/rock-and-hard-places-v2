@@ -14,6 +14,8 @@ export function TaskReview({
   const assignments = useData(profile, `assignments-${task.id}`, (signal) =>
     api.taskAssignments(task.id, signal),
   );
+  const reviews = useData(profile, `reviews-${task.id}`, (signal) => workspaceApi.taskReviews(task.id, signal));
+  const eligible = assignments.data?.filter(a => !reviews.data?.some(r => r.tradespersonId === a.tradespersonId)) ?? [];
   const mutation = useMutation({
     mutationFn: (form: FormData) =>
       workspaceApi.createReview({
@@ -27,21 +29,27 @@ export function TaskReview({
     onSuccess: refreshProfileData,
   });
   return (
-    <State query={assignments}>
+    <State query={assignments}><State query={reviews}>
       {!!assignments.data?.length && (
         <details>
           <summary>Review completed task work</summary>
           <p>
             Share your experience with this task and the person who performed it.
           </p>
-          {mutation.isSuccess ? (
+          {reviews.data?.map(review => <article key={review.id}>
+            <h3>{review.withdrawn ? "Withdrawn review" : "Published review"}</h3>
+            <p>{review.authorDisplayName} reviewed {review.tradespersonDisplayName}</p>
+            <p>{review.overallRating} / 5 · {review.body}</p>
+            <p>Published <time dateTime={review.createdAt}>{new Date(review.createdAt).toLocaleDateString()}</time></p>
+          </article>)}
+          {mutation.isSuccess && !reviews.data?.some(r => r.id === mutation.data.id) ? (
             <div role="status">
               <h3>Your review was saved.</h3>
               <p>
                 {mutation.data.overallRating} / 5 · {mutation.data.body}
               </p>
             </div>
-          ) : (
+          ) : eligible.length > 0 && reviews.data ? (
             <form
               onSubmit={(event) => {
                 event.preventDefault();
@@ -51,7 +59,7 @@ export function TaskReview({
               <label>
                 Tradesperson
                 <select name="person" required>
-                  {assignments.data.map((a) => (
+                  {eligible.map((a) => (
                     <option key={a.id} value={a.tradespersonId}>
                       {a.displayName}
                     </option>
@@ -80,9 +88,9 @@ export function TaskReview({
               </button>
               <MutationNotice mutation={mutation} />
             </form>
-          )}
+          ) : null}
         </details>
       )}
-    </State>
+    </State></State>
   );
 }
