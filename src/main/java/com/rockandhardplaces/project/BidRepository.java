@@ -9,6 +9,8 @@ import com.rockandhardplaces.account.Tradesperson;
 
 public interface BidRepository extends JpaRepository<Bid, Long> {
 
+    boolean existsByTaskTradeAndTradesperson(TaskTrade taskTrade, Tradesperson tradesperson);
+
     List<Bid> findByTask(Task task);
 
     List<Bid> findByTradesperson(Tradesperson tradesperson);

@@ -14,6 +14,7 @@ export function deliveredMediaUrl(value?: string | null) {
   return value && (/^https?:\/\//.test(value) || /^\/(?!\/)/.test(value)) ? value : undefined;
 }
 export function seedPortrait({ name, reference }: PersonMediaContext) {
+  if (reference === null) return undefined;
   const person = seedPeople.find((person) => reference
     ? reference === `demo/rhp-023/profiles/${slug(person)}.jpg`
     : person.toLowerCase() === name.trim().toLowerCase());
@@ -105,7 +106,7 @@ export const seedPortfolios = [
 ] as const;
 /** RH&P work shares the project registry; external work never acquires project media by title. */
 export function resolvePortfolioMedia(
-  name: string,
+  _name: string,
   item: { title: string; provenance: string; mediaReference?: string | null },
   delivered: readonly ProjectMediaFrame[] = [],
 ): WorkMedia {
@@ -124,8 +125,5 @@ export function resolvePortfolioMedia(
     const known = seedProjectStories.find((title) => title === item.title);
     return known ? seedProjectMedia({ title: known }) : { source: 'presentation', frames: [] };
   }
-  const known = seedPortfolios.find(([person, title]) => person === name && title === item.title);
-  const file = known ? `portfolios/${slug(name)}/${slug(item.title)}.jpg` : '';
-  const frames = availableStoryAssets.includes(file) ? [frame(file, item.title, 'Work photo')] : [];
-  return { source: 'presentation', frames, cover: frames[0] };
+  return { source: 'presentation', frames: [] };
 }

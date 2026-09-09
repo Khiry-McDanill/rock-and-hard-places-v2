@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { api } from '../../api/client';
 import type { Person } from '../../api/types';
 import { Portrait } from '../../components/ui';
 import type { InspirationConcept, SeeItBuiltStory } from './inspirationData';
-import { selectCollaborators } from './seeItBuiltPeople';
+import { selectCollaborators, loadSuggestedPeople, type PeopleSuggestionState } from './seeItBuiltPeople';
 
 export function CollaboratorCards({ people, story, direction }: { people: readonly Person[]; story: SeeItBuiltStory; direction: string }) {
   const collaborators = selectCollaborators(people, story.teamSuggestions, direction);
@@ -17,25 +16,30 @@ export function CollaboratorCards({ people, story, direction }: { people: readon
     </article>)}</div> : <p className="built-people-status">There aren’t matching people available to suggest right now. You can still start shaping your project.</p>;
 }
 
+export function PeopleSuggestions({ state, story, direction, retry }: { state: PeopleSuggestionState; story: SeeItBuiltStory; direction: string; retry: () => void }) {
+  if (state.status === 'ready') return <CollaboratorCards people={state.people} story={story} direction={direction} />;
+  if (state.status === 'loading') return <p className="built-people-status" role="status">Finding people with these skills…</p>;
+  if (state.status === 'homeowner-required') return <div className="built-people-status"><p>Switch to your Homeowner profile to explore matching tradespeople. You can keep exploring ideas with either profile.</p><Link to="/overview">Open your workspace →</Link></div>;
+  if (state.status === 'sign-in-required') return <div className="built-people-status"><p>Sign in with a Homeowner profile to explore matching tradespeople. These ideas are open for everyone to explore.</p><Link to="/overview">Open your workspace →</Link></div>;
+  if (state.status === 'restricted') return <p className="built-people-status">People suggestions aren’t available for your current profile. You can still explore this build direction.</p>;
+  return <div className="built-people-status" role="alert"><p>People suggestions couldn’t be loaded. Keep exploring this direction or try again.</p><button type="button" onClick={retry}>Try people again</button></div>;
+}
+
 function SuggestedPeople({ story, direction }: { story: SeeItBuiltStory; direction: string }) {
-  const [people, setPeople] = useState<Person[] | null>(null);
-  const [failed, setFailed] = useState(false);
+  const [state, setState] = useState<PeopleSuggestionState>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
-    setPeople(null); setFailed(false);
-    api.people({}, controller.signal).then(result => {
-      if (!controller.signal.aborted) setPeople(result);
-    }).catch(() => { if (!controller.signal.aborted) setFailed(true); });
+    setState({ status: 'loading' });
+    loadSuggestedPeople(controller.signal).then(result => {
+      if (!controller.signal.aborted) setState(result);
+    }).catch(() => { if (!controller.signal.aborted) setState({ status: 'failed' }); });
     return () => controller.abort();
   }, [attempt]);
-  // Discovery can be unavailable under the current account; inspiration itself never depends on it.
   return <div className="built-team">
     <h3>A build like this may bring together…</h3>
     <p>People with these skills could contribute. Explore their profiles to learn about their own work and specialties.</p>
-    {people ? <CollaboratorCards people={people} story={story} direction={direction} />
-      : failed ? <div className="built-people-status"><p>People suggestions aren’t available right now. Keep exploring this direction or try again.</p><button type="button" onClick={() => setAttempt(value => value + 1)}>Try people again</button></div>
-      : <p className="built-people-status" role="status">Finding people with these skills…</p>}
+    <PeopleSuggestions state={state} story={story} direction={direction} retry={() => setAttempt(value => value + 1)} />
   </div>;
 }
 
@@ -62,6 +66,5 @@ export function SeeItBuilt({ concept }: { concept: InspirationConcept }) {
       <div><h3>Work that may be involved</h3><ul>{story.workAreas.map(area => <li key={area.trade}><strong>{area.trade}</strong><span>{area.description}</span></li>)}</ul></div>
     </div>
     <SuggestedPeople story={story} direction={concept.key} />
-    <div className="built-cta"><p>Inspired by this direction?</p><Link className="public-button" to="/projects/new">{story.ctaLabel} ↗</Link></div>
   </div></section>;
 }

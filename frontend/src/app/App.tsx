@@ -80,7 +80,7 @@ function WorkspaceApp() {
     <AppShell profile={profile}>
       <header className="account-bar">
         <div className="account-identity">
-          <Portrait name={profile.displayName} />
+          <Portrait name={profile.displayName} reference={profile.profileImageReference} />
           <div>
             <strong>{profile.displayName}</strong>
             <span>
@@ -146,6 +146,7 @@ function WorkspaceApp() {
                 />
               }
             />
+            <Route path="/people/:personId" element={<PersonProfile profile={profile} />} />
             {profile.role === "HOMEOWNER" ? (
               <>
                 <Route
@@ -157,10 +158,7 @@ function WorkspaceApp() {
                   element={<ProjectForm profile={profile} />}
                 />
                 <Route path="/people" element={<People profile={profile} />} />
-                <Route
-                  path="/people/:personId"
-                  element={<PersonProfile profile={profile} />}
-                />
+
               </>
             ) : (
               <>

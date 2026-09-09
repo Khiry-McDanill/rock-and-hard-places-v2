@@ -20,7 +20,7 @@ export function ProjectBids({
         </div>
       </div>
       {tasks.map((task) => (
-        <TaskBids key={task.id} task={task} profile={profile} />
+        <TaskBids key={task.id} task={task} profile={profile} hasSubtasks={tasks.some(child => child.parentTaskId === task.id)} />
       ))}
       {!tasks.length && (
         <Empty title="Start with a scope of work.">

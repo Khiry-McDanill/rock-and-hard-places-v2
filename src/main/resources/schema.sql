@@ -303,3 +303,31 @@ CREATE INDEX IF NOT EXISTS idx_portfolio_publication_status ON portfolio_publica
 CREATE TABLE IF NOT EXISTS demo_seed_versions (
     version VARCHAR(100) PRIMARY KEY
 );
+
+-- RH&P-030: optional profile presentation; qualifications remain authoritative elsewhere.
+CREATE TABLE IF NOT EXISTS professional_profiles (
+ tradesperson_id INTEGER PRIMARY KEY REFERENCES tradespeople(id),
+ headline TEXT NOT NULL DEFAULT '', bio TEXT NOT NULL DEFAULT '',
+ presentation TEXT NOT NULL DEFAULT 'PERSON_FIRST' CHECK(presentation IN ('PERSON_FIRST','BUSINESS_FIRST')),
+ primary_trade_id INTEGER REFERENCES trades(id)
+);
+CREATE TABLE IF NOT EXISTS professional_businesses (
+ tradesperson_id INTEGER PRIMARY KEY REFERENCES tradespeople(id),
+ name TEXT NOT NULL, description TEXT NOT NULL, website TEXT NOT NULL,
+ phone TEXT NOT NULL, address TEXT NOT NULL, years_in_business INTEGER, role TEXT NOT NULL,
+ logo_reference TEXT
+);
+CREATE TABLE IF NOT EXISTS professional_credentials (
+ id INTEGER PRIMARY KEY AUTOINCREMENT, tradesperson_id INTEGER NOT NULL REFERENCES tradespeople(id),
+ scope TEXT NOT NULL CHECK(scope IN ('PERSONAL','BUSINESS')),
+ type TEXT NOT NULL CHECK(type IN ('LICENSE','INSURANCE','CERTIFICATION')),
+ name TEXT NOT NULL, issuer TEXT NOT NULL, number TEXT NOT NULL, jurisdiction TEXT NOT NULL,
+ issued_date TEXT, expiration_date TEXT, notes TEXT NOT NULL,
+ verification_status TEXT NOT NULL DEFAULT 'PROVIDED' CHECK(verification_status IN ('PROVIDED','PENDING_VERIFICATION','VERIFIED')),
+ evidence_kind TEXT NOT NULL DEFAULT 'OTHER', evidence_reference TEXT,
+ confirmed_trade_id INTEGER REFERENCES trades(id), verified_at TEXT, verification_basis TEXT
+);
+CREATE TABLE IF NOT EXISTS professional_media (
+ id TEXT PRIMARY KEY, tradesperson_id INTEGER NOT NULL REFERENCES tradespeople(id),
+ content_type TEXT NOT NULL, content BLOB NOT NULL
+);

@@ -97,6 +97,10 @@ public class Tradesperson {
         this.availableStartDate = availableStartDate;
     }
 
+    public void updateProfessionalIdentity(String name, String zip, Integer radius, AvailabilityStatus availability) {
+        this.displayName = name; this.baseZip = zip; this.serviceRadius = radius; this.availabilityStatus = availability;
+    }
+
     public Long getId() {
         return id;
     }

@@ -32,6 +32,11 @@ export interface Portfolio {
   approvedAttachmentIds: number[];
   mediaReference?: string | null;
 }
+export interface TaskReviewRecord {
+  id: number; homeownerId: number; tradespersonId: number; projectId: number; taskId: number;
+  overallRating: number; body: string; withdrawn: boolean;
+  authorDisplayName: string; tradespersonDisplayName: string; createdAt: string; editedAt: string | null; withdrawnAt: string | null;
+}
 export type ProjectInput = Pick<Project, "title" | "description" | "jobZip">;
 const post = <T>(path: string, body?: unknown) =>
   request<T>(path, {
@@ -39,6 +44,7 @@ const post = <T>(path: string, body?: unknown) =>
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
 export const workspaceApi = {
+  taskReviews: (taskId: number, signal?: AbortSignal) => request<TaskReviewRecord[]>(`/reviews?taskId=${taskId}`, { signal }),
   createReview: (body: {
     tradespersonId: number;
     projectId: number;
@@ -47,7 +53,7 @@ export const workspaceApi = {
     overallRating: number;
     body: string;
   }) =>
-    post<{ id: number; overallRating: number; body: string }>("/reviews", body),
+    post<TaskReviewRecord>("/reviews", body),
   projects: (signal?: AbortSignal) =>
     request<Project[]>("/projects", { signal }),
   project: (id: number, signal?: AbortSignal) =>

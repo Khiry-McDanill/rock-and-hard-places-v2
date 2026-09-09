@@ -55,10 +55,10 @@ class FrontendSupportService {
     }
 
     List<FrontendDtos.PersonSummary> discoverPeople(Long tradeId, String query, AvailabilityStatus availability) {
-        Homeowner owner = homeowner();
+        homeowner(); // Public discovery may include the viewer; marketplace eligibility still excludes self-dealing.
         Map<Long, FrontendDtos.TradeSummary> catalog = tradeCatalog();
         String search = query == null ? "" : query.strip().toLowerCase(Locale.ROOT);
-        return people.findByAccountStatusAndUserNot(AccountStatus.ACTIVE, owner.getUser()).stream()
+        return people.findByAccountStatus(AccountStatus.ACTIVE).stream()
                 .sorted(Comparator.comparing(Tradesperson::getId))
                 .filter(p -> p.getDisplayName().toLowerCase(Locale.ROOT).contains(search))
                 .filter(p -> availability == null || p.getAvailabilityStatus() == availability)
@@ -100,6 +100,12 @@ class FrontendSupportService {
                 work.stream().filter(a -> included(a.getTask()) && a.getTask().getStatus() == TaskStatus.COMPLETED).count(),
                 access.projectsFor(actor).stream().filter(p -> p.getStatus() == ProjectStatus.COMPLETED).count(),
                 opportunities(actor, null, null));
+    }
+
+    List<FrontendDtos.BidSummary> myBids() {
+        Tradesperson actor=worker();
+        Set<Long> qualified=qualifiedTrades(actor);
+        return bids.findByTradesperson(actor).stream().map(b->bidSummary(b,actor,qualified)).toList();
     }
 
     List<FrontendDtos.WorkSummary> myAssignments() {

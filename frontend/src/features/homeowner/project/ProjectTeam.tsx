@@ -38,7 +38,7 @@ export function ProjectTeam({
           return (
             <article className="build-team-member" key={member.id}>
               <div className="build-person-heading">
-                <Portrait name={member.displayName} />
+                <Portrait name={member.displayName} reference={member.profileImageReference} />
                 <div>
                   <h3>
                     <Link to={`/people/${member.tradespersonId}`}>

@@ -49,6 +49,84 @@ class FrontendSupportIntegrationTests {
         asOwner();
     }
 
+    @Test void proposalCreationConflictsWithoutDuplicatingHistory() throws Exception {
+        asWorker();
+        String body="{\"taskTradeId\":"+requirement.getId()+",\"amount\":1200,\"message\":\"Approach\"}";
+        mvc.perform(post("/api/tasks/{id}/bids",task.getId()).contentType("application/json").content(body)).andExpect(status().isCreated());
+        for(String state: new String[]{"SUBMITTED","ACCEPTED","REJECTED","WITHDRAWN"}) {
+            em.createNativeQuery("UPDATE bids SET status=:state WHERE task_id=:task").setParameter("state",state).setParameter("task",task.getId()).executeUpdate();em.clear();
+            mvc.perform(post("/api/tasks/{id}/bids",task.getId()).contentType("application/json").content(body)).andExpect(status().isConflict());
+            assertThat(((Number)em.createNativeQuery("SELECT COUNT(*) FROM bids WHERE task_id=:task").setParameter("task",task.getId()).getSingleResult()).intValue()).isEqualTo(1);
+        }
+    }
+
+    @Test void reviewIsReadBackAfterClearingPersistenceContextWithItsRelationships() throws Exception {
+        assign();progress.start(task);progress.submitForReview(task);progress.approve(task);reload();asOwner();
+        String body="{\"tradespersonId\":"+worker.getId()+",\"projectId\":"+project.getId()+",\"taskId\":"+task.getId()+",\"level\":\"TASK\",\"overallRating\":5,\"body\":\"Lasting review\"}";
+        mvc.perform(post("/api/reviews").contentType("application/json").content(body)).andExpect(status().isCreated());
+        reload();asOwner();
+        for(int i=0;i<2;i++) mvc.perform(get("/api/reviews").param("taskId",task.getId().toString())).andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(1)).andExpect(jsonPath("$[0].body").value("Lasting review"))
+            .andExpect(jsonPath("$[0].overallRating").value(5)).andExpect(jsonPath("$[0].homeownerId").value(owner.getId()))
+            .andExpect(jsonPath("$[0].tradespersonId").value(worker.getId())).andExpect(jsonPath("$[0].projectId").value(project.getId()))
+            .andExpect(jsonPath("$[0].taskId").value(task.getId())).andExpect(jsonPath("$[0].createdAt").isNotEmpty())
+            .andExpect(jsonPath("$[0].authorDisplayName").value("Owner")).andExpect(jsonPath("$[0].tradespersonDisplayName").value("Builder"))
+            .andExpect(jsonPath("$[0].withdrawn").value(false));
+        mvc.perform(post("/api/reviews").contentType("application/json").content(body)).andExpect(status().isConflict());
+        asWorker();mvc.perform(get("/api/reviews").param("taskId",task.getId().toString())).andExpect(status().isForbidden());
+        mvc.perform(post("/api/reviews").contentType("application/json").content(body)).andExpect(status().isForbidden());
+        var stranger=save(new Homeowner(save(new User(UUID.randomUUID()+"@example.com")),"Other owner"));
+        when(account.activeProfile()).thenReturn(stranger);
+        mvc.perform(get("/api/reviews").param("taskId",task.getId().toString())).andExpect(status().isForbidden());
+        mvc.perform(post("/api/reviews").contentType("application/json").content(body)).andExpect(status().isForbidden());
+    }
+
+    @Test
+    void bidderEditsAndWithdrawsSameProposalWhileHistoryAndScopeStayIntact() throws Exception {
+        Bid bid=save(new Bid(task,requirement,worker,BigDecimal.TEN,"Original"));em.flush();asWorker();
+        Long id=bid.getId();
+        mvc.perform(put("/api/bids/{id}",id).contentType("application/json").content("{\"amount\":125.50,\"message\":\"Revised approach\",\"taskTradeId\":99999,\"status\":\"ACCEPTED\"}"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(id)).andExpect(jsonPath("$.amount").value(125.50))
+            .andExpect(jsonPath("$.taskTradeId").value(requirement.getId())).andExpect(jsonPath("$.status").value("SUBMITTED"));
+        em.clear();
+        mvc.perform(get("/api/bids")).andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(1)).andExpect(jsonPath("$[0].bid.message").value("Revised approach"));
+        mvc.perform(post("/api/bids/{id}/withdraw",id)).andExpect(status().isOk()).andExpect(jsonPath("$.status").value("WITHDRAWN"));
+        em.clear();mvc.perform(get("/api/bids")).andExpect(jsonPath("$.length()").value(1)).andExpect(jsonPath("$[0].bid.id").value(id)).andExpect(jsonPath("$[0].bid.status").value("WITHDRAWN"));
+        mvc.perform(put("/api/bids/{id}",id).contentType("application/json").content("{\"amount\":150}")).andExpect(status().isConflict());
+        mvc.perform(post("/api/bids/{id}/withdraw",id)).andExpect(status().isConflict());
+    }
+    @Test
+    void proposalMutationsRejectOtherActorsInvalidAmountsAndDecidedBids() throws Exception {
+        Bid bid=save(new Bid(task,requirement,worker,BigDecimal.TEN,"Original"));em.flush();
+        mvc.perform(put("/api/bids/{id}",bid.getId()).contentType("application/json").content("{\"amount\":20}")).andExpect(status().isForbidden());
+        Tradesperson other=save(new Tradesperson(save(new User(UUID.randomUUID()+"@test.local")),"Other"));em.flush();when(account.activeProfile()).thenReturn(other);
+        mvc.perform(put("/api/bids/{id}",bid.getId()).contentType("application/json").content("{\"amount\":20}")).andExpect(status().isForbidden());
+        mvc.perform(post("/api/bids/{id}/withdraw",bid.getId())).andExpect(status().isForbidden());
+        mvc.perform(get("/api/bids")).andExpect(jsonPath("$.length()").value(0));asWorker();
+        mvc.perform(put("/api/bids/{id}",bid.getId()).contentType("application/json").content("{\"amount\":0}")).andExpect(status().isBadRequest());
+        for(boolean accepted:java.util.List.of(true,false)) {
+            Task decisionTask=save(new Task("Decision scope","Description",TaskStatus.PLANNING,project,null));
+            TaskTrade decisionRequirement=save(new TaskTrade(decisionTask,trade));
+            Bid decided=save(new Bid(decisionTask,decisionRequirement,worker,BigDecimal.TEN,"Fixed"));if(accepted)decided.accept();else decided.reject();em.flush();
+            mvc.perform(put("/api/bids/{id}",decided.getId()).contentType("application/json").content("{\"amount\":20}")).andExpect(status().isConflict());
+            mvc.perform(post("/api/bids/{id}/withdraw",decided.getId())).andExpect(status().isConflict());
+            assertThat(decided.getAmount()).isEqualByComparingTo(BigDecimal.TEN);
+        }
+    }
+    @Test
+    void zipSearchReturnsOnlyEligibleOpenScopesIncludingNoTaskAndSelfExclusions() throws Exception {
+        save(new Project("No open needs","Description",ProjectStatus.PLANNING,"10001",owner));
+        Homeowner self=save(new Homeowner(worker.getUser(),"Same person"));
+        Project own=save(new Project("Hockessin Tree House","Description",ProjectStatus.PLANNING,"19807",self));
+        Task ownTask=save(new Task("Own scope","Description",TaskStatus.PLANNING,own,null));save(new TaskTrade(ownTask,trade));
+        Project otherZip=save(new Project("Open work elsewhere","Description",ProjectStatus.PLANNING,"19807",owner));
+        Task otherTask=save(new Task("Eligible scope","Description",TaskStatus.PLANNING,otherZip,null));save(new TaskTrade(otherTask,trade));
+        reload();asWorker();
+        mvc.perform(get("/api/opportunities").param("jobZip","10001")).andExpect(jsonPath("$.length()").value(1)).andExpect(jsonPath("$[0].project.title").value("Bus conversion"));
+        mvc.perform(get("/api/opportunities").param("jobZip","19807")).andExpect(jsonPath("$.length()").value(1)).andExpect(jsonPath("$[0].project.title").value("Open work elsewhere"));
+        mvc.perform(get("/api/opportunities").param("jobZip","00000")).andExpect(jsonPath("$.length()").value(0));
+    }
+
     @Test
     void homeownerSummaryUsesServerCountsAndUnfilledRequirements() throws Exception {
         save(new Task("Review scope", "Inspect", TaskStatus.READY_FOR_REVIEW, project, null));
@@ -68,7 +146,7 @@ class FrontendSupportIntegrationTests {
     }
 
     @Test
-    void catalogAndPeopleSearchReturnQualificationsAndExcludeSameUser() throws Exception {
+    void catalogAndPeopleSearchReturnQualificationsIncludingSelfPublicProfile() throws Exception {
         Specialty specialty = save(new Specialty("Cabinetry", trade));
         save(new PersonSpecialty(worker, specialty));
         Tradesperson self = save(new Tradesperson(owner.getUser(), "Self builder"));
@@ -79,7 +157,8 @@ class FrontendSupportIntegrationTests {
         em.flush();
         mvc.perform(get("/api/catalog/trades")).andExpect(status().isOk());
         mvc.perform(get("/api/discovery/tradespeople").param("tradeId", trade.getId().toString()).param("q", "BUILD"))
-            .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(1))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$[1].profile.id").value(self.getId()))
             .andExpect(jsonPath("$[0].profile.id").value(worker.getId()))
             .andExpect(jsonPath("$[0].qualifications[0].specialties[0].name").value("Cabinetry"))
             .andExpect(jsonPath("$[0].specialties[0].name").value("Cabinetry"))

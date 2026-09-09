@@ -6,5 +6,6 @@ import java.util.Optional;
 
 public interface TradespersonRepository extends JpaRepository<Tradesperson, Long> {
     Optional<Tradesperson> findByUser(User user);
+    List<Tradesperson> findByAccountStatus(AccountStatus accountStatus);
     List<Tradesperson> findByAccountStatusAndUserNot(AccountStatus accountStatus, User user);
 }

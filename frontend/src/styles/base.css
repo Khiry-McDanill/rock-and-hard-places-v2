@@ -326,8 +326,8 @@ main {
   max-width: 58ch;
 }
 .eyebrow {
-  font-size: 0.68rem;
-  letter-spacing: 0.15em;
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
 }
 .journey {
   display: flex;
@@ -962,3 +962,32 @@ dd {
     padding: 1.25rem;
   }
 }
+
+/* Compact architectural trust marks: text carries the state, linework is decorative. */
+/* Compact schematic identities; evidence stays secondary to the trade name. */
+.trust-mark { display: inline-flex; align-items: center; max-width: 100%; box-sizing: border-box; }
+.trust-mark svg { stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.trust-mark--identity { gap: .7rem; padding: .2rem 0; color: #203d55; }
+.trust-mark .trust-trade-icon { width: 44px; height: 44px; flex: 0 0 44px; }
+.trust-construction-line { opacity: .25; stroke-width: 1; stroke-dasharray: 2 3; }
+.trust-mark .trust-trade-accent { stroke: #a34e2b; }
+.trust-identity-copy { min-width: 0; }
+.trust-mark-detail { display: block; color: #262b29; font: 600 18px/1.35 Inter, sans-serif; overflow-wrap: anywhere; }
+.trust-verification { display: flex; align-items: center; gap: .3rem; margin-top: .2rem; color: #42614c; font: 400 14px/1.4 Inter, sans-serif; }
+.trust-mark .trust-evidence-icon { width: 17px; height: 17px; flex: 0 0 17px; }
+.trust-mark--evidence { gap: .4rem; padding: .1rem 0; color: #42614c; }
+.trust-mark-label { font: 400 14px/1.5 Inter, sans-serif; overflow-wrap: anywhere; }
+.trust-mark--provided { color: #515d65; }
+.trust-mark--pending { color: #914525; }
+.trust-mark--project { color: #203d55; }
+.trust-mark--project .trust-evidence-icon { color: #a34e2b; }
+.profile-trust-summary { display: flex; flex-wrap: wrap; gap: 1rem 1.75rem; margin: 1.25rem 0; }
+
+.professional-profile > .portrait { width: 80px; height: 80px; margin-bottom: 1rem; }
+.profile-credentials { margin-top: 2.5rem; }
+.profile-credentials article { padding: 1.25rem 0; border-top: 1px solid #cbbdad; }
+.profile-credentials details { margin-top: 1rem; }
+.profile-credentials summary { font-size: 15px; color: #203d55; cursor: pointer; text-decoration: underline; text-underline-offset: .2em; }
+
+.proposal-card { margin-bottom: 1rem; }
+.proposal-message { white-space: pre-wrap; overflow-wrap: anywhere; }
