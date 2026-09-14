@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestControllerAdvice
 class ApiExceptionHandler {
+    @ExceptionHandler({org.springframework.dao.DataAccessException.class,
+            org.springframework.transaction.TransactionException.class})
+    ResponseEntity<Map<String, Object>> persistence(RuntimeException exception, HttpServletRequest request) {
+        return response(HttpStatus.SERVICE_UNAVAILABLE, "SAVE_UNAVAILABLE",
+                "We could not save your changes. Please try again.", request, Map.of());
+    }
     @ExceptionHandler({ResourceNotFoundException.class, NoSuchElementException.class})
     ResponseEntity<Map<String, Object>> notFound(RuntimeException exception, HttpServletRequest request) {
         return response(HttpStatus.NOT_FOUND, "NOT_FOUND", "Resource not found", request, Map.of());

@@ -1,23 +1,26 @@
 import { useEffect, useRef, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router";
 import type { Profile, Project } from "../api/types";
 import {
   planProject,
+  createApprovedProject,
+  type ApprovedProjectDraft,
   type Answer,
   type PlanResponse,
-  type Recommendation,
 } from "../api/projectBuilder";
-import { workspaceApi } from "../api/workspace";
+import { api } from "../api/client";
 import { refreshProfileData } from "../app/query";
-import { Empty, MutationNotice } from "../components/ui";
+import { Empty } from "../components/ui";
 import { ManualProjectForm, type ProjectDraft } from "./manualProjectForm";
 
-type Choice = "pending" | "kept" | "removed";
-type Item = (Recommendation & { title?: string; description?: string }) & {
-  choice: Choice;
-  editing?: boolean;
-};
+import {
+  catalogTrade,
+  reviewSuggestions,
+  reviseItem,
+  type ReviewItem as Item,
+} from "./projectBuilderDraft";
+
 const blankDraft: ProjectDraft = { title: "", description: "", jobZip: "" };
 const confidence = {
   HIGH: "Strong fit",
@@ -58,6 +61,7 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
   const [error, setError] = useState("");
   const [hasEdits, setHasEdits] = useState(false);
   const generation = useRef(0);
+  const descriptionEdited = useRef(false);
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     heading.current?.focus();
@@ -68,25 +72,48 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
     },
     [],
   );
+  const [submissionKey, setSubmissionKey] = useState(() => crypto.randomUUID());
+  const catalog = useQuery({
+    queryKey: ["catalog", "trades"],
+    queryFn: ({ signal }) => api.trades(signal),
+  });
   const create = useMutation({
-    mutationFn: (value: ProjectDraft) => workspaceApi.saveProject(value),
+    mutationFn: (value: ApprovedProjectDraft) =>
+      createApprovedProject(value, submissionKey),
     onSuccess: async (result) => {
       await refreshProfileData();
-      navigate(`/projects/${result.id}`);
+      navigate(`/projects/${result.id}`, { state: { projectCreated: true } });
     },
   });
+  function resetDraft(nextManual: boolean) {
+    generation.current += 1;
+    setManual(nextManual);
+    setIdea("");
+    setDraft(blankDraft);
+    setResponse(undefined);
+    setAnswers([]);
+    setTrades([]);
+    setTasks([]);
+    setPending(false);
+    setError("");
+    setHasEdits(false);
+    descriptionEdited.current = false;
+    setSubmissionKey(crypto.randomUUID());
+    create.reset();
+  }
+  function startPath(nextManual: boolean) {
+    // Returning to the same path edits this draft; choosing the other entry path
+    // starts a separate project. Continue manually below is explicitly a continuation.
+    if (nextManual !== manual) resetDraft(nextManual);
+    setStep(nextManual ? "manual" : "idea");
+  }
   const continueManually = () => {
     generation.current += 1;
     setPending(false);
     setError("");
     setManual(true);
-    if (!manual) {
-      setDraft({ ...blankDraft, description: idea });
-      setResponse(undefined);
-      setTrades([]);
-      setTasks([]);
-      setAnswers([]);
-    }
+    if (!draft.description && !descriptionEdited.current)
+      setDraft((previous) => ({ ...previous, description: idea }));
     setStep("manual");
   };
   async function plan(manualDraft?: ProjectDraft) {
@@ -96,16 +123,20 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
     try {
       const result = await planProject(
         idea,
-        manualDraft ? [] : answers,
+        answers,
         manualDraft ?? (manual ? draft : undefined),
       );
       if (generation.current !== current) return;
       setResponse(result);
-      setTrades(
-        result.plan.suggestedTrades.map((t) => ({ ...t, choice: "pending" })),
+      if (!manual && !descriptionEdited.current)
+        setDraft((previous) => ({
+          ...previous,
+          description: result.plan.summary,
+        }));
+      setTrades((previous) =>
+        reviewSuggestions(previous, result.plan.suggestedTrades),
       );
-      setTasks(result.plan.tasks.map((t) => ({ ...t, choice: "pending" })));
-      setHasEdits(false);
+      setTasks((previous) => reviewSuggestions(previous, result.plan.tasks));
       setAnswers((previous) => {
         const next = [...previous];
         result.plan.followUpQuestions.forEach((question) => {
@@ -133,32 +164,44 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
   ) {
     setHasEdits(true);
     (kind === "trade" ? setTrades : setTasks)((items) =>
-      items.map((item, i) => (i === index ? { ...item, ...changes } : item)),
+      items.map((item, i) => (i === index ? reviseItem(item, changes) : item)),
     );
   }
-  const kept = [...trades, ...tasks].filter((item) => item.choice === "kept");
-  const savedDraft = {
-    ...draft,
-    description:
-      draft.description +
-      (kept.length
-        ? "\n\nHomeowner-selected planning notes:\n" +
-          kept
-            .map((item) =>
-              item.title
-                ? `Task: ${item.title} (${item.trade}) — ${item.description}`
-                : `Trade: ${item.trade}`,
-            )
-            .join("\n")
-        : ""),
-  };
-  const busy = pending || create.isPending;
-  const invalidKept = kept.some(
-    (item) =>
-      !item.trade.trim() ||
-      (item.title !== undefined &&
-        (!item.title.trim() || !item.description?.trim())),
+  const matchTrade = (name: string) => catalogTrade(name, catalog.data);
+  const keptTasks = tasks.filter((item) => item.choice === "kept");
+  const keptTrades = trades.filter((item) => item.choice === "kept");
+  const removedTrades = trades.filter((item) => item.choice === "removed");
+  const unresolved = [...tasks, ...trades].some(
+    (item) => item.choice !== "removed" && !matchTrade(item.trade),
   );
+  const orphanTrade = keptTrades.some(
+    (item) =>
+      !keptTasks.some(
+        (task) => matchTrade(task.trade)?.id === matchTrade(item.trade)?.id,
+      ),
+  );
+  const conflictingTrade = keptTasks.some((task) =>
+    removedTrades.some((trade) => {
+      const id = matchTrade(trade.trade)?.id;
+      return id !== undefined && id === matchTrade(task.trade)?.id;
+    }),
+  );
+  const savedDraft: ApprovedProjectDraft = {
+    ...draft,
+    tasks: keptTasks.map((item) => ({
+      title: item.title ?? "",
+      description: item.description ?? "",
+      requiredTradeIds: matchTrade(item.trade)
+        ? [matchTrade(item.trade)!.id]
+        : [],
+    })),
+  };
+  const busy = pending || create.isPending || create.isSuccess;
+  const invalidKept =
+    unresolved ||
+    orphanTrade ||
+    conflictingTrade ||
+    keptTasks.some((item) => !item.title?.trim() || !item.description?.trim());
 
   return (
     <div className="project-builder">
@@ -204,17 +247,7 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
               Tell us what you want to build. RH&P will help shape the work,
               identify likely trades, and ask the questions that matter.
             </p>
-            <button
-              onClick={() => {
-                setManual(false);
-                setResponse(undefined);
-                setTrades([]);
-                setTasks([]);
-                setAnswers([]);
-                setError("");
-                setStep("idea");
-              }}
-            >
+            <button onClick={() => startPath(false)}>
               Build my project plan
             </button>
           </section>
@@ -227,13 +260,7 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
               Already know the project details? Enter them yourself and RH&P can
               review the plan before you create it.
             </p>
-            <button
-              className="secondary"
-              onClick={() => {
-                setManual(true);
-                setStep("manual");
-              }}
-            >
+            <button className="secondary" onClick={() => startPath(true)}>
               Enter project details
             </button>
           </section>
@@ -255,7 +282,16 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
               maxLength={6000}
               value={idea}
               disabled={pending}
-              onChange={(e) => setIdea(e.target.value)}
+              onChange={(e) => {
+                if (
+                  response ||
+                  tasks.length ||
+                  answers.length ||
+                  draft.description
+                )
+                  resetDraft(false);
+                setIdea(e.target.value);
+              }}
               placeholder="A tree house in Hockessin, a more welcoming kitchen, a quiet place to work…"
             />
           </label>
@@ -270,14 +306,13 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
         <ManualProjectForm
           profile={profile}
           draft={draft}
-          onDraftChange={setDraft}
+          onDraftChange={(value) => {
+            if (value.description !== draft.description)
+              descriptionEdited.current = true;
+            setDraft(value);
+          }}
           onReview={(value, withReview) => {
             setDraft(value);
-            setResponse(undefined);
-            setTrades([]);
-            setTasks([]);
-            setAnswers([]);
-            setHasEdits(false);
             setError("");
             setStep("review");
             if (withReview) void plan(value);
@@ -290,7 +325,11 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
           details.
           {manual && (
             <div className="actions">
-              <button className="secondary" onClick={continueManually}>
+              <button
+                className="secondary"
+                disabled={create.isPending || create.isSuccess}
+                onClick={continueManually}
+              >
                 Continue manually
               </button>
             </div>
@@ -301,10 +340,14 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
         <div className="builder-notice" role="alert">
           <p>{error}</p>
           <div className="actions">
-            <button onClick={() => void plan()} disabled={pending}>
+            <button onClick={() => void plan()} disabled={busy}>
               Try again
             </button>
-            <button className="secondary" onClick={continueManually}>
+            <button
+              className="secondary"
+              disabled={create.isPending || create.isSuccess}
+              onClick={continueManually}
+            >
               Continue manually
             </button>
           </div>
@@ -348,8 +391,8 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
               ))}
               {hasEdits && (
                 <p>
-                  Updating the plan replaces the recommendations below,
-                  including your edits and selections. Your answers remain.
+                  Updating the plan refreshes unreviewed recommendations. Your
+                  edits, decisions, and answers remain.
                 </p>
               )}
               <div className="actions">
@@ -375,57 +418,44 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
             <>
               <section className="form-panel">
                 <h2>Project summary</h2>
-                {manual ? (
-                  <>
-                    <label>
-                      Project name
-                      <input
-                        required
-                        value={draft.title}
-                        disabled={busy}
-                        onChange={(e) =>
-                          setDraft({ ...draft, title: e.target.value })
-                        }
-                      />
-                    </label>
-                    <label>
-                      Your vision
-                      <textarea
-                        required
-                        rows={4}
-                        value={draft.description}
-                        disabled={busy}
-                        onChange={(e) =>
-                          setDraft({ ...draft, description: e.target.value })
-                        }
-                      />
-                    </label>
-                    <label>
-                      Project ZIP code
-                      <input
-                        required
-                        inputMode="numeric"
-                        value={draft.jobZip}
-                        disabled={busy}
-                        onChange={(e) =>
-                          setDraft({ ...draft, jobZip: e.target.value })
-                        }
-                      />
-                    </label>
-                  </>
-                ) : (
-                  <>
-                    <label>
-                      Your original idea
-                      <textarea value={idea} readOnly rows={4} />
-                    </label>
-                    <p>
-                      This is a planning draft. Review every recommendation;
-                      nothing is created or assigned here. Updating your answers
-                      will replace the proposed plan.
-                    </p>
-                  </>
-                )}
+                <>
+                  <label>
+                    Project name
+                    <input
+                      required
+                      value={draft.title}
+                      disabled={busy}
+                      onChange={(e) =>
+                        setDraft({ ...draft, title: e.target.value })
+                      }
+                    />
+                  </label>
+                  <label>
+                    Your vision
+                    <textarea
+                      required
+                      rows={4}
+                      value={draft.description}
+                      disabled={busy}
+                      onChange={(e) => {
+                        descriptionEdited.current = true;
+                        setDraft({ ...draft, description: e.target.value });
+                      }}
+                    />
+                  </label>
+                  <label>
+                    Project ZIP code
+                    <input
+                      required
+                      inputMode="numeric"
+                      value={draft.jobZip}
+                      disabled={busy}
+                      onChange={(e) =>
+                        setDraft({ ...draft, jobZip: e.target.value })
+                      }
+                    />
+                  </label>
+                </>
                 {manual && !response && !error && (
                   <button disabled={busy} onClick={() => void plan()}>
                     Review my plan with RH&P
@@ -471,20 +501,54 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
                           <strong>Trade: {item.trade}</strong>
                         </p>
                       )}
-                      <p>{item.reason}</p>
+                      {item.origin === "suggestion" ? (
+                        <p>{item.reason}</p>
+                      ) : (
+                        <p>
+                          {item.origin === "added"
+                            ? "Added by you."
+                            : "Edited by you."}
+                        </p>
+                      )}
                       <p className="builder-meta">
-                        Confidence: {confidence[item.confidence]}
-                        {item.needsConfirmation && (
-                          <span className="builder-tag">
-                            Needs confirmation
-                          </span>
+                        {item.origin === "suggestion" && item.confidence && (
+                          <>Confidence: {confidence[item.confidence]}</>
                         )}
-                        {response?.unresolvedTrades.includes(item.trade) && (
+                        {item.origin === "suggestion" &&
+                          item.needsConfirmation && (
+                            <span className="builder-tag">
+                              Needs confirmation
+                            </span>
+                          )}
+                        {!matchTrade(item.trade) && (
                           <span className="builder-tag">
                             Trade needs matching
                           </span>
                         )}
                       </p>
+                      {item.choice !== "removed" && (
+                        <label>
+                          Required trade for {item.title ?? item.trade}
+                          <select
+                            disabled={busy}
+                            value={matchTrade(item.trade)?.id ?? ""}
+                            onChange={(e) => {
+                              const selected = catalog.data?.find(
+                                (t) => t.id === Number(e.target.value),
+                              );
+                              if (selected)
+                                update(kind, i, { trade: selected.name });
+                            }}
+                          >
+                            <option value="">Choose an existing trade</option>
+                            {catalog.data?.map((t) => (
+                              <option key={t.id} value={t.id}>
+                                {t.name}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
                       {item.editing && (
                         <div className="builder-edit">
                           {item.title !== undefined && (
@@ -493,6 +557,7 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
                                 Task name
                                 <input
                                   value={item.title}
+                                  disabled={busy}
                                   maxLength={200}
                                   onChange={(e) =>
                                     update(kind, i, { title: e.target.value })
@@ -503,6 +568,7 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
                                 Task details
                                 <textarea
                                   value={item.description}
+                                  disabled={busy}
                                   maxLength={4000}
                                   onChange={(e) =>
                                     update(kind, i, {
@@ -517,6 +583,7 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
                             Trade name
                             <input
                               value={item.trade}
+                              disabled={busy}
                               maxLength={200}
                               onChange={(e) =>
                                 update(kind, i, { trade: e.target.value })
@@ -574,9 +641,7 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
                       setHasEdits(true);
                       const item: Item = {
                         trade: "",
-                        reason: "Added by you.",
-                        confidence: "MEDIUM",
-                        needsConfirmation: true,
+                        origin: "added",
                         choice: "pending",
                         editing: true,
                         ...(kind === "task"
@@ -620,35 +685,77 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
                     : "Your plan, your decisions."}
                 </h2>
                 <p>
-                  {manual
-                    ? "Only your project details and applied planning notes will be saved. Tasks and trade assignments are not created from these notes."
-                    : "This review stays in this tab. Creating a project from this plan is not available yet. A refresh resets this draft."}
+                  Only kept or applied tasks and their selected catalog trades
+                  will be created. Unselected recommendations are excluded. You
+                  can create a project without tasks.
                 </p>
-                {manual && (
-                  <>
-                    <label>
-                      Description that will be saved
-                      <textarea
-                        readOnly
-                        rows={6}
-                        value={savedDraft.description}
-                      />
-                    </label>
-                    <MutationNotice mutation={create} />
-                    <button
-                      disabled={
-                        busy ||
-                        invalidKept ||
-                        !draft.title.trim() ||
-                        !draft.description.trim() ||
-                        !draft.jobZip.trim()
-                      }
-                      onClick={() => create.mutate(savedDraft)}
-                    >
-                      {create.isPending ? "Creating…" : "Create project"}
-                    </button>
-                  </>
+                {unresolved && (
+                  <p role="alert">
+                    Choose an existing RH&P trade for each unresolved item, or
+                    remove it.
+                  </p>
                 )}
+                {orphanTrade && (
+                  <p role="alert">
+                    Each kept trade needs a kept task. Add or keep a task for
+                    that trade, or remove the trade.
+                  </p>
+                )}
+                {conflictingTrade && (
+                  <p role="alert">
+                    A kept task uses a removed trade. Change the task’s trade,
+                    remove the task, or keep the trade.
+                  </p>
+                )}
+                {catalog.isError && (
+                  <p>
+                    We couldn’t load the trade catalog.{" "}
+                    <button
+                      className="secondary"
+                      onClick={() => void catalog.refetch()}
+                    >
+                      Retry trade catalog
+                    </button>{" "}
+                    You can still create a project without tasks.
+                  </p>
+                )}
+                <label>
+                  Description that will be saved
+                  <textarea readOnly rows={4} value={savedDraft.description} />
+                </label>
+                <p>{savedDraft.tasks.length} approved tasks will be created.</p>
+                {create.isError && (
+                  <div role="alert">
+                    <p>
+                      We couldn’t create your project. Your review is still
+                      here. Retry with the same approval, or check My Projects
+                      if an earlier request may have succeeded.
+                    </p>
+                    <Link to="/projects">My Projects</Link>
+                  </div>
+                )}
+                {create.isPending && (
+                  <p role="status">Creating your project and approved tasks…</p>
+                )}
+                <button
+                  disabled={
+                    busy ||
+                    invalidKept ||
+                    !draft.title.trim() ||
+                    !draft.description.trim() ||
+                    !draft.jobZip.trim()
+                  }
+                  onClick={() => {
+                    if (!create.isPending && !create.isSuccess)
+                      create.mutate(savedDraft);
+                  }}
+                >
+                  {create.isPending
+                    ? "Creating…"
+                    : create.isError
+                      ? "Retry Create project"
+                      : "Create project"}
+                </button>
               </section>
             </>
           )}
@@ -665,7 +772,11 @@ function ProjectBuilder({ profile }: { profile: Profile }) {
           </button>
         )}
         {!manual && step !== "entry" && (
-          <button className="secondary" onClick={continueManually}>
+          <button
+            className="secondary"
+            disabled={create.isPending || create.isSuccess}
+            onClick={continueManually}
+          >
             Continue manually
           </button>
         )}

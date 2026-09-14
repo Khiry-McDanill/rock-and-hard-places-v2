@@ -90,6 +90,26 @@ async function setup(page: Page, status = 200) {
                 },
         });
       }
+      if (path === "/api/catalog/trades")
+        return route.fulfill({
+          json: [
+            { id: 1, name: "Carpentry", specialties: [] },
+            { id: 2, name: "Electrical", specialties: [] },
+          ],
+        });
+      if (path === "/api/dashboard/homeowner")
+        return route.fulfill({ json: { projects: [] } });
+      if (path === "/api/projects/321")
+        return route.fulfill({
+          json: {
+            id: 321,
+            title: "Created project",
+            description: "Approved work",
+            jobZip: "19707",
+            status: "PLANNING",
+            progressPercentage: 0,
+          },
+        });
       if (req.method() !== "GET")
         writes.push({ url: path, body: req.postDataJSON() });
       if (path === "/api/account")
@@ -102,7 +122,7 @@ async function setup(page: Page, status = 200) {
             profiles: [owner],
           },
         });
-      if (path === "/api/projects" && req.method() === "POST")
+      if (path === "/api/project-builder/create" && req.method() === "POST")
         return route.fulfill({
           json: {
             ...req.postDataJSON(),
@@ -163,11 +183,12 @@ test("entry offers both paths and manual creation works without planning", async
     .click();
   await expect.poll(() => writes.length).toBe(1);
   expect(writes[0]).toEqual({
-    url: "/api/projects",
+    url: "/api/project-builder/create",
     body: {
       title: "Hockessin Tree House",
       description: "Tree House with Deck and Lighting",
       jobZip: "19707",
+      tasks: [],
     },
   });
 });
@@ -237,7 +258,7 @@ test("AI idea, loading, iterative answers, review and homeowner controls never c
   expect(writes).toEqual([]);
   await expect(
     page.getByRole("button", { name: "Create project", exact: true }),
-  ).toHaveCount(0);
+  ).toBeDisabled();
 });
 
 test("manual recommendations are opt-in with Apply, Edit, Ignore and exact save preview", async ({
@@ -255,7 +276,9 @@ test("manual recommendations are opt-in with Apply, Edit, Ignore and exact save 
     exact: true,
   });
   await electrical.getByRole("button", { name: "Apply", exact: true }).click();
-  await expect(preview).toHaveValue(/Trade: Electrical/);
+  await expect(
+    page.getByRole("button", { name: "Create project", exact: true }),
+  ).toBeDisabled();
   const task = page.getByRole("article", {
     name: "Weather protection",
     exact: true,
@@ -266,16 +289,32 @@ test("manual recommendations are opt-in with Apply, Edit, Ignore and exact save 
     .fill("Discuss exterior weather protection.");
   await expect(preview).not.toHaveValue(/Discuss exterior/);
   await task.getByRole("button", { name: "Apply", exact: true }).click();
-  await expect(preview).toHaveValue(/Discuss exterior/);
+  await expect(
+    page.getByText(
+      "Choose an existing RH&P trade for each unresolved item, or remove it.",
+    ),
+  ).toBeVisible();
   await task.getByRole("button", { name: "Ignore", exact: true }).click();
   await expect(preview).not.toHaveValue(/Discuss exterior/);
   expect(writes).toEqual([]);
+  await electrical.getByRole("button", { name: "Ignore", exact: true }).click();
+  await page
+    .getByRole("article", { name: "Plan access and railing", exact: true })
+    .getByRole("button", { name: "Apply", exact: true })
+    .click();
   const description = await preview.inputValue();
   await page
     .getByRole("button", { name: "Create project", exact: true })
     .click();
   await expect.poll(() => writes.length).toBe(1);
   expect(writes[0].body.description).toBe(description);
+  expect(writes[0].body.tasks).toEqual([
+    {
+      title: "Plan access and railing",
+      description: "Clarify safe access to the elevated deck.",
+      requiredTradeIds: [1],
+    },
+  ]);
 });
 
 for (const status of [429, 503, 502])
@@ -408,3 +447,130 @@ test("leaving a pending review ignores late results and preserves manual entries
   ).toHaveValue("Keep these homeowner details");
   expect(writes).toEqual([]);
 });
+
+for (const width of [1440, 943, 390])
+  test(`approved guided project creates real-shaped work at ${width}px with safe retry`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await setup(page);
+    const submissions: { body: any; key: string | undefined }[] = [];
+    let release: (() => Promise<void>) | undefined;
+    await page.route("**/api/project-builder/create", (route) => {
+      submissions.push({
+        body: route.request().postDataJSON(),
+        key: route.request().headers()["idempotency-key"],
+      });
+      release = () =>
+        route.fulfill({
+          status: submissions.length === 1 ? 503 : 201,
+          json:
+            submissions.length === 1
+              ? { message: "PRIVATE failure" }
+              : { id: 321 },
+        });
+    });
+    await startAI(page);
+    await page.getByRole("button", { name: "Review proposed plan" }).click();
+    await page
+      .getByLabel("Project name", { exact: true })
+      .fill(`AI-assisted Hockessin ${width}`);
+    await page.getByLabel("Project ZIP code").fill("19707");
+    const task = page.getByRole("article", {
+      name: "Plan access and railing",
+      exact: true,
+    });
+    await task.getByRole("button", { name: "Edit", exact: true }).click();
+    await task
+      .getByLabel("Task details")
+      .fill("Homeowner-approved deck access.");
+    await task.getByRole("button", { name: "Keep", exact: true }).click();
+    const unresolved = page.getByRole("article", {
+      name: "Weather protection",
+      exact: true,
+    });
+    await unresolved.getByRole("button", { name: "Keep", exact: true }).click();
+    await expect(
+      page.getByRole("button", { name: "Create project", exact: true }),
+    ).toBeDisabled();
+    await unresolved.getByRole("combobox").selectOption("1");
+    await expect(
+      page.getByRole("button", { name: "Create project", exact: true }),
+    ).toBeEnabled();
+    await unresolved
+      .getByRole("button", { name: "Remove", exact: true })
+      .click();
+    await page
+      .getByRole("article", { name: "Electrical", exact: true })
+      .getByRole("button", { name: "Remove", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Create project", exact: true })
+      .click();
+    await expect.poll(() => submissions.length).toBe(1);
+    await expect(
+      page.getByRole("button", { name: "Creating…", exact: true }),
+    ).toBeDisabled();
+    await release!();
+    await expect(page.getByRole("alert")).toContainText(
+      "Your review is still here",
+    );
+    await expect(task.getByLabel("Task details")).toHaveValue(
+      "Homeowner-approved deck access.",
+    );
+    await page.getByRole("button", { name: "Retry Create project" }).click();
+    await expect.poll(() => submissions.length).toBe(2);
+    expect(submissions[0]).toEqual(submissions[1]);
+    expect(submissions[0].body.tasks).toEqual([
+      {
+        title: "Plan access and railing",
+        description: "Homeowner-approved deck access.",
+        requiredTradeIds: [1],
+      },
+    ]);
+    expect(Object.keys(submissions[0].body).sort()).toEqual([
+      "description",
+      "jobZip",
+      "tasks",
+      "title",
+    ]);
+    await release!();
+    await expect(page).toHaveURL(/\/projects\/321$/);
+    await expect(
+      page.getByText(
+        "Your project was created. Your approved work is ready to manage.",
+      ),
+    ).toBeVisible();
+    if (width === 390)
+      await expect(
+        page.getByLabel("Project section").locator("option"),
+      ).toHaveText([
+        "Overview",
+        "Tasks",
+        "Team",
+        "Bids",
+        "Messages",
+        "Completion",
+      ]);
+    else
+      for (const name of [
+        "Overview",
+        "Tasks",
+        "Team",
+        "Bids",
+        "Messages",
+        "Completion",
+      ])
+        await expect(
+          page.getByRole("link", { name, exact: true }).first(),
+        ).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    ).toBe(true);
+    await page.screenshot({
+      path: `test-results/created-project-${width}.png`,
+      fullPage: true,
+    });
+  });

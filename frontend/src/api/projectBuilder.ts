@@ -69,3 +69,17 @@ export async function planProject(
     clearTimeout(timer);
   }
 }
+
+export interface ApprovedProjectDraft extends ProjectDraft {
+  tasks: { title: string; description: string; requiredTradeIds: number[] }[];
+}
+export function createApprovedProject(
+  draft: ApprovedProjectDraft,
+  submissionKey: string,
+) {
+  return request<import("./types").Project>("/project-builder/create", {
+    method: "POST",
+    headers: { "Idempotency-Key": submissionKey },
+    body: JSON.stringify(draft),
+  });
+}
