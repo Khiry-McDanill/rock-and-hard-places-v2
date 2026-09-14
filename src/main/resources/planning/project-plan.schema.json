@@ -1,0 +1,117 @@
+{
+  "type": "object",
+  "properties": {
+    "summary": {
+      "type": "string",
+      "description": "Nonblank text, at most 4000 characters."
+    },
+    "followUpQuestions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Nonblank text, at most 2000 characters."
+      }
+    },
+    "suggestedTrades": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "trade": {
+            "type": "string",
+            "description": "Nonblank text, at most 200 characters."
+          },
+          "reason": {
+            "type": "string",
+            "description": "Nonblank text, at most 2000 characters."
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ]
+          },
+          "needsConfirmation": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "trade",
+          "reason",
+          "confidence",
+          "needsConfirmation"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Nonblank text, at most 200 characters."
+          },
+          "description": {
+            "type": "string",
+            "description": "Nonblank text, at most 4000 characters."
+          },
+          "trade": {
+            "type": "string",
+            "description": "Nonblank text, at most 200 characters."
+          },
+          "reason": {
+            "type": "string",
+            "description": "Nonblank text, at most 2000 characters."
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ]
+          },
+          "needsConfirmation": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "trade",
+          "reason",
+          "confidence",
+          "needsConfirmation"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Nonblank text, at most 2000 characters."
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Nonblank text, at most 2000 characters."
+      }
+    }
+  },
+  "required": [
+    "summary",
+    "followUpQuestions",
+    "suggestedTrades",
+    "tasks",
+    "assumptions",
+    "warnings"
+  ],
+  "additionalProperties": false
+}

@@ -18,6 +18,14 @@ class ApiExceptionHandler {
         return response(HttpStatus.NOT_FOUND, "NOT_FOUND", "Resource not found", request, Map.of());
     }
 
+    @ExceptionHandler(com.rockandhardplaces.planning.PlanningException.class)
+    ResponseEntity<Map<String, Object>> planning(com.rockandhardplaces.planning.PlanningException exception,
+            HttpServletRequest request) {
+        HttpStatus status = exception.reason() == com.rockandhardplaces.planning.PlanningException.Reason.INVALID_RESPONSE
+                ? HttpStatus.BAD_GATEWAY : HttpStatus.SERVICE_UNAVAILABLE;
+        return response(status, "PLANNING_" + exception.reason().name(), exception.getMessage(), request, Map.of());
+    }
+
     @ExceptionHandler(SecurityException.class)
     ResponseEntity<Map<String, Object>> forbidden(SecurityException exception, HttpServletRequest request) {
         return response(HttpStatus.FORBIDDEN, "FORBIDDEN", message(exception, "Forbidden"), request, Map.of());
