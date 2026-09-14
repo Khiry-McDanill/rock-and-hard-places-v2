@@ -59,7 +59,7 @@ References: [Vite guide](https://vite.dev/guide/), [React Router declarative set
 - Tradesperson: operational overview, assigned scopes and project memberships, filtered opportunities and scope detail, bid submission, submitted bids, task start/review submission, project conversations, own profile and portfolio.
 - Shared: desktop sidebar, role-labeled account switcher, mobile bottom navigation, server progress, pending/error/empty/inactive-account states, mutation feedback, labeled forms and keyboard focus.
 
-`npm test` runs focused Node tests using esbuild and server rendering. They verify navigation by role, inactive-account presentation, progress semantics, API payloads/errors, and profile query isolation/cancellation. They are not a replacement for browser interaction tests.
+`npm test` runs focused Node tests using esbuild and server rendering, followed by the mocked Project Builder browser suite described below. The Node tests verify navigation by role, inactive-account presentation, progress semantics, API payloads/errors, and profile query isolation/cancellation.
 
 ## Current API limits
 
@@ -71,3 +71,34 @@ References: [Vite guide](https://vite.dev/guide/), [React Router declarative set
 - My bids shows server-provided submitted bids; accessible task bid lists show other statuses. There is no complete personal history endpoint or bid edit/withdraw action.
 - Bid amounts use the established USD display convention. The API supplies no currency field; multi-currency support remains outside this release. Service-radius units and bid timestamp timezone remain unspecified; radius units are not displayed.
 - Production packaging and route forwards remain the integration plan above. Use Vite for the local demo.
+
+## Project Builder (RH&P-031 Phase 3)
+
+`/projects/new` offers guided planning and the existing manual fields, converging on Project Review. Follow-up context is composed into Phase 1's existing `{ idea }` request with its 8,000-character limit. The original idea and answers remain in memory. Planning still uses the Phase 1 endpoint; unsubmitted drafts are not persisted.
+
+Creation occurs only on **Create project**, through `POST /api/project-builder/create`. Both paths send the approved title, description, ZIP and tasks (`title`, `description`, `requiredTradeIds`). Only Keep/Apply items enter the payload; unresolved suggestions must be matched to catalog entries or removed. Kept trade recommendations must belong to a kept task. Review never creates arbitrary catalog trades or persists provider metadata.
+
+The server derives the active homeowner, validates the full draft, and calls `ProjectWorkflowService` inside one transaction. A small `project_creation_receipts` table commits with the Project/Task/TaskTrade writes. The client retains one UUID `Idempotency-Key` across retries. The same owner/key/payload returns the original project; a changed payload after success returns 409. Failed transactions leave no project or receipt. The SQLite workflow serializes requests through commit, and the database owner/key constraint prevents duplicates across competing processes. This is a workflow receipt, not a new project type.
+
+Manual-only creation accepts an empty task list and never requires planning or catalog availability. Planning failure and creation failure retain the review; creation failure supports retry without another conversation. Success opens the normal workspace. Existing project editing still uses the original API.
+
+Install the browser once after `npm ci`:
+
+```sh
+npx playwright install chromium
+npm run typecheck
+npm run build
+npm test
+```
+
+`npm test` runs the existing Node tests and the Playwright interaction suite; `npm run test:browser` runs only Playwright. The browser suite starts Vite on port 4179 and intercepts every `/api/` request. It never calls Gemini or a backend. The deterministic Hockessin Tree House fixture is test-only. It covers both entry paths, iterative answers, recommendation controls, manual saves, provider failures, timeout, stale responses, and 1440/943/390px layouts. Screenshots are written to ignored `frontend/test-results/` for visual review.
+
+
+For real browser creation checks, start a separate backend database with Gemini disabled (from the repository root):
+
+```sh
+./mvnw spring-boot:run -Dspring-boot.run.arguments='--server.port=8088 --spring.datasource.url=jdbc:sqlite:/tmp/rhp-phase3-browser.sqlite --rhp.planning.gemini.api-key='
+RHP_INTEGRATION_URL=http://127.0.0.1:8088 npm test --prefix frontend
+```
+
+The opt-in integration suite mocks only `/project-builder/plan`; all creation and workspace reads use that backend. It creates uniquely titled guided and manual projects at 1440/943/390px, verifies persisted tasks/catalog requirements, My Projects and every workspace section. It does not modify the existing manually created Hockessin project. Default `npm test` skips these three real-backend checks and runs the fully mocked browser suite. Install Chromium first as described above.

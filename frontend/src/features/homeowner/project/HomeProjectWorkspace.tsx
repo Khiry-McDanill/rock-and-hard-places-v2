@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router";
+import { Link, useParams, useLocation } from "react-router";
 import { api } from "../../../api/client";
 import { workspaceApi } from "../../../api/workspace";
 import type { Profile } from "../../../api/types";
@@ -26,6 +26,7 @@ export function HomeProjectWorkspace({
 }) {
   const { projectId, section = "overview" } = useParams();
   const id = Number(projectId);
+  const location = useLocation();
   const project = useData(profile, `project-${id}`, (signal) =>
     workspaceApi.project(id, signal),
   );
@@ -41,6 +42,11 @@ export function HomeProjectWorkspace({
   );
   return (
     <div className="home-project">
+      {location.state?.projectCreated && (
+        <p role="status">
+          Your project was created. Your approved work is ready to manage.
+        </p>
+      )}
       <State query={project}>
         {project.data &&
           (section === "edit" ? (

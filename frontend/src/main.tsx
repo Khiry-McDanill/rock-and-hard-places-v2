@@ -15,6 +15,7 @@ import "./styles/project-workspace.css";
 import "./styles/public-home.css";
 import "./styles/inspiration.css";
 import "./styles/see-it-built.css";
+import "./styles/project-builder.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

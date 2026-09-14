@@ -331,3 +331,12 @@ CREATE TABLE IF NOT EXISTS professional_media (
  id TEXT PRIMARY KEY, tradesperson_id INTEGER NOT NULL REFERENCES tradespeople(id),
  content_type TEXT NOT NULL, content BLOB NOT NULL
 );
+
+-- A receipt commits with the approved project, tasks and trade requirements.
+CREATE TABLE IF NOT EXISTS project_creation_receipts (
+ homeowner_id INTEGER NOT NULL REFERENCES homeowners(id),
+ submission_key TEXT NOT NULL,
+ fingerprint TEXT NOT NULL,
+ project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+ PRIMARY KEY (homeowner_id, submission_key)
+);
