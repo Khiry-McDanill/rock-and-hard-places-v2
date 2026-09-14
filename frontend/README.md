@@ -59,7 +59,7 @@ References: [Vite guide](https://vite.dev/guide/), [React Router declarative set
 - Tradesperson: operational overview, assigned scopes and project memberships, filtered opportunities and scope detail, bid submission, submitted bids, task start/review submission, project conversations, own profile and portfolio.
 - Shared: desktop sidebar, role-labeled account switcher, mobile bottom navigation, server progress, pending/error/empty/inactive-account states, mutation feedback, labeled forms and keyboard focus.
 
-`npm test` runs focused Node tests using esbuild and server rendering. They verify navigation by role, inactive-account presentation, progress semantics, API payloads/errors, and profile query isolation/cancellation. They are not a replacement for browser interaction tests.
+`npm test` runs focused Node tests using esbuild and server rendering, followed by the mocked Project Builder browser suite described below. The Node tests verify navigation by role, inactive-account presentation, progress semantics, API payloads/errors, and profile query isolation/cancellation.
 
 ## Current API limits
 
@@ -71,3 +71,20 @@ References: [Vite guide](https://vite.dev/guide/), [React Router declarative set
 - My bids shows server-provided submitted bids; accessible task bid lists show other statuses. There is no complete personal history endpoint or bid edit/withdraw action.
 - Bid amounts use the established USD display convention. The API supplies no currency field; multi-currency support remains outside this release. Service-radius units and bid timestamp timezone remain unspecified; radius units are not displayed.
 - Production packaging and route forwards remain the integration plan above. Use Vite for the local demo.
+
+## Project Builder (RH&P-031 Phase 2)
+
+`/projects/new` offers guided planning and the existing manual fields, converging on Project Review. Follow-up context is composed into Phase 1's existing `{ idea }` request with its 8,000-character limit. The original idea and answers remain in memory. No backend extension or draft persistence is used.
+
+Guided reviews remain drafts; automatic Project/Task/TaskTrade creation is deferred. Manual creation still uses `workspaceApi.saveProject`. Only explicitly applied recommendations are appended as planning notes to the description, with the exact saved description visible before creation. No tasks or trade assignments are created by review. An unavailable provider, quota response, invalid response, network failure, or 45-second frontend timeout permits manual continuation. Phase 1 already logs provider status internally and keeps provider diagnostics out of the public envelope.
+
+Install the browser once after `npm ci`:
+
+```sh
+npx playwright install chromium
+npm run typecheck
+npm run build
+npm test
+```
+
+`npm test` runs the existing Node tests and the Playwright interaction suite; `npm run test:browser` runs only Playwright. The browser suite starts Vite on port 4179 and intercepts every `/api/` request. It never calls Gemini or a backend. The deterministic Hockessin Tree House fixture is test-only. It covers both entry paths, iterative answers, recommendation controls, manual saves, provider failures, timeout, stale responses, and 1440/943/390px layouts. Screenshots are written to ignored `frontend/test-results/` for visual review.
