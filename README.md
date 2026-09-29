@@ -4,7 +4,7 @@
 
 Rock & Hard Places is a full-stack project workspace that helps homeowners turn construction and remodeling ideas into organized work with tradespeople. It brings project planning, people, bids, tasks, messages, and progress into one place.
 
-![Rock & Hard Places landing page, with project actions and a before-and-after renovation feature](docs/screenshots/homepage.png)
+![Rock & Hard Places landing page, with project actions and a before-and-after renovation feature](docs/screenshots/homepage.jpg)
 
 ## The problem
 
